@@ -14,8 +14,7 @@ class Solution {
             children[newParent].push_back(node);
             int nps = hm[newParent].second + 1;
             if (hm[node].second>nps) {
-                hm[node].first = newParent;
-                hm[node].second = nps;
+                hm[node]= {newParent,nps};
                 queue<int> q;
                 q.push(node); // add the tail of query edge to queue list
                 while (!q.empty()) {
