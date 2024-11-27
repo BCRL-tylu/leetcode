@@ -1,35 +1,32 @@
 class Solution {
-public:
-    vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
+    public:vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
+        // Use vector instead of unordered_map
         vector<pair<int, int>> hm(n); // [parent, distance]
-        vector<unordered_set<int>> children(n); 
-        hm[0] = {n, 0};
+        vector<vector<int>> children(n); // Store children for each node
+        hm[0] = {n, 0}; // Root node
         for (int i = 1; i < n; i++) {
             hm[i] = {i - 1, i}; // Parent and initial distance
-            children[i - 1].emplace(i); // Add child relationship
+            children[i - 1].push_back(i); // Add child relationship
         }
         vector<int> rt(queries.size());
         for (int j = 0; j < queries.size(); j++) {
             int newParent = queries[j][0];
             int node = queries[j][1];
-            // Add node to the children of newParent if not already present
-            if (children[newParent].find(node) == children[newParent].end())
-                children[newParent].emplace(node);
+            children[newParent].push_back(node);
             int nps = hm[newParent].second + 1;
-            if (hm[node].second > nps) {
+            if (hm[node].second>nps) {
                 hm[node].first = newParent;
-                hm[node].second = nps;
-                // Update distances using BFS
+                hm[node].second = hm[newParent].second + 1;
                 queue<int> q;
-                q.emplace(node);
+                q.push(node); // add the tail of query edge to queue list
                 while (!q.empty()) {
-                    int curr = q.front();
-                    q.pop();
+                    int curr = q.front(); // get the first element of queue
+                    q.pop(); //remove it
                     int updated = hm[curr].second + 1;
                     for (int child : children[curr]) {
-                        if (hm[child].second > updated) {
-                            hm[child].second = updated;
-                            q.emplace(child);
+                    if(hm[child].second>updated){
+                        hm[child].second = updated;
+                        q.push(child);
                         }
                     }
                 }
