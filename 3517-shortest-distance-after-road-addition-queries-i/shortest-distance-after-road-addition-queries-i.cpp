@@ -1,25 +1,43 @@
 class Solution {
 public:
     vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
-        vector<vector<int>> from(n);
-        vector<int> dp(n);
-        std::iota(dp.begin(), dp.end(), 0);
-        int m = queries.size();
-        vector<int> ans(m);
-        for (int i = 0; i < m; ++i) {
-            int u = queries[i][0], v = queries[i][1];
-            from[v].emplace_back(u);
-            if (1 + dp[u] < dp[v]) {
-                dp[v] = 1 + dp[u];
-                for (int j = 1 + v; j < n; ++j) {
-                    dp[j] = std::min(dp[j], 1 + dp[j - 1]);
-                    for (int k : from[j]) {
-                        dp[j] = std::min(dp[j], 1 + dp[k]);
+        vector<pair<int, int>> hm(n); // [parent, distance]
+        vector<unordered_set<int>> children(n); // Store children with unique relationships
+        // Initialize parent and distance
+        hm[0] = {n, 0};
+        for (int i = 1; i < n; i++) {
+            hm[i] = {i - 1, i}; // Parent and initial distance
+            children[i - 1].emplace(i); // Add child relationship
+        }
+        vector<int> rt(queries.size());
+        for (int j = 0; j < queries.size(); j++) {
+            int newParent = queries[j][0];
+            int node = queries[j][1];
+            // Add node to the children of newParent if not already present
+            if (children[newParent].find(node) == children[newParent].end()) {
+                children[newParent].emplace(node);
+            }
+            int nps = hm[newParent].second + 1;
+            if (hm[node].second > nps) {
+                hm[node].first = newParent;
+                hm[node].second = nps;
+                // Update distances using BFS
+                queue<int> q;
+                q.emplace(node);
+                while (!q.empty()) {
+                    int curr = q.front();
+                    q.pop();
+                    int updated = hm[curr].second + 1;
+                    for (int child : children[curr]) {
+                        if (hm[child].second > updated) {
+                            hm[child].second = updated;
+                            q.emplace(child);
+                        }
                     }
                 }
             }
-            ans[i] = dp.back();
+            rt[j] = hm[n - 1].second;
         }
-        return ans;
+        return rt;
     }
 };
