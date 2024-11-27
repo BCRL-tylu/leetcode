@@ -1,6 +1,5 @@
 class Solution {
     public:vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
-        // Use vector instead of unordered_map
         vector<pair<int, int>> hm(n); // [parent, distance]
         vector<vector<int>> children(n); // Store children for each node
         hm[0] = {n, 0}; // Root node
@@ -16,7 +15,7 @@ class Solution {
             int nps = hm[newParent].second + 1;
             if (hm[node].second>nps) {
                 hm[node].first = newParent;
-                hm[node].second = hm[newParent].second + 1;
+                hm[node].second = nps;
                 queue<int> q;
                 q.push(node); // add the tail of query edge to queue list
                 while (!q.empty()) {
