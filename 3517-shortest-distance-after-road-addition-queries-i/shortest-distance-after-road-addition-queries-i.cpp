@@ -2,8 +2,7 @@ class Solution {
 public:
     vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
         vector<pair<int, int>> hm(n); // [parent, distance]
-        vector<unordered_set<int>> children(n); // Store children with unique relationships
-        // Initialize parent and distance
+        vector<unordered_set<int>> children(n); 
         hm[0] = {n, 0};
         for (int i = 1; i < n; i++) {
             hm[i] = {i - 1, i}; // Parent and initial distance
@@ -14,9 +13,8 @@ public:
             int newParent = queries[j][0];
             int node = queries[j][1];
             // Add node to the children of newParent if not already present
-            if (children[newParent].find(node) == children[newParent].end()) {
+            if (children[newParent].find(node) == children[newParent].end())
                 children[newParent].emplace(node);
-            }
             int nps = hm[newParent].second + 1;
             if (hm[node].second > nps) {
                 hm[node].first = newParent;
