@@ -19,13 +19,13 @@ public:
                 int nx = x + directions[i], ny = y + directions[i + 1];
                 // if the new position is within boundry and new position hasn't been updated
                 if (nx >= 0 && ny >= 0 && nx < m && ny < n && dist[nx][ny]==-1) {
-                    // If this path is better, update distance
+                    // Since we only take the high priority grids, due to property of 0-1 BFS, if it's unlabelled, the label must be optimal
                         dist[nx][ny] = dist[x][y] + grid[nx][ny];
                         // Add to the front or back of the deque based on obstacle weight
                         if (grid[nx][ny]) {
-                            dq.emplace_back(nx, ny); // No obstacle, higher priority
+                            dq.emplace_back(nx, ny); // Obstacle, lower priority
                         } else {
-                            dq.emplace_front(nx, ny); // Obstacle, lower priority
+                            dq.emplace_front(nx, ny); // No obstacle, higher priority
                         }
                 }
             }
