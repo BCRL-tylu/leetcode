@@ -4,15 +4,22 @@ public:
         int m = grid.size();
         int n = grid[0].size();
         vector<int> directions = {0, 1, 0, -1, 0}; // Directions: right, down, left, up
-        priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<>> pq; // Min-heap
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<>> pq; // Min-heap
         vector<vector<int>> dist(m, vector<int>(n, INT_MAX)); // Distance matrix
-
-        pq.emplace(0, 0, 0); // (current weight, x, y)
         dist[0][0] = 0;
+        pq.push({0, {0, 0}}); // (current weight, (x, y))
+
         while (!pq.empty()) {
-            auto [currentWeight, x, y] = pq.top();
+            auto [currentWeight, coords] = pq.top();
+            auto [x, y] = coords;
             pq.pop();
+
+            // If we've already found a better way to this cell, skip processing
             if (currentWeight > dist[x][y]) continue;
+
+            // Check if we reached the destination
+            if (x == m - 1 && y == n - 1) return currentWeight;
+
             for (int i = 0; i < 4; ++i) {
                 int nx = x + directions[i], ny = y + directions[i + 1];
                 if (nx >= 0 && ny >= 0 && nx < m && ny < n) {
@@ -20,8 +27,7 @@ public:
                     // If this path is better, update distance and push to the heap
                     if (newWeight < dist[nx][ny]) {
                         dist[nx][ny] = newWeight;
-                        if (nx == m - 1 && ny == n - 1) return newWeight;
-                        pq.emplace(newWeight, nx, ny);
+                        pq.push({newWeight, {nx, ny}});
                     }
                 }
             }
