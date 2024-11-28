@@ -13,17 +13,13 @@ public:
         vector<int> directions = {0, 1, 0, -1, 0}; // Directions: right, down, left, up
         vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
         dist[0][0] = 0;
-
         deque<pair<int, int>> dq; // Deque for 0-1 BFS
         dq.emplace_front(0, 0); // Starting point
-
         while (!dq.empty()) {
             auto [x, y] = dq.front();
             dq.pop_front();
-
             // Check if we reached the destination
             if (x == m - 1 && y == n - 1) return dist[x][y];
-
             // Explore neighbors
             for (int i = 0; i < 4; ++i) {
                 int nx = x + directions[i], ny = y + directions[i + 1];
