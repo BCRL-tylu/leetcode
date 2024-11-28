@@ -10,7 +10,7 @@ public:
     int minimumObstacles(vector<vector<int>>& grid) {
         int m = grid.size();
         int n = grid[0].size();
-        vector<int> directions = {0, 1, 0, -1, 0}; // Directions: right, down, left, up
+        int directions[5] = {0, 1, 0, -1, 0}; // Directions: right, down, left, up
         int dist[m][n];
         memset(dist,-1,sizeof(dist));
         dist[0][0] = 0;
