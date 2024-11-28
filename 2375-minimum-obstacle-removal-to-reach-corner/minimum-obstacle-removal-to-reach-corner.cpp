@@ -11,7 +11,8 @@ public:
         int m = grid.size();
         int n = grid[0].size();
         vector<int> directions = {0, 1, 0, -1, 0}; // Directions: right, down, left, up
-        vector<vector<int>> dist(m, vector<int>(n, -1));
+        int dist[m][n];
+        memset(dist,-1,sizeof(dist));
         dist[0][0] = 0;
         deque<pair<int, int>> dq; // Deque for 0-1 BFS
         dq.emplace_front(0, 0); // Starting point
