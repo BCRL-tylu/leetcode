@@ -11,7 +11,7 @@ public:
         int m = grid.size();
         int n = grid[0].size();
         vector<int> directions = {0, 1, 0, -1, 0}; // Directions: right, down, left, up
-        vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
+        vector<vector<int>> dist(m, vector<int>(n, -1));
         dist[0][0] = 0;
         deque<pair<int, int>> dq; // Deque for 0-1 BFS
         dq.emplace_front(0, 0); // Starting point
@@ -23,18 +23,15 @@ public:
             // Explore neighbors
             for (int i = 0; i < 4; ++i) {
                 int nx = x + directions[i], ny = y + directions[i + 1];
-                if (nx >= 0 && ny >= 0 && nx < m && ny < n) {
-                    int newWeight = dist[x][y] + grid[nx][ny]; // Add edge weight
+                if (nx >= 0 && ny >= 0 && nx < m && ny < n && dist[nx][ny]==-1) {
                     // If this path is better, update distance
-                    if (newWeight < dist[nx][ny]) {
-                        dist[nx][ny] = newWeight;
+                        dist[nx][ny] = dist[x][y] + grid[nx][ny];
                         // Add to the front or back of the deque based on obstacle weight
-                        if (grid[nx][ny] == 0) {
-                            dq.emplace_front(nx, ny); // No obstacle, higher priority
+                        if (grid[nx][ny]) {
+                            dq.emplace_back(nx, ny); // No obstacle, higher priority
                         } else {
-                            dq.emplace_back(nx, ny); // Obstacle, lower priority
+                            dq.emplace_front(nx, ny); // Obstacle, lower priority
                         }
-                    }
                 }
             }
         }
