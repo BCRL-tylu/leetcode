@@ -1,16 +1,9 @@
-#include <vector>
-#include <deque>
-#include <utility>
-#include <climits>
-
-using namespace std;
-
 class Solution {
 public:
     int minimumObstacles(vector<vector<int>>& grid) {
         int m = grid.size();
         int n = grid[0].size();
-        int directions[5] = {0, 1, 0, -1, 0}; // Directions: right, down, left, up
+        int directions[5] = {0, 1, 0, -1, 0}; // Directions right 1,0, down0,-1, left-1,0, up 0,1
         int dist[m][n];
         memset(dist,-1,sizeof(dist));
         dist[0][0] = 0;
@@ -24,6 +17,7 @@ public:
             // Explore neighbors
             for (int i = 0; i < 4; ++i) {
                 int nx = x + directions[i], ny = y + directions[i + 1];
+                // if the new position is within boundry and new position hasn't been updated
                 if (nx >= 0 && ny >= 0 && nx < m && ny < n && dist[nx][ny]==-1) {
                     // If this path is better, update distance
                         dist[nx][ny] = dist[x][y] + grid[nx][ny];
