@@ -10,7 +10,7 @@ public:
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
         pq.push({0, 0});
         // Directions: {right, down, left, up}
-        int d[5] = {0, 1, 0, -1, 0};
+        short d[5] = {0, 1, 0, -1, 0};
         int waitTime,i;
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
