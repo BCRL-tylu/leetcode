@@ -5,7 +5,7 @@ public:
             return -1;
         int m = grid.size(), n = grid[0].size();
         int dist[m * n];
-        memset(dist, 10001, sizeof(dist));
+        memset(dist, 10000, sizeof(dist));
         dist[0] = 0;
         // Priority queue: {distance, {row, col}}
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
@@ -16,13 +16,12 @@ public:
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
             pq.pop();
-            int x = cell % m, y = cell / m;
+            int x = cell % m, y = cell/m;
             // Early exit if we reached the destination
             if (x == m - 1 && y == n - 1)
                 return currentDist;
             // Skip if already processed
-            if (currentDist > dist[cell])
-                continue;
+            if (currentDist > dist[cell]) continue;
             for (int i = 0; i < 4; ++i) {
                 int nx = x + d[i], ny = y + d[i + 1];
                 if (nx < 0 || ny < 0 || nx >= m || ny >= n)
