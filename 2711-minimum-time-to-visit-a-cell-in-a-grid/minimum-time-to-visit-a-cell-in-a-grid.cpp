@@ -1,9 +1,3 @@
-#include <climits>
-#include <cstring>
-#include <queue>
-#include <vector>
-using namespace std;
-
 class Solution {
 public:
     int minimumTime(vector<vector<int>>& grid) {
@@ -34,14 +28,14 @@ public:
                 if (nx < 0 || ny < 0 || nx >= m || ny >= n)
                     continue;
                 int c_pos = nx + ny * m;
-                int newDist = currentDist + 1;
-                waitTime = grid[nx][ny] - newDist;
+                int md = currentDist+1;
+                waitTime = grid[nx][ny] - md;
                 if(waitTime > 0){
-                    newDist+= waitTime + waitTime % 2;
+                    md+= waitTime + waitTime % 2;
                 }
                 // Adjust to next valid time if waitTime is odd
-                if (newDist < dist[c_pos]) {
-                    dist[c_pos] = newDist;
+                if (md < dist[c_pos]) {
+                    dist[c_pos] = md;
                     pq.push({dist[c_pos], c_pos});
                 }
             }
