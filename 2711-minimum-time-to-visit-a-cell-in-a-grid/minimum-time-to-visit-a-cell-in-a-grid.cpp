@@ -15,7 +15,7 @@ public:
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
             pq.pop();
-            int x = cell % m, y = cell/m;
+            short x = cell % m, y = cell/m;
             // Early exit if we reached the destination
             if (x == m - 1 && y == n - 1)
                 return currentDist;
@@ -23,7 +23,7 @@ public:
             if (dist[cell]<currentDist) continue;
             i = 0;
             while(i < 4) {
-                int nx = x + d[i], ny = y + d[++i];
+                short nx = x + d[i], ny = y + d[++i];
                 if (nx < 0 || ny < 0 || nx >= m || ny >= n)
                     continue;
                 int c_pos = nx + ny * m;
