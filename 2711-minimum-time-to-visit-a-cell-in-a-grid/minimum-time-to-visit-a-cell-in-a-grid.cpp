@@ -18,7 +18,6 @@ public:
         // Priority queue: {distance, {row, col}}
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
         pq.push({0, 0});
-
         // Directions: {right, down, left, up}
         int d[5] = {0, 1, 0, -1, 0};
 
@@ -40,8 +39,7 @@ public:
                 int newDist = currentDist + 1;
                 int waitTime = max(0, grid[nx][ny] - newDist);
                 // Adjust to next valid time if waitTime is odd
-                if (waitTime % 2 != 0)
-                    ++waitTime;
+                if (waitTime % 2)++waitTime;
                 int nextDist = newDist + waitTime;
                 if (nextDist < dist[c_pos]) {
                     dist[c_pos] = nextDist;
