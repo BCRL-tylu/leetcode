@@ -13,6 +13,7 @@ public:
         // Directions: {right, down, left, up}
         int d[5] = {0, 1, 0, -1, 0};
         int waitTime;
+        int i;
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
             pq.pop();
@@ -22,7 +23,7 @@ public:
                 return currentDist;
             // Skip if already processed
             if (currentDist > dist[cell]) continue;
-            int i =0;
+            i = 0;
             while(i < 4) {
                 int nx = x + d[i], ny = y + d[++i];
                 if (nx < 0 || ny < 0 || nx >= m || ny >= n)
