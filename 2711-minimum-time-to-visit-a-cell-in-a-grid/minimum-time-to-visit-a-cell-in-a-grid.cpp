@@ -28,27 +28,20 @@ public:
 
             // Early exit if we reached the destination
             if (x == m - 1 && y == n - 1) return currentDist;
-
             // Skip if already processed
             if (currentDist > dist[x][y]) continue;
-
             for (int i = 0; i < 4; ++i) {
                 int nx = x + d[i], ny = y + d[i + 1];
-
-                if (nx >= 0 && ny >= 0 && nx < m && ny < n) {
+                if (nx < 0 || ny < 0 || nx >= m || ny >= n) continue;
                     int newDist = currentDist + 1;
                     int waitTime = max(0, grid[nx][ny] - newDist);
-
                     // Adjust to next valid time if waitTime is odd
                     if (waitTime % 2 != 0) ++waitTime;
-
                     int nextDist = newDist + waitTime;
-
                     if (nextDist < dist[nx][ny]) {
                         dist[nx][ny] = nextDist;
                         pq.push({nextDist, {nx, ny}});
                     }
-                }
             }
         }
         return -1; // Return -1 if no valid path exists
