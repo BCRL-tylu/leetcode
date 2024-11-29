@@ -1,19 +1,18 @@
 class Solution {
 public:
     int minimumTime(vector<vector<int>>& grid) {
-        if (grid[0][1] > 1 && grid[1][0] > 1)
-            return -1;
+        if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
         int m = grid.size(), n = grid[0].size();
-        int dist[m * n];
-        memset(dist, 10000, sizeof(dist));
+        int k = m*n;
+        int dist[k];
+        memset(dist,9000, sizeof(dist));
         dist[0] = 0;
         // Priority queue: {distance, {row, col}}
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
         pq.push({0, 0});
         // Directions: {right, down, left, up}
         int d[5] = {0, 1, 0, -1, 0};
-        int waitTime;
-        int i;
+        int waitTime,i;
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
             pq.pop();
@@ -22,7 +21,7 @@ public:
             if (x == m - 1 && y == n - 1)
                 return currentDist;
             // Skip if already processed
-            if (currentDist > dist[cell]) continue;
+            if (dist[cell]<currentDist) continue;
             i = 0;
             while(i < 4) {
                 int nx = x + d[i], ny = y + d[++i];
