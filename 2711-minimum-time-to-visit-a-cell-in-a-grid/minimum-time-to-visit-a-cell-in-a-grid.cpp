@@ -37,7 +37,7 @@ public:
                 // Adjust to next valid time if waitTime is odd
                 if (md < dist[c_pos]) {
                     dist[c_pos] = md;
-                    pq.push({dist[c_pos], c_pos});
+                    pq.push({md, c_pos});
                 }
             }
         }
