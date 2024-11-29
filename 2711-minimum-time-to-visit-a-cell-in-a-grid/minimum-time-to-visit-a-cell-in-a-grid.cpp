@@ -23,7 +23,7 @@ public:
             if (dist[cell]<currentDist) continue;
             i = 0;
             while(i < 4) {
-                short nx = x + d[i], ny = y + d[++i];
+                int nx = x + d[i], ny = y + d[++i];
                 if (nx < 0 || ny < 0 || nx >= m || ny >= n)
                     continue;
                 int c_pos = nx + ny * m;
