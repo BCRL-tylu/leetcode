@@ -4,7 +4,7 @@ public:
         if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
         short m = grid.size(), n = grid[0].size();
         int dist[m*n];
-        memset(dist,9000, sizeof(dist));
+        memset(dist,8500, sizeof(dist));
         dist[0] = 0;
         // Priority queue: {distance, {row, col}}
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
