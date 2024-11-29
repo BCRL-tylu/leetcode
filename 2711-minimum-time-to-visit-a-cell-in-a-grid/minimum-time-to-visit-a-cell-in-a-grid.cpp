@@ -11,7 +11,7 @@ public:
             return -1;
         int m = grid.size(), n = grid[0].size();
         int dist[m * n];
-        memset(dist, 10000, sizeof(dist));
+        memset(dist, 10001, sizeof(dist));
         dist[0] = 0;
         // Priority queue: {distance, {row, col}}
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
@@ -36,7 +36,9 @@ public:
                 int c_pos = nx + ny * m;
                 int newDist = currentDist + 1;
                 int waitTime = grid[nx][ny] - newDist;
-                if(waitTime > 0) newDist+= waitTime + waitTime % 2;
+                if(waitTime > 0){
+                    newDist+= waitTime + waitTime % 2;
+                }
                 // Adjust to next valid time if waitTime is odd
                 if (newDist < dist[c_pos]) {
                     dist[c_pos] = newDist;
