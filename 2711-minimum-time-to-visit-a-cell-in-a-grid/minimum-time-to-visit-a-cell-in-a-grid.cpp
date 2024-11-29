@@ -2,12 +2,14 @@ class Solution {
 public:
     int minimumTime(vector<vector<int>>& grid) {
         if(grid[0][1] > 1 && grid[1][0] > 1) return -1;
-
         int m = grid.size();
         int n = grid[0].size();
         int directions[5] = {0, 1, 0, -1, 0}; // Directions: right, down, left, up
-        vector<vector<int>> dist(m, vector<int>(n, INT_MAX)); // Use vector for 2D distance array
+
+        int dist[m][n];
+        memset(dist,10001,sizeof(dist));
         dist[0][0] = 0;
+
         // Min-heap priority queue: {distance, {row, col}}
         priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<>> pq;
         pq.push({0, {0, 0}}); // Start at (0, 0) with distance 0
