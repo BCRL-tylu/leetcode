@@ -10,12 +10,12 @@ public:
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
         pq.push({0, 0});
         // Directions: {right, down, left, up}
-        short d[5] = {0, 1, 0, -1, 0};
+        int d[5] = {0, 1, 0, -1, 0};
         int waitTime,i;
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
             pq.pop();
-            short x = cell % m, y = cell/m;
+            int x = cell % m, y = cell/m;
             // Early exit if we reached the destination
             if (x == m - 1 && y == n - 1)
                 return currentDist;
