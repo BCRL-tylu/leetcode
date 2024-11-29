@@ -35,7 +35,7 @@ public:
                     continue;
                 int c_pos = nx + ny * m;
                 int newDist = currentDist + 1;
-                int waitTime = grid[nx][ny] - newDist;
+                waitTime = grid[nx][ny] - newDist;
                 if(waitTime > 0){
                     newDist+= waitTime + waitTime % 2;
                 }
