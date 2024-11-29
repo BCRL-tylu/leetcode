@@ -11,8 +11,7 @@ public:
         pq.push({0, 0});
         // Directions: {right, down, left, up}
         short d[5] = {0, 1, 0, -1, 0};
-        int waitTime;
-        short i;
+        int waitTime,i;
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
             pq.pop();
