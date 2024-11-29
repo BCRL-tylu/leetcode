@@ -3,8 +3,7 @@ public:
     int minimumTime(vector<vector<int>>& grid) {
         if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
         int m = grid.size(), n = grid[0].size();
-        int k = m*n;
-        int dist[k];
+        int dist[m*n];
         memset(dist,10000, sizeof(dist));
         dist[0] = 0;
         // Priority queue: {distance, {row, col}}
