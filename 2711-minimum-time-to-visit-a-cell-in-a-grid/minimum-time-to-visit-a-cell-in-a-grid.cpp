@@ -22,8 +22,9 @@ public:
                 return currentDist;
             // Skip if already processed
             if (currentDist > dist[cell]) continue;
-            for (int i = 0; i < 4; ++i) {
-                int nx = x + d[i], ny = y + d[i + 1];
+            int i =0;
+            while(i < 4) {
+                int nx = x + d[i], ny = y + d[++i];
                 if (nx < 0 || ny < 0 || nx >= m || ny >= n)
                     continue;
                 int c_pos = nx + ny * m;
