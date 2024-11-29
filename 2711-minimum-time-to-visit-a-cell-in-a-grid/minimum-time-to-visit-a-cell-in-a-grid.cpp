@@ -2,7 +2,7 @@ class Solution {
 public:
     int minimumTime(vector<vector<int>>& grid) {
         if (grid[0][1] > 1 && grid[1][0] > 1) return -1;
-        int m = grid.size(), n = grid[0].size();
+        short m = grid.size(), n = grid[0].size();
         int dist[m*n];
         memset(dist,9000, sizeof(dist));
         dist[0] = 0;
@@ -15,7 +15,7 @@ public:
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
             pq.pop();
-            int x = cell % m, y = cell/m;
+            short x = cell % m, y = cell/m;
             // Early exit if we reached the destination
             if (x == m - 1 && y == n - 1)
                 return currentDist;
