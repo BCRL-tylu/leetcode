@@ -39,8 +39,7 @@ public:
                 int newDist = currentDist + 1;
                 int waitTime = max(0, grid[nx][ny] - newDist);
                 // Adjust to next valid time if waitTime is odd
-                if (waitTime % 2)++waitTime;
-                int nextDist = newDist + waitTime;
+                int nextDist = newDist + waitTime+waitTime % 2;
                 if (nextDist < dist[c_pos]) {
                     dist[c_pos] = nextDist;
                     pq.push({dist[c_pos], c_pos});
