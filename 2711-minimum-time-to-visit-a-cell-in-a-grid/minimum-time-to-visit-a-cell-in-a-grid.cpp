@@ -5,7 +5,7 @@ public:
         int m = grid.size(), n = grid[0].size();
         int k = m*n;
         int dist[k];
-        memset(dist,9000, sizeof(dist));
+        memset(dist,10000, sizeof(dist));
         dist[0] = 0;
         // Priority queue: {distance, {row, col}}
         priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
