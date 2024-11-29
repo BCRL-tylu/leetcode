@@ -15,11 +15,11 @@ public:
         memset(dist, 10001, sizeof(dist));
         dist[0] = 0;
         // Priority queue: {distance, {row, col}}
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
         pq.push({0, 0});
         // Directions: {right, down, left, up}
         int d[5] = {0, 1, 0, -1, 0};
-
+        int waitTime;
         while (!pq.empty()) {
             auto [currentDist, cell] = pq.top();
             pq.pop();
@@ -36,11 +36,13 @@ public:
                     continue;
                 int c_pos = nx + ny * m;
                 int newDist = currentDist + 1;
-                int waitTime = max(0, grid[nx][ny] - newDist);
+                int waitTime = grid[nx][ny] - newDist;
+                if(waitTime > 0){
+                    newDist+= waitTime + waitTime % 2;
+                }
                 // Adjust to next valid time if waitTime is odd
-                int nextDist = newDist + waitTime + waitTime % 2;
-                if (nextDist < dist[c_pos]) {
-                    dist[c_pos] = nextDist;
+                if (newDist < dist[c_pos]) {
+                    dist[c_pos] = newDist;
                     pq.push({dist[c_pos], c_pos});
                 }
             }
