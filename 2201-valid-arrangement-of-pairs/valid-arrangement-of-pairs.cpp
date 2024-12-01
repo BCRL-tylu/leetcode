@@ -1,6 +1,6 @@
 class Solution {
 public:
-    std::vector<std::vector<int>> validArrangement(std::vector<std::vector<int>>& pairs) {
+    vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
         // Step 1: Build adjacency list and compute degree
         unordered_map<int, std::vector<int>> adj;
         unordered_map<int, int> degree;
@@ -50,3 +50,9 @@ public:
         return result;
     }
 };
+auto init = []() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    return 'c';
+}();
