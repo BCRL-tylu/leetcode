@@ -35,9 +35,8 @@ public:
         while (path.empty()) {
            node = stack.top();
             if (!adj[node].empty()) {
-                next = adj[node].back();
+                stack.push(adj[node].back());
                 adj[node].pop_back();
-                stack.push(next);
             } else {
                 path.push_back(node);
                 stack.pop();
@@ -46,9 +45,8 @@ public:
         while (!stack.empty()) {
             node = stack.top();
             if (!adj[node].empty()) {
-                next = adj[node].back();
+                stack.push(adj[node].back());
                 adj[node].pop_back();
-                stack.push(next);
             } else {
                 path.push_back(node);
                 stack.pop();
