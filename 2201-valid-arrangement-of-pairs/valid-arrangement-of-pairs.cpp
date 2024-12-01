@@ -1,13 +1,9 @@
-#include <vector>
-#include <unordered_map>
-#include <stack>
-
 class Solution {
 public:
     std::vector<std::vector<int>> validArrangement(std::vector<std::vector<int>>& pairs) {
         // Step 1: Build adjacency list and compute degree
-        std::unordered_map<int, std::vector<int>> adj;
-        std::unordered_map<int, int> degree;
+        unordered_map<int, std::vector<int>> adj;
+        unordered_map<int, int> degree;
 
         for (const auto& edge : pairs) {
             int from = edge[0], to = edge[1];
@@ -24,9 +20,9 @@ public:
             }
         }
         // Step 3: Hierholzer’s Algorithm to find Eulerian path
-        std::stack<int> stack;
-        std::vector<int> path;
-        std::vector<std::vector<int>> result;
+        stack<int> stack;
+        vector<int> path;
+        vector<vector<int>> result;
         stack.push(start);
         int node,next;
         while (path.empty()) {
