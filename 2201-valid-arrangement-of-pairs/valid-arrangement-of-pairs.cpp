@@ -31,11 +31,11 @@ public:
         std::vector<int> path;
         std::vector<std::vector<int>> result;
         stack.push(start);
-        int s;
+        int node,next;
         while (path.empty()) {
-            int node = stack.top();
+           node = stack.top();
             if (!adj[node].empty()) {
-                int next = adj[node].back();
+                next = adj[node].back();
                 adj[node].pop_back();
                 stack.push(next);
             } else {
@@ -44,16 +44,15 @@ public:
             }
         }
         while (!stack.empty()) {
-            int node = stack.top();
+            node = stack.top();
             if (!adj[node].empty()) {
-                int next = adj[node].back();
+                next = adj[node].back();
                 adj[node].pop_back();
                 stack.push(next);
             } else {
                 path.push_back(node);
                 stack.pop();
-                s = path.size()-1;
-                result.push_back({path[s], path[s - 1]});
+                result.push_back({node, path[path.size()-2]});
             }
         }
         std::reverse(result.begin(), result.end());
