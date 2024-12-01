@@ -26,12 +26,12 @@ public:
         if (start == -1) {
             start = pairs[0][0]; // Arbitrary start if no imbalanced nodes
         }
-
-
         // Step 3: Hierholzer’s Algorithm to find Eulerian path
         std::stack<int> stack;
         std::vector<int> path;
+        std::vector<std::vector<int>> result;
         stack.push(start);
+        int s;
         while (!stack.empty()) {
             int node = stack.top();
             if (!adj[node].empty()) {
@@ -41,14 +41,13 @@ public:
             } else {
                 path.push_back(node);
                 stack.pop();
+                s = path.size()-1;
+                if(s>0){
+                    result.push_back({path[s], path[s - 1]});
+                }
             }
         }
-        // Step 4: Reconstruct result in reverse order
-        std::vector<std::vector<int>> result;
-        for (int i = path.size() - 1; i > 0; --i) {
-            result.push_back({path[i], path[i - 1]});
-        }
-
+        std::reverse(result.begin(), result.end());
         return result;
     }
 };
