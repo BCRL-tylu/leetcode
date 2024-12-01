@@ -33,10 +33,8 @@ public:
         numbers.push_back(number);
         frequencyMap[number]++;
         int freq = frequencyMap[number];
-
         // Update the sum
         sum += number;
-
         // Update frequency map
         if (freq > 1) {
             // Remove the number from the previous frequency set
@@ -56,13 +54,11 @@ public:
         } else {
             right.insert(number);
         }
-
         // Balance the heaps
         balanceHeaps();
     }
 
     void removeFirstAddedNumber() {
-        if (!numbers.empty()) { // Ensure the deque is not empty
             int numberToRemove = numbers.front();
             numbers.pop_front(); // Remove the first element
 
@@ -93,14 +89,11 @@ public:
             } else {
                 right.erase(right.find(numberToRemove));
             }
-
             // Rebalance the heaps after removal
             balanceHeaps();
-        }
     }
 
     int getMean() {
-        if (numbers.empty()) return 0; // Edge case: no numbers
         return sum / numbers.size(); // Integer division gives the floored mean
     }
 
