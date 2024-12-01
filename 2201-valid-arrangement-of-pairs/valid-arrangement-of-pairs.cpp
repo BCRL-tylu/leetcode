@@ -36,19 +36,19 @@ public:
         while (!stack.empty()) {
             int node = stack.top();
             if (!adj[node].empty()) {
-                int next = adj[node].back();
-                adj[node].pop_back();
-                stack.push(next);
+                int next = adj[node].back();  // Get the last edge in the adjacency list
+                adj[node].pop_back();          // Remove that edge from the list
+                stack.push(next);              // Push the next node onto the stack
             } else {
-                path.push_back(node);
-                stack.pop();
+                path.insert(path.begin(), node); // Insert at the front
+                stack.pop();                      // Backtrack
             }
         }
 
-        // Step 4: Reconstruct result in reverse order
+        // Step 4: Reconstruct result as pairs
         std::vector<std::vector<int>> result;
-        for (int i = path.size() - 1; i > 0; --i) {
-            result.push_back({path[i], path[i - 1]});
+        for (size_t i = 0; i < path.size() - 1; ++i) {
+            result.push_back({path[i], path[i + 1]});
         }
 
         return result;
