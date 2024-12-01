@@ -27,23 +27,23 @@ public:
         int node,next;
         while (path.empty()) {
            node = stack.back();
-            if (!adj[node].empty()) {
-                stack.push_back(adj[node].back());
-                adj[node].pop_back();
-            } else {
+            if (adj[node].empty()) {
                 path.push_back(node);
                 stack.pop_back();
+            } else {
+                stack.push_back(adj[node].back());
+                adj[node].pop_back();
             }
         }
         while (!stack.empty()) {
             node = stack.back();
-            if (!adj[node].empty()) {
-                stack.push_back(adj[node].back());
-                adj[node].pop_back();
-            } else {
+            if (adj[node].empty()) {
                 result.push_back({node, path.back()});
                 path.push_back(node);
                 stack.pop_back();
+            } else {
+                stack.push_back(adj[node].back());
+                adj[node].pop_back();
             }
         }
         std::reverse(result.begin(), result.end());
