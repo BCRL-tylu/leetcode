@@ -1,52 +1,65 @@
+// Hierholzer’s algorithm 
 class Solution {
 public:
-    vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
-        // Step 1: Build adjacency list and compute degree
-        unordered_map<int, std::vector<int>> adj;
-        unordered_map<int, int> degree;
+    unordered_map<int, vector<int>> adj;
+    unordered_map<int, int> deg;// net outdegree
+    inline void build_graph(vector<vector<int>>& pairs){
+        for(auto& edge: pairs){
+            int start=edge[0], end=edge[1];
+            adj[start].push_back(end);
+            deg[start]++;
+            deg[end]--;
+        }
+    }
 
-        for (const auto& edge : pairs) {
-            int from = edge[0], to = edge[1];
-            adj[from].push_back(to);
-            degree[from]--;
-            degree[to]++;
+    vector<int> rpath;
+    inline void euler(int i){
+        vector<int> stk={i};
+        while(!stk.empty()){
+            i = stk.back();
+            if(adj[i].empty()){
+                rpath.push_back(i);
+                stk.pop_back();
+            } 
+            else {
+                int j=adj[i].back();
+                adj[i].pop_back();
+                stk.push_back(j);
+            }
         }
-        // Step 2: Find the start vertex
-        int start = start = pairs[0][0];
-        for (const auto& [node, deg] : degree) {
-            if (deg == -1) {
-                start = node; // Start of the Eulerian path
+    }
+
+    vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
+        const int e = pairs.size();
+        adj.reserve(e);
+        deg.reserve(e);
+    
+        build_graph(pairs);
+
+        int i0=deg.begin()->first;
+        //Find start vertex for Euler path 
+        for (auto& [v, d]: deg){
+            if (d == 1){
+                i0=v;
                 break;
-            }
+            } 
         }
-        // Step 3: Hierholzer’s Algorithm to find Eulerian path
-        vector<int> stack;
-        vector<int> path;
-        vector<vector<int>> result;
-        stack.push_back(start);
-        int node,next;
-        while (path.empty()) {
-           node = stack.back();
-            if (adj[node].empty()) {
-                path.push_back(node);
-                stack.pop_back();
-            } else {
-                stack.push_back(adj[node].back());
-                adj[node].pop_back();
-            }
-        }
-        while (!stack.empty()) {
-            node = stack.back();
-            if (adj[node].empty()) {
-                result.push_back({node, path.back()});
-                path.push_back(node);
-                stack.pop_back();
-            } else {
-                stack.push_back(adj[node].back());
-                adj[node].pop_back();
-            }
-        }
-        std::reverse(result.begin(), result.end());
-        return result;
+
+        euler(i0);
+
+        vector<vector<int>> ans;
+        ans.reserve(e);
+
+        for (int i=rpath.size()-2; i>=0; i--) 
+            ans.push_back({rpath[i+1], rpath[i]});
+
+        return ans;
     }
 };
+
+auto init = []() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    return 'c';
+}();
