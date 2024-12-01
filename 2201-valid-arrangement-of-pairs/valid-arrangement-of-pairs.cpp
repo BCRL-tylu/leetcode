@@ -16,15 +16,12 @@ public:
             degree[to]++;
         }
         // Step 2: Find the start vertex
-        int start = -1;
+        int start = start = pairs[0][0];
         for (const auto& [node, deg] : degree) {
             if (deg == -1) {
                 start = node; // Start of the Eulerian path
                 break;
             }
-        }
-        if (start == -1) {
-            start = pairs[0][0]; // Arbitrary start if no imbalanced nodes
         }
         // Step 3: Hierholzer’s Algorithm to find Eulerian path
         std::stack<int> stack;
