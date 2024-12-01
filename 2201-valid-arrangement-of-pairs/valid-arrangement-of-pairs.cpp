@@ -48,9 +48,9 @@ public:
                 stack.push(adj[node].back());
                 adj[node].pop_back();
             } else {
+                result.push_back({node, path.back()});
                 path.push_back(node);
                 stack.pop();
-                result.push_back({node, path[path.size()-2]});
             }
         }
         std::reverse(result.begin(), result.end());
