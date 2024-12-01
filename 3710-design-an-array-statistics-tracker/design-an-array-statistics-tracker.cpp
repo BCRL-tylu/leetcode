@@ -28,7 +28,6 @@ private:
 
 public:
     StatisticsTracker() : sum(0), maxFrequency(0) {}
-
     void addNumber(int number) {
         numbers.push_back(number);
         frequencyMap[number]++;
