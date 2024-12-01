@@ -20,30 +20,30 @@ public:
             }
         }
         // Step 3: Hierholzer’s Algorithm to find Eulerian path
-        stack<int> stack;
+        vector<int> stack;
         vector<int> path;
         vector<vector<int>> result;
-        stack.push(start);
+        stack.push_back(start);
         int node,next;
         while (path.empty()) {
-           node = stack.top();
+           node = stack.back();
             if (!adj[node].empty()) {
-                stack.push(adj[node].back());
+                stack.push_back(adj[node].back());
                 adj[node].pop_back();
             } else {
                 path.push_back(node);
-                stack.pop();
+                stack.pop_back();
             }
         }
         while (!stack.empty()) {
-            node = stack.top();
+            node = stack.back();
             if (!adj[node].empty()) {
-                stack.push(adj[node].back());
+                stack.push_back(adj[node].back());
                 adj[node].pop_back();
             } else {
                 result.push_back({node, path.back()});
                 path.push_back(node);
-                stack.pop();
+                stack.pop_back();
             }
         }
         std::reverse(result.begin(), result.end());
