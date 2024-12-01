@@ -1,65 +1,56 @@
-// Hierholzer’s algorithm 
+#include <vector>
+#include <unordered_map>
+#include <stack>
+
 class Solution {
 public:
-    unordered_map<int, vector<int>> adj;
-    unordered_map<int, int> deg;// net outdegree
-    inline void build_graph(vector<vector<int>>& pairs){
-        for(auto& edge: pairs){
-            int start=edge[0], end=edge[1];
-            adj[start].push_back(end);
-            deg[start]++;
-            deg[end]--;
-        }
-    }
+    std::vector<std::vector<int>> validArrangement(std::vector<std::vector<int>>& pairs) {
+        // Step 1: Build adjacency list and compute degree
+        std::unordered_map<int, std::vector<int>> adj;
+        std::unordered_map<int, int> degree;
 
-    vector<int> rpath;
-    inline void euler(int i){
-        vector<int> stk={i};
-        while(!stk.empty()){
-            i = stk.back();
-            if(adj[i].empty()){
-                rpath.push_back(i);
-                stk.pop_back();
-            } 
-            else {
-                int j=adj[i].back();
-                adj[i].pop_back();
-                stk.push_back(j);
+        for (const auto& edge : pairs) {
+            int from = edge[0], to = edge[1];
+            adj[from].push_back(to);
+            degree[from]--;
+            degree[to]++;
+        }
+
+        // Step 2: Find the start vertex
+        int start = -1;
+        for (const auto& [node, deg] : degree) {
+            if (deg == -1) {
+                start = node; // Start of the Eulerian path
+                break;
             }
         }
-    }
-
-    vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
-        const int e = pairs.size();
-        adj.reserve(e);
-        deg.reserve(e);
-    
-        build_graph(pairs);
-
-        int i0=deg.begin()->first;
-        //Find start vertex for Euler path 
-        for (auto& [v, d]: deg){
-            if (d == 1){
-                i0=v;
-                break;
-            } 
+        if (start == -1) {
+            start = pairs[0][0]; // Arbitrary start if no imbalanced nodes
         }
 
-        euler(i0);
+        // Step 3: Hierholzer’s Algorithm to find Eulerian path
+        std::stack<int> stack;
+        std::vector<int> path;
+        stack.push(start);
 
-        vector<vector<int>> ans;
-        ans.reserve(e);
+        while (!stack.empty()) {
+            int node = stack.top();
+            if (!adj[node].empty()) {
+                int next = adj[node].back();
+                adj[node].pop_back();
+                stack.push(next);
+            } else {
+                path.push_back(node);
+                stack.pop();
+            }
+        }
 
-        for (int i=rpath.size()-2; i>=0; i--) 
-            ans.push_back({rpath[i+1], rpath[i]});
+        // Step 4: Reconstruct result in reverse order
+        std::vector<std::vector<int>> result;
+        for (int i = path.size() - 1; i > 0; --i) {
+            result.push_back({path[i], path[i - 1]});
+        }
 
-        return ans;
+        return result;
     }
 };
-
-auto init = []() {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-    return 'c';
-}();
