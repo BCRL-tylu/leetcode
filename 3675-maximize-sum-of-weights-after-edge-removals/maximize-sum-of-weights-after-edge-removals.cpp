@@ -1,53 +1,69 @@
+#define _int64 long long
+_int64 d[110000][2];
+vector<pair<int,int> > a[110000];
+int p[110000];
+
 class Solution {
 public:
     long long maximizeSumOfWeights(vector<vector<int>>& edges, int k) {
-        int n = edges.size();
-        vector<vector<vector<int>>> adj(n+1);
-        for(auto &e: edges){
-            adj[e[0]].push_back({e[1], e[2]});
-            adj[e[1]].push_back({e[0], e[2]});
+        int i,j,x,y,z,n;
+        _int64 sum;
+        vector<int> q;
+        vector<_int64> aa;
+        n=edges.size()+1;
+        for (i=0;i<n;i++)
+        {
+            a[i].clear();
+            p[i]=-1;
         }
-        vector<vector<long long>> dp(n+1, vector<long long>(2));
-        auto dfs = [&](auto&& self, int node, int par) -> void{
-            /*
-            x = {a, b, c}
-            dp[a][0] = not take
-            dp[a][1] = take + cost
-            if(dp[a][0] >= dp[a][1] + cost) not take
-            */  
-            // it will have sum for all nottake
-            long long sum = 0;
-            // for all takes
-            vector<int> val;
-            for(auto &c: adj[node]){
-                if(c[0] != par){
-                    self(self, c[0], node);
-                    sum += dp[c[0]][0];
-                    val.push_back(dp[c[0]][1] + c[1] - dp[c[0]][0]);
+        for (i=0;i+1<n;i++)
+        {
+            x=edges[i][0];
+            y=edges[i][1];
+            z=edges[i][2];
+            a[x].push_back(make_pair(y,z));
+            a[y].push_back(make_pair(x,z));
+        }
+        q.clear();
+        q.push_back(0);
+        for (i=0;i<q.size();i++)
+        {
+            x=q[i];
+            for (j=0;j<a[x].size();j++)
+            {
+                y=a[x][j].first;
+                if (y==p[x]) continue;
+                q.push_back(y);
+                p[y]=x;
+            }
+        }
+        for (i=q.size()-1;i>=0;i--)
+        {
+            x=q[i];
+            aa.clear();
+            sum=0;
+            for (j=0;j<a[x].size();j++)
+            {
+                y=a[x][j].first;
+                if (y==p[x]) continue;
+                sum+=d[y][0];
+                if (d[y][1]+a[x][j].second>d[y][0])
+                {
+                    aa.push_back(d[y][1]+a[x][j].second-d[y][0]);
                 }
             }
-            sort(val.begin(), val.end());
-            // now maximize k-1 and k
-            int n = val.size();
-            int cnt = 0;
-            for(int i=0; i<n && cnt < (k-1); i++){
-                if(val.back() > 0){
-                    sum += val.back();
-                    cnt++;
-                }
-                val.pop_back();
+            sort(aa.rbegin(),aa.rend());
+            for (j=0;(j+1<k)&&(j<aa.size());j++)
+            {
+                sum+=aa[j];
             }
-            dp[node][1] = sum;
-            while(val.size()){
-                if(val.back() > 0){
-                    sum += val.back();
-                    break;
-                }
-                val.pop_back();
+            d[x][1]=sum;
+            if (k-1<aa.size())
+            {
+                sum+=aa[k-1];
             }
-            dp[node][0] = sum; 
-        };
-        dfs(dfs, 0, -1);
-        return max(dp[0][0], dp[0][1]);
+            d[x][0]=sum;
+        }
+        return max(d[0][0],d[0][1]);
     }
 };
