@@ -23,9 +23,9 @@ public:
                         dist[nx][ny] = dist[x][y] + grid[nx][ny];
                         // Add to the front or back of the deque based on obstacle weight
                         if (grid[nx][ny]) {
-                            dq.emplace_back(nx, ny); // No obstacle, higher priority
+                            dq.emplace_back(nx, ny); //Obstacle, lower priority
                         } else {
-                            dq.emplace_front(nx, ny); // Obstacle, lower priority
+                            dq.emplace_front(nx, ny); //No obstacle, higher priority
                         }
                 }
             }
