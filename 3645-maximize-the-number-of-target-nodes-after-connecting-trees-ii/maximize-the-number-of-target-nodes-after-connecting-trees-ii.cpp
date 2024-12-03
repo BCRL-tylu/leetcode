@@ -1,3 +1,11 @@
+#include <vector>
+#include <queue>
+#include <utility> // for std::pair
+#include <algorithm> // for std::max
+#include <iostream> // for std::cout
+
+using namespace std;
+
 class Solution {
 public:
     typedef pair<int, int> pii; // Shorthand for a pair of integers
