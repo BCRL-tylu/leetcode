@@ -4,11 +4,15 @@ public:
     typedef vector<int> vi;    // Shorthand for a vector of integers
 
     vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2) {
+        const int MAX_NODES = 100000; // Assumed maximum number of nodes
+        static vector<int> adj1[MAX_NODES], adj2[MAX_NODES]; // Static adjacency lists
         int n = edges1.size() + 1; // Number of nodes in tree 1
         int m = edges2.size() + 1; // Number of nodes in tree 2
 
-        // Step 1: Build adjacency lists dynamically
-        vector<vector<int>> adj1(n), adj2(m);
+        // Step 1: Build adjacency lists
+        for (int i = 0; i < n; i++) adj1[i].clear(); // Clear adjacency space for tree 1
+        for (int i = 0; i < m; i++) adj2[i].clear(); // Clear adjacency space for tree 2
+
         for (auto& edge : edges1) {
             adj1[edge[0]].push_back(edge[1]);
             adj1[edge[1]].push_back(edge[0]);
@@ -20,12 +24,12 @@ public:
 
         // Step 2: BFS for labeling nodes in tree 1
         vi labels1(n, -1); // -1 means unvisited
-        int labelCount1 = 0; // To count the total number of nodes with label 0
+        vi labelCounts1(2, 0); // Count of nodes with labels 0 and 1
         queue<int> q;
 
         q.push(0); // Start BFS from node 0
-        labels1[0] = 0; // Label root as 0
-        labelCount1++;
+        labels1[0] = 0;
+        labelCounts1[0]++;
 
         while (!q.empty()) {
             int current = q.front();
@@ -33,22 +37,20 @@ public:
             for (int neighbor : adj1[current]) {
                 if (labels1[neighbor] == -1) { // If unvisited
                     labels1[neighbor] = 1 - labels1[current]; // Alternate label
-                    if (labels1[neighbor] == 0) {
-                        labelCount1++; // Increment count for label 0
-                    }
+                    labelCounts1[labels1[neighbor]]++;
                     q.push(neighbor);
                 }
             }
         }
 
         // Step 3: BFS for counting labels in tree 2
-        int labelCount2 = 0; // Count of nodes with label 0 in tree 2
-        vector<bool> visited2(m, false); // Use vector<bool> for memory efficiency
-        queue<pii> q2;
+        vi labelCounts2(2, 0);
+        vi visited2(m, 0); // Use `vi` for boolean-like visited array
+        queue<pii> q2; // Store (node, label) pairs
 
         q2.push({0, 0}); // Start BFS from node 0
         visited2[0] = true;
-        labelCount2++; // Root is labeled 0
+        labelCounts2[0]++;
 
         while (!q2.empty()) {
             auto [current, label] = q2.front();
@@ -56,9 +58,7 @@ public:
             for (int neighbor : adj2[current]) {
                 if (!visited2[neighbor]) { // If unvisited
                     int newLabel = 1 - label; // Alternate label
-                    if (newLabel == 0) {
-                        labelCount2++; // Increment count for label 0
-                    }
+                    labelCounts2[newLabel]++;
                     visited2[neighbor] = true;
                     q2.push({neighbor, newLabel});
                 }
@@ -66,11 +66,11 @@ public:
         }
 
         // Step 4: Compute results
-        int maxLabel2 = max(labelCount2, (m - labelCount2)); // Max count of either label
+        int maxLabel2 = max(labelCounts2[0], labelCounts2[1]);
         vi result(n);
 
         for (int i = 0; i < n; i++) {
-            result[i] = (labels1[i] == 0 ? labelCount1 : (n - labelCount1)) + maxLabel2;
+            result[i] = labelCounts1[labels1[i]] + maxLabel2;
         }
         return result;
     }
