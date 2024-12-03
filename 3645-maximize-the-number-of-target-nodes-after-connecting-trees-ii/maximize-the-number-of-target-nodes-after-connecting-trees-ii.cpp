@@ -10,8 +10,6 @@ public:
         int n = edges1.size() + 1; // Number of nodes in tree 1
         int m = edges2.size() + 1; // Number of nodes in tree 2
 
-        // Step 1: Build adjacency lists
-        for (int i = 0; i < m; i++) adj2[i].clear(); // Clear adjacency space for tree 2
 
         for (auto& edge : edges1) {
             adj1[edge[0]].push_back(edge[1]);
@@ -71,6 +69,9 @@ public:
             result[i] = labelCounts1[labels1[i]] + maxLabel2;
             adj1[i].clear();
         }
+        // Step 1: Build adjacency lists
+        for (int i = 0; i < m; i++) adj2[i].clear(); // Clear adjacency space for tree 2
+
         return result;
     }
 };
