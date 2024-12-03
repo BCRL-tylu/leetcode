@@ -10,10 +10,12 @@ class Solution {
 public:
     vi adj[100001];
 
+    // Optimized function to color the tree and count the nodes in each color group
     void color(const vvi &edges, vi &col, int &c0, int &c1) {
-        int n = edges.size() + 1;
-        // Clear the adjacency list and color vector
+        int n = edges.size() + 1; // Number of nodes
+        // Clear the adjacency list and initialize color vector
         for (int i = 0; i < n; i++) adj[i].clear();
+        col.assign(n, -1); // Initialize color vector to -1
         
         // Build the adjacency list
         for (const auto &e : edges) {
@@ -21,8 +23,7 @@ public:
             adj[e[1]].push_back(e[0]);
         }
 
-        col.assign(n, -1); // Initialize color vector to -1
-        c0 = c1 = 0;
+        c0 = c1 = 0; // Initialize counts
 
         // Iterative DFS for coloring
         stack<pair<int, int>> s; // (node, color)
@@ -33,9 +34,9 @@ public:
             s.pop();
             if (col[x] != -1) continue; // Already colored
             
-            col[x] = val;
-            if (val == 0) c0++;
-            else c1++;
+            col[x] = val; // Assign color
+            if (val == 0) c0++; // Count nodes with color 0
+            else c1++; // Count nodes with color 1
 
             // Push neighbors with alternate color
             for (int y : adj[x]) {
@@ -47,20 +48,25 @@ public:
     }
 
     vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2) {
-        vi a, b;
-        int c0, c1, c2, c3;
+        vi a, b; // Vectors to hold colors of each tree
+        int c0, c1, c2, c3; // Count of colored nodes
+
+        // Color the first tree and get counts
         color(edges1, a, c0, c1);
+        
+        // Color the second tree and get counts
         color(edges2, b, c2, c3);
 
-        if (c2 < c3) swap(c2, c3); // Ensure c2 >= c3
-        int n = a.size();
-        vector<int> ret(n);
+        // Ensure c2 >= c3
+        if (c2 < c3) swap(c2, c3); 
 
-        // Compute the result based on the coloring
+        int n = a.size(); // Number of nodes in the first tree
+        vector<int> ret(n); // Result vector
+
+        // Calculate the result based on the coloring
         for (int i = 0; i < n; i++) {
-            ret[i] = (a[i] == 1 ? c1 : c0) + c2;
+            ret[i] = (a[i] == 1 ? c1 : c0) + c2; // Add counts based on color
         }
-
-        return ret;
+        return ret; // Return the result
     }
 };
