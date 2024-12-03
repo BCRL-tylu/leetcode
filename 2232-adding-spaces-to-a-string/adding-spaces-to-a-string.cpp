@@ -7,8 +7,7 @@ public:
     std::string addSpaces(std::string s, std::vector<int>& spaces) {
         // Calculate the size of the new string
         int total_length = s.length() + spaces.size();
-        std::string rt(total_length, ' '); // Preallocate with total size and fill with spaces
-        
+        std::string rt(total_length, ' ');
         int prev = 0; // Last processed position
         int rt_index = 0; // Index for the resulting string
 
@@ -20,7 +19,6 @@ public:
             }
             rt[rt_index++] = ' '; // Add space
         }
-
         // Copy remaining characters from s after the last space
         while (prev < s.length()) {
             rt[rt_index++] = s[prev++];
