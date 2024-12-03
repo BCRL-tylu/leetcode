@@ -33,6 +33,7 @@ public:
         q.push(0); // Start BFS from node 0
         labels1[0] = 0; // Initial label
         labelCounts1[0]++;
+        
 
         while (!q.empty()) {
             int current = q.front();
@@ -55,12 +56,13 @@ public:
         visited2[0] = true;
         labelCounts2[0]++;
 
+        int newLabel;
         while (!q2.empty()) {
             auto [current, label] = q2.front();
             q2.pop();
             for (int neighbor : adj2[current]) {
                 if (!visited2[neighbor]) { // If unvisited
-                    int newLabel = label ^ 1; // Alternate label using XOR
+                    newLabel = label ^ 1; // Alternate label using XOR
                     labelCounts2[newLabel]++;
                     visited2[neighbor] = true;
                     q2.push({neighbor, newLabel});
