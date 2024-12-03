@@ -1,22 +1,25 @@
 #include <iostream>
 #include <string>
+#include <vector>
+
 class Solution {
 public:
-    string addSpaces(string s, vector<int>& spaces) {
+    std::string addSpaces(std::string s, std::vector<int>& spaces) {
         int k = spaces.size();
-        int m;
-        std::string rt(&s[0], spaces[0]);
-        std::string temp;
-        char* itr = &s[0];
-        itr+=spaces[0];
-        for (const int* ptr = &spaces[1]; ptr < &spaces[k]; ++ptr) {
-            m = *ptr - *(ptr - 1);
-            std::string temp(itr, m);
-            itr+=m;
-            rt += " "+temp;
+        std::string rt; // Resulting string
+        int prev = 0;   // To track the last position in the string
+
+        // Loop through the spaces vector
+        for (int i = 0; i < k; ++i) {
+            // Append the substring from prev to the current space index
+            rt += s.substr(prev, spaces[i] - prev); // Get substring from prev to spaces[i]
+            rt += " "; // Add a space
+            prev = spaces[i]; // Update previous position to current space index
         }
-        std::string substring(itr);
-        rt += " "+ substring;
+
+        // Append the remaining part of the string after the last space
+        rt += s.substr(prev);
+
         return rt;
     }
 };
