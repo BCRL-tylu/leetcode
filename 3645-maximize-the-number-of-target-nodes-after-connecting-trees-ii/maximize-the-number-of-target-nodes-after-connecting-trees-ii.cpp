@@ -1,19 +1,12 @@
-#include <vector>
-#include <queue>
-#include <utility> 
-#include <algorithm> 
-#include <iostream> 
-
-using namespace std;
+typedef pair<int, int> pii; // Shorthand for a pair of integers
+typedef vector<int> vi;    // Shorthand for a vector of integers
+const int MAX_NODES = 100000;
+static vector<int> adj1[MAX_NODES], adj2[MAX_NODES]; // Static adjacency lists
 
 class Solution {
 public:
-    typedef pair<int, int> pii; // Shorthand for a pair of integers
-    typedef vector<int> vi;    // Shorthand for a vector of integers
-
     vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2) {
-        const int MAX_NODES = 100000; // Assumed maximum number of nodes
-        static vector<int> adj1[MAX_NODES], adj2[MAX_NODES]; // Static adjacency lists
+       // Assumed maximum number of nodes
         int n = edges1.size() + 1; // Number of nodes in tree 1
         int m = edges2.size() + 1; // Number of nodes in tree 2
 
@@ -71,11 +64,9 @@ public:
                 }
             }
         }
-
         // Step 4: Compute results
         int maxLabel2 = max(labelCounts2[0], labelCounts2[1]);
         vi result(n);
-
         for (int i = 0; i < n; i++) {
             result[i] = labelCounts1[labels1[i]] + maxLabel2;
             adj1[i].clear();
