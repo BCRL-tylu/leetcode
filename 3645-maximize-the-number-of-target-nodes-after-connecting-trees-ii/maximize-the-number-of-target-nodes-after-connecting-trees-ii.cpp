@@ -1,16 +1,21 @@
+#include <vector>
+#include <queue>
+#include <utility>
+
+using namespace std;
+
 typedef pair<int, int> pii; // Shorthand for a pair of integers
-typedef vector<int> vi;    // Shorthand for a vector of integers
+typedef vector<int> vi; // Shorthand for a vector of integers
 const int MAX_NODES = 100000;
 static vector<int> adj1[MAX_NODES], adj2[MAX_NODES]; // Static adjacency lists
 
 class Solution {
 public:
     vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2) {
-       // Assumed maximum number of nodes
         int n = edges1.size() + 1; // Number of nodes in tree 1
         int m = edges2.size() + 1; // Number of nodes in tree 2
 
-
+        // Step 1: Build adjacency lists
         for (auto& edge : edges1) {
             adj1[edge[0]].push_back(edge[1]);
             adj1[edge[1]].push_back(edge[0]);
@@ -26,7 +31,7 @@ public:
         queue<int> q;
 
         q.push(0); // Start BFS from node 0
-        labels1[0] = 0;
+        labels1[0] = 0; // Initial label
         labelCounts1[0]++;
 
         while (!q.empty()) {
@@ -34,7 +39,7 @@ public:
             q.pop();
             for (int neighbor : adj1[current]) {
                 if (labels1[neighbor] == -1) { // If unvisited
-                    labels1[neighbor] = 1 - labels1[current]; // Alternate label
+                    labels1[neighbor] = labels1[current] ^ 1; // Use XOR to alternate label
                     labelCounts1[labels1[neighbor]]++;
                     q.push(neighbor);
                 }
@@ -55,13 +60,14 @@ public:
             q2.pop();
             for (int neighbor : adj2[current]) {
                 if (!visited2[neighbor]) { // If unvisited
-                    int newLabel = 1 - label; // Alternate label
+                    int newLabel = label ^ 1; // Alternate label using XOR
                     labelCounts2[newLabel]++;
                     visited2[neighbor] = true;
                     q2.push({neighbor, newLabel});
                 }
             }
         }
+
         // Step 4: Compute results
         int maxLabel2 = max(labelCounts2[0], labelCounts2[1]);
         vi result(n);
@@ -69,9 +75,9 @@ public:
             result[i] = labelCounts1[labels1[i]] + maxLabel2;
             adj1[i].clear();
         }
-        // Step 1: Build adjacency lists
-        for (int i = 0; i < m; i++) adj2[i].clear(); // Clear adjacency space for tree 2
 
+        // Clear adjacency lists (necessary for LeetCode environment)
+        for (int i = 0; i < m; i++) adj2[i].clear();
         return result;
     }
 };
