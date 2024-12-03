@@ -1,72 +1,85 @@
 #include <vector>
-#include <stack>
+#include <queue>
+#include <utility>
 
 using namespace std;
 
-typedef vector<int> vi;
-typedef vector<vi> vvi;
+typedef pair<int, int> pii; // Shorthand for a pair of integers
+typedef vector<int> vi; // Shorthand for a vector of integers
+const int MAX_NODES = 100000;
+static vector<int> adj1[MAX_NODES], adj2[MAX_NODES]; // Static adjacency lists
 
 class Solution {
 public:
-    vi adj[100001];
+    vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2) {
+        int n = edges1.size() + 1; // Number of nodes in tree 1
+        int m = edges2.size() + 1; // Number of nodes in tree 2
 
-    // Optimized function to color the tree and count the nodes in each color group
-    void color(const vvi &edges, vi &col, int &c0, int &c1) {
-        int n = edges.size() + 1; // Number of nodes
-        // Clear the adjacency list and initialize color vector
-        for (int i = 0; i < n; i++) adj[i].clear();
-        col.assign(n, -1); // Initialize color vector to -1
-        
-        // Build the adjacency list
-        for (const auto &e : edges) {
-            adj[e[0]].push_back(e[1]);
-            adj[e[1]].push_back(e[0]);
+        // Step 1: Build adjacency lists
+        for (auto& edge : edges1) {
+            adj1[edge[0]].push_back(edge[1]);
+            adj1[edge[1]].push_back(edge[0]);
+        }
+        for (auto& edge : edges2) {
+            adj2[edge[0]].push_back(edge[1]);
+            adj2[edge[1]].push_back(edge[0]);
         }
 
-        c0 = c1 = 0; // Initialize counts
+        // Step 2: BFS for labeling nodes in tree 1
+        vi labels1(n, -1); // -1 means unvisited
+        vi labelCounts1(2, 0); // Count of nodes with labels 0 and 1
+        queue<int> q;
 
-        // Iterative DFS for coloring
-        stack<pair<int, int>> s; // (node, color)
-        s.push({0, 0}); // Start with node 0 colored 0
+        q.push(0); // Start BFS from node 0
+        labels1[0] = 0; // Initial label
+        labelCounts1[0]++;
+        
 
-        while (!s.empty()) {
-            auto [x, val] = s.top();
-            s.pop();
-            if (col[x] != -1) continue; // Already colored
-            
-            col[x] = val; // Assign color
-            if (val == 0) c0++; // Count nodes with color 0
-            else c1++; // Count nodes with color 1
-
-            // Push neighbors with alternate color
-            for (int y : adj[x]) {
-                if (col[y] == -1) {
-                    s.push({y, 1 - val}); // Alternate color
+        while (!q.empty()) {
+            int current = q.front();
+            q.pop();
+            for (int neighbor : adj1[current]) {
+                if (labels1[neighbor] == -1) { // If unvisited
+                    labels1[neighbor] = labels1[current] ^ 1; // Use XOR to alternate label
+                    labelCounts1[labels1[neighbor]]++;
+                    q.push(neighbor);
                 }
             }
         }
-    }
 
-    vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2) {
-        vi a, b; // Vectors to hold colors of each tree
-        int c0, c1, c2, c3; // Count of colored nodes
+        // Step 3: BFS for counting labels in tree 2
+        vi labelCounts2(2, 0);
+        vi visited2(m, 0); // Use `vi` for boolean-like visited array
+        queue<pii> q2; // Store (node, label) pairs
 
-        // Color the first tree and get counts
-        color(edges1, a, c0, c1);
-        
-        // Color the second tree and get counts
-        color(edges2, b, c2, c3);
+        q2.push({0, 0}); // Start BFS from node 0
+        visited2[0] = true;
+        labelCounts2[0]++;
 
-        // Ensure c2 >= c3
-        if (c2 < c3) swap(c2, c3); 
-
-        int n = a.size(); // Number of nodes in the first tree
-        vector<int> ret(n); // Result vector
-
-        // Calculate the result based on the coloring
-        for (int i = 0; i < n; i++) {
-            ret[i] = (a[i] == 1 ? c1 : c0) + c2; // Add counts based on color
+        int newLabel;
+        while (!q2.empty()) {
+            auto [current, label] = q2.front();
+            q2.pop();
+            for (int neighbor : adj2[current]) {
+                if (!visited2[neighbor]) { // If unvisited
+                    newLabel = label ^ 1; // Alternate label using XOR
+                    labelCounts2[newLabel]++;
+                    visited2[neighbor] = true;
+                    q2.push({neighbor, newLabel});
+                }
+            }
         }
-        return ret; // Return the result
+
+        // Step 4: Compute results
+        int maxLabel2 = max(labelCounts2[0], labelCounts2[1]);
+        vi result(n);
+        for (int i = 0; i < n; i++) {
+            result[i] = labelCounts1[labels1[i]] + maxLabel2;
+            adj1[i].clear();
+        }
+
+        // Clear adjacency lists (necessary for LeetCode environment)
+        for (int i = 0; i < m; i++) adj2[i].clear();
+        return result;
     }
 };
