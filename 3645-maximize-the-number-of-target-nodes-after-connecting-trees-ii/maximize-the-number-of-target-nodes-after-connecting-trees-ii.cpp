@@ -1,8 +1,8 @@
 #include <vector>
 #include <queue>
-#include <utility> // for std::pair
-#include <algorithm> // for std::max
-#include <iostream> // for std::cout
+#include <utility> 
+#include <algorithm> 
+#include <iostream> 
 
 using namespace std;
 
@@ -18,7 +18,6 @@ public:
         int m = edges2.size() + 1; // Number of nodes in tree 2
 
         // Step 1: Build adjacency lists
-        for (int i = 0; i < n; i++) adj1[i].clear(); // Clear adjacency space for tree 1
         for (int i = 0; i < m; i++) adj2[i].clear(); // Clear adjacency space for tree 2
 
         for (auto& edge : edges1) {
@@ -79,6 +78,7 @@ public:
 
         for (int i = 0; i < n; i++) {
             result[i] = labelCounts1[labels1[i]] + maxLabel2;
+            adj1[i].clear();
         }
         return result;
     }
