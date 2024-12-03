@@ -1,11 +1,18 @@
 class Solution {
 public:
+    typedef pair<int, int> pii; // Shorthand for a pair of integers
+    typedef vector<int> vi;    // Shorthand for a vector of integers
+
     vector<int> maxTargetNodes(vector<vector<int>>& edges1, vector<vector<int>>& edges2) {
+        const int MAX_NODES = 100000; // Assumed maximum number of nodes
+        static vector<int> adj1[MAX_NODES], adj2[MAX_NODES]; // Static adjacency lists
         int n = edges1.size() + 1; // Number of nodes in tree 1
         int m = edges2.size() + 1; // Number of nodes in tree 2
 
         // Step 1: Build adjacency lists
-        vector<vector<int>> adj1(n), adj2(m);
+        for (int i = 0; i < n; i++) adj1[i].clear(); // Clear adjacency space for tree 1
+        for (int i = 0; i < m; i++) adj2[i].clear(); // Clear adjacency space for tree 2
+
         for (auto& edge : edges1) {
             adj1[edge[0]].push_back(edge[1]);
             adj1[edge[1]].push_back(edge[0]);
@@ -16,12 +23,11 @@ public:
         }
 
         // Step 2: BFS for labeling nodes in tree 1
-        vector<int> labels1(n, -1); // -1 means unvisited
-        vector<int> labelCounts1(2, 0); // Count of nodes with labels 0 and 1
+        vi labels1(n, -1); // -1 means unvisited
+        vi labelCounts1(2, 0); // Count of nodes with labels 0 and 1
         queue<int> q;
 
-        // Start BFS from an arbitrary root (node 0)
-        q.push(0);
+        q.push(0); // Start BFS from node 0
         labels1[0] = 0;
         labelCounts1[0]++;
 
@@ -38,11 +44,11 @@ public:
         }
 
         // Step 3: BFS for counting labels in tree 2
-        vector<int> labelCounts2(2, 0);
-        vector<bool> visited2(m, false);
-        queue<pair<int, int>> q2;
+        vi labelCounts2(2, 0);
+        vi visited2(m, 0); // Use `vi` for boolean-like visited array
+        queue<pii> q2; // Store (node, label) pairs
 
-        q2.push({0, 0}); // Start BFS from an arbitrary root (node 0)
+        q2.push({0, 0}); // Start BFS from node 0
         visited2[0] = true;
         labelCounts2[0]++;
 
@@ -61,7 +67,7 @@ public:
 
         // Step 4: Compute results
         int maxLabel2 = max(labelCounts2[0], labelCounts2[1]);
-        vector<int> result(n);
+        vi result(n);
 
         for (int i = 0; i < n; i++) {
             result[i] = labelCounts1[labels1[i]] + maxLabel2;
