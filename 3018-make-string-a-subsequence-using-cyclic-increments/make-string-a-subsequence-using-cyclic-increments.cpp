@@ -1,23 +1,25 @@
+#include <iostream>
+
 class Solution {
 public:
-    bool canMakeSubsequence(string& str1, string& str2) {
-        int i {0};
-
-        auto next_cyclic_char {[](char c) -> char {
-            if (c == 'z')
-                return 'a';
-            else
-                return c+1;
-        }};
-
-        for (const int subseq_len = str2.size(); auto c : str1) {
-            if (c == str2[i] || next_cyclic_char(c) == str2[i])
-                ++i;
-
-            if (i == subseq_len)
-                return true;
+    bool canMakeSubsequence(string str1, string str2) {
+        int n = str1.size();
+        int m = str2.size();
+        int cp = 0;
+        bool found;
+        for(int i =0;i<m;i++){
+            found = false;
+            for(int j = cp; j<n;j++){
+                if(str2[i] == str1[j] || ((str1[j] - 'a' + 1) % 26 + 'a')==str2[i]){
+                    cp = j+1;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                return false;
+            }
         }
-
-        return false;
+        return found;
     }
 };
