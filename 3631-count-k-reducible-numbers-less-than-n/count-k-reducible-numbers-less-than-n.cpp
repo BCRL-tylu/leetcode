@@ -1,51 +1,45 @@
+typedef uint64_t u64;
+constexpr u64 mod = 1e9 + 7;
+constexpr u64 n = 800;
+
+constexpr auto dp = [] {
+    array<u64, n + 1> dp{};
+    for (u64 i = 2; i <= n; i++) {
+        dp[i] = dp[__builtin_popcount(i)] + 1;
+    }
+    return dp;
+}();
+
+auto C = [] {
+    array<array<u64, n + 1>, n + 1> C{};
+    C[0][0] = C[1][0] = C[1][1] = 1;
+    for (u64 i = 2; i <= n; i++) {
+        C[i][0] = 1;
+        for (u64 j = 1; j <= i; j++) {
+            C[i][j] = C[i - 1][j] + C[i - 1][j - 1];
+            C[i][j] %= mod;
+        }
+    }
+    return C;
+}();
+
 class Solution {
 public:
-    int countKReducibleNumbers(string s, int k) {
-        const int mod = 1e9 + 7;
-        int n = s.size();
-
-        auto setBitsIn = [&](int v) -> int {
-            int ans = 0;
-            for(int bit = 0; bit < 32; bit++) {
-                if((v >> bit) & 1)
-                    ans++;
+    u64 countKReducibleNumbers(string s, u64 k) {
+        u64 n = s.size();
+        u64 c1 = 0;
+        u64 ans = 0;
+        for (u64 i = 0; i < n; i++) {
+            if (s[i] == '1') {
+                for (u64 c2 = 0; i + c2 < n; c2++) {
+                    if (c1 + c2 > 0 && dp[c1 + c2] + 1 <= k) {
+                        ans += C[n - i - 1][c2];
+                        ans %= mod;
+                    }
+                }
+                c1++;
             }
-            return ans;
-        };
-
-        // we can have at max 800 set bits
-        // filter out the number of set bits we can have to reach 1 with atmax k operations
-        set<int> canHaveSetBits;
-        unordered_map<int, int> t;
-        for(int i = 1; i <= n; i++) {
-            t[i] = 1 + t[setBitsIn(i)];
-            if(t[i] <= k)
-                canHaveSetBits.insert(i);
         }
-
-        int dp[801][2][801];
-        memset(dp, -1, sizeof(dp));
-
-        // limit our recursive calls on the max number of set bits we can achieve
-        auto recur = [&](auto&& recur, int pos, bool tight, int setBits) -> int {
-            if(pos == n)
-                return !tight && canHaveSetBits.count(setBits);
-            if(setBits > *canHaveSetBits.rbegin())
-                return 0;
-
-            if(dp[pos][tight][setBits] != -1)
-                return dp[pos][tight][setBits];
-
-            // add 0 here
-            int ans = recur(recur, pos + 1, tight && (s[pos] == '0'), setBits);
-
-            // add 1 here
-            if(!tight || s[pos] == '1')
-                ans = (1ll * ans + recur(recur, pos + 1, tight && (s[pos] == '1'), setBits + 1)) % mod;
-            return dp[pos][tight][setBits] = ans;
-        };
-
-        
-        return recur(recur, 0, true, 0);
+        return ans;
     }
 };
