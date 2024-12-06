@@ -8,7 +8,7 @@ public:
             if (bannedSet.count(i)) {
                 continue; // Skip banned numbers
             }
-            if (sum + i > maxSum) {
+            if (sum + i > maxSum || i>maxSum) {
                 break; // Stop if adding `i` exceeds `maxSum`
             }
             sum += i;
