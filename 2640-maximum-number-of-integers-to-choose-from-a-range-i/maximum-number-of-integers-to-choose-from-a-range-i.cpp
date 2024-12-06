@@ -1,11 +1,22 @@
+
+
 class Solution {
 public:
     int maxCount(std::vector<int>& banned, int n, int maxSum) {
-        std::unordered_set<int> bannedSet(banned.begin(), banned.end());
+        std::vector<bool> isBanned(n + 1, false);
+
+        // Mark banned numbers using a bit array
+        for (int num : banned) {
+            if (num <= n) {
+                isBanned[num] = true;
+            }
+        }
+
         int sum = 0, count = 0;
 
+        // Iterate through numbers from 1 to n
         for (int i = 1; i <= n; ++i) {
-            if (bannedSet.count(i)) {
+            if (isBanned[i]) {
                 continue; // Skip banned numbers
             }
             if(i>maxSum){
@@ -17,6 +28,7 @@ public:
             sum += i;
             ++count;
         }
+
         return count;
     }
 };
