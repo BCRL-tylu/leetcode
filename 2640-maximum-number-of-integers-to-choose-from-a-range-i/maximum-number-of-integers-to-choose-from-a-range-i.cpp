@@ -1,22 +1,20 @@
 class Solution {
 public:
-    int maxCount(vector<int>& banned, int n, int maxSum) {
-        int sum =0;
-        int last =1;
-        int count = 0;
-        while(sum<maxSum && last<=n && maxSum>=last){
-            auto lf = std::find(banned.begin(), banned.end(), last);
-            if(lf!=banned.end()){
-                last++;
-                banned.erase(lf);
-                continue;
+    int maxCount(std::vector<int>& banned, int n, int maxSum) {
+        std::unordered_set<int> bannedSet(banned.begin(), banned.end());
+        int sum = 0, count = 0;
+
+        for (int i = 1; i <= n; ++i) {
+            if (bannedSet.count(i)) {
+                continue; // Skip banned numbers
             }
-            sum+=last++;
-            count++;
+            if (sum + i > maxSum) {
+                break; // Stop if adding `i` exceeds `maxSum`
+            }
+            sum += i;
+            ++count;
         }
-        if(sum>maxSum){
-            return count-1;
-        }
+
         return count;
     }
 };
