@@ -17,10 +17,7 @@ public:
             if (isBanned[i]) {
                 continue; // Skip banned numbers
             }
-            if(i>maxSum){
-                break;
-            }
-            if (sum + i > maxSum) {
+            if (i>maxSum||sum + i > maxSum) {
                 break; // Stop if adding `i` exceeds `maxSum`
             }
             sum += i;
