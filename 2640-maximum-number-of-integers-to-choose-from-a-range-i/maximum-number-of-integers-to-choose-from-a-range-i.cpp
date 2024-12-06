@@ -7,17 +7,15 @@ public:
                 isBanned[num] = true;
         }
 
-        int sum = 0, count = 0;
+        int sum = 0;
+        short count = 0;
 
         for (int i = 1; i <= n; ++i) {
-            if (isBanned[i]) 
-                continue;
-            if (sum + i > maxSum) 
-                break;
+            if (isBanned[i]) continue;
+            if (sum + i > maxSum) break;
             sum += i;
             ++count;
         }
-
         return count;
     }
 };
