@@ -8,13 +8,15 @@ public:
             if (bannedSet.count(i)) {
                 continue; // Skip banned numbers
             }
-            if (sum + i > maxSum || i>maxSum) {
+            if(i>maxSum){
+                break;
+            }
+            if (sum + i > maxSum) {
                 break; // Stop if adding `i` exceeds `maxSum`
             }
             sum += i;
             ++count;
         }
-
         return count;
     }
 };
