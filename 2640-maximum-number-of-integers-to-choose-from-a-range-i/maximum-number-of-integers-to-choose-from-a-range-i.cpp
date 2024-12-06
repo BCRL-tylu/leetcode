@@ -1,5 +1,3 @@
-
-
 class Solution {
 public:
     int maxCount(std::vector<int>& banned, int n, int maxSum) {
@@ -19,9 +17,7 @@ public:
             if (isBanned[i]) {
                 continue; // Skip banned numbers
             }
-            if(i>maxSum){
-                break;
-            }
+
             if (sum + i > maxSum) {
                 break; // Stop if adding `i` exceeds `maxSum`
             }
