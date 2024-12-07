@@ -77,7 +77,6 @@ public:
             result[i] = labelCounts1[labels1[i]] + maxLabel2;
             adj1[i].clear();
         }
-
         // Clear adjacency lists (necessary for LeetCode environment)
         for (int i = 0; i < m; i++) adj2[i].clear();
         return result;
