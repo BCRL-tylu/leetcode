@@ -1,22 +1,10 @@
 #include <vector>
 #include <algorithm>
-#include <utility> // For std::pair
 
 using namespace std;
 
 class Solution {
 public:
-    vector<int> generateMaxValues(const vector<vector<int>>& events) {
-        int n = events.size();
-        vector<int> maxValues(n);
-        maxValues[n - 1] = events[n - 1][2];
-
-        for (int i = n - 2; i >= 0; --i) {
-            maxValues[i] = max(events[i + 1][2], maxValues[i + 1]);
-        }
-        return maxValues;
-    }
-
     int maxTwoEvents(vector<vector<int>>& events) {
         int n = events.size();
         int maxdual = 0;
@@ -27,14 +15,22 @@ public:
             return a[0] < b[0];
         });
 
-        // Step 2: Extract sorted first indices into a separate vector
+        // Step 2: Initialize maxValues array
+        vector<int> maxValues(n);
+        maxValues[n - 1] = events[n - 1][2];
+
+        // Generate maximum values directly
+        for (int i = n - 2; i >= 0; --i) {
+            maxValues[i] = max(events[i + 1][2], maxValues[i + 1]);
+        }
+
+        // Step 3: Extract sorted first indices into a separate vector
         vector<int> sortedFirstIndices(n);
         for (int i = 0; i < n; ++i) {
             sortedFirstIndices[i] = events[i][0];
         }
-        vector<int> maxValues = generateMaxValues(events);
 
-        // Step 3: Process the events
+        // Step 4: Process the events
         for (int i = 0; i < n - 1; i++) {
             // Update the maximum single event value
             if (events[i][2] > maxind) {
