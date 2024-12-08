@@ -1,43 +1,27 @@
 class Solution {
+    int uf[101010];
+    int find(int u) {
+        return uf[u] == u ? u : uf[u] = find(uf[u]);
+    }
+    void uni(int u, int v) {
+        int pu = find(u), pv = find(v);
+        uf[pu] = uf[pv] = min(pu,pv);
+    }
 public:
-
     int countComponents(vector<int>& nums, int threshold) {
-        int n = nums.size();
-        unordered_map<int, vector<int>> adj;
-
-        int components = 0;
-        
-        for(int j = 0; j < n; j ++) {
-            int num = nums[j];
-            if(num > threshold) components ++;
-            for(int i = 1 * num; i <= threshold; i += num) {
-        
-                adj[num].push_back(i);
-                adj[i].push_back(num);
-            }
-        }
-
-        unordered_map<int, int> vis;
-        
-        
-        for(auto it: adj) {
-            int i = it.first;
-            queue<int> q;
-            if(vis[i] == 1) continue;
-            q.push(i);
-            vis[i] = 1;
-            components ++;
-            while(! q.empty()) {
-                auto u = q.front();
-                q.pop();
-                for(auto v: adj[u]) {
-                    if(!vis[v]) {
-                        vis[v] = 1;
-                        q.push(v);
-                    }
+        int res = 0;
+        for(int i = 0; i < nums.size(); i++) uf[i] = i;
+        vector<int> cover(threshold + 1, -1);
+        for(int i = 0; i < nums.size(); i++) {
+            for(int j = nums[i]; j <= threshold; j += nums[i]) {
+                if(cover[j] == -1) cover[j] = i;
+                else {
+                    uni(cover[j], i);
+                    if(j == nums[i]) break;
                 }
             }
         }
-        return components;
+        for(int i = 0; i < nums.size(); i++) if(find(i) == i) res++;
+        return res;
     }
 };
