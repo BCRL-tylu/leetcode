@@ -6,8 +6,7 @@ using namespace std;
 
 class Solution {
 public:
-    vector<int> generateMaxValues(const vector<vector<int>>& events) {
-        int n = events.size();
+    vector<int> generateMaxValues(const vector<vector<int>>& events,int n) {
         vector<int> maxValues(n, 0); // Initialize the result vector with size n
         // Start with the last event's value
         maxValues[n - 1] = events[n - 1][2];
@@ -35,7 +34,7 @@ public:
         for (int i = 0; i < n; ++i) {
             sortedFirstIndices[i] = events[i][0];
         }
-        vector<int> maxValues = generateMaxValues(events);
+        vector<int> maxValues = generateMaxValues(events,n);
 
         // Step 3: Process the events
         for (int i = 0; i < n - 1; i++) {
