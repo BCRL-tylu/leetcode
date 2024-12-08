@@ -1,6 +1,3 @@
-
-
-
 class Solution {
     int uf[101010]; // Union-Find parent array to keep track of connected components
 
