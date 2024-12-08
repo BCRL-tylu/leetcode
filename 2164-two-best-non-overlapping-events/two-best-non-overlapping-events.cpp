@@ -6,6 +6,18 @@ using namespace std;
 
 class Solution {
 public:
+    vector<int> generateMaxValues(const vector<vector<int>>& events) {
+        int n = events.size();
+        vector<int> maxValues(n, 0); // Initialize the result vector with size n
+        // Start with the last event's value
+        maxValues[n - 1] = events[n - 1][2];
+        // Traverse from the second last element to the start
+        for (int i = n - 2; i >= 0; --i) {
+            // For each position, take the max of the current value and the next max
+            maxValues[i] = max(events[i + 1][2], maxValues[i + 1]);
+        }
+        return maxValues;
+    }
 
     int maxTwoEvents(vector<vector<int>>& events) {
         int n = events.size();
@@ -23,15 +35,7 @@ public:
         for (int i = 0; i < n; ++i) {
             sortedFirstIndices[i] = events[i][0];
         }
-
-        vector<int> maxValues(n, 0); // Initialize the result vector with size n
-        // Start with the last event's value
-        maxValues[n - 1] = events[n - 1][2];
-        // Traverse from the second last element to the start
-        for (int i = n - 2; i >= 0; --i) {
-            // For each position, take the max of the current value and the next max
-            maxValues[i] = max(events[i + 1][2], maxValues[i + 1]);
-        }
+        vector<int> maxValues = generateMaxValues(events);
 
         // Step 3: Process the events
         for (int i = 0; i < n - 1; i++) {
