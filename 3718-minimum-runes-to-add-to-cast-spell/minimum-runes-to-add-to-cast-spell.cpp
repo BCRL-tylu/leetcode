@@ -1,13 +1,14 @@
 class Solution {
 public:
     int minRunesToAdd(int n, vector<int>& crystals, vector<int>& flowFrom, vector<int>& flowTo) {
-        // Build adjacency list and reverse adjacency list
-        vector<vector<int>> adj(n), revAdj(n);
+        // Build adjacency list and reverse adjacency list using unordered_map
+        unordered_map<int, vector<int>> adj, revAdj;
         for (int i = 0; i < flowFrom.size(); i++) {
             adj[flowFrom[i]].push_back(flowTo[i]);
             revAdj[flowTo[i]].push_back(flowFrom[i]);
         }
-        // Step 1: Perform DFS to determine the order of nodes
+
+        // Perform DFS to determine the order of nodes
         vector<bool> visited(n, false);
         stack<int> order;
         for (int i = 0; i < n; i++) {
@@ -15,7 +16,8 @@ public:
                 dfs(i, adj, visited, order);
             }
         }
-        // Step 2: Find SCCs using the reverse graph
+
+        // Find SCCs using the reverse graph
         vector<int> sccId(n, -1);
         int sccCount = 0;
         vector<int> sccProperties; // To store properties of each SCC
@@ -28,11 +30,13 @@ public:
                 sccCount++;
             }
         }
-        // Step 3: Mark the SCCs containing crystals
+
+        // Mark the SCCs containing crystals
         for (int crystal : crystals) {
             sccProperties[sccId[crystal]] |= 1; // Set crystal bit (bit 0)
         }
-        // Step 4: Check incoming edges to SCCs
+
+        // Check incoming edges to SCCs
         vector<bool> hasIncoming(sccCount, false);
         for (int i = 0; i < flowFrom.size(); i++) {
             int u = sccId[flowFrom[i]], v = sccId[flowTo[i]];
@@ -40,32 +44,40 @@ public:
                 hasIncoming[v] = true; // Mark incoming edges for SCC v
             }
         }
+
         // Count SCCs that do not have crystals and do not have incoming edges
         int runesNeeded = 0;
         for (int i = 0; i < sccCount; i++) {
             // Check if the SCC has no crystals and no incoming edges
-            if ((sccProperties[i] & 1) == 0 && !hasIncoming[i]) {
+            if (!(sccProperties[i] & 1) && !hasIncoming[i]) {
                 runesNeeded++; // Need a rune for this SCC
             }
         }
         return runesNeeded;
     }
+
 private:
-    void dfs(int node, const vector<vector<int>>& adj, vector<bool>& visited, stack<int>& order) {
+    void dfs(int node, const unordered_map<int, vector<int>>& adj, vector<bool>& visited, stack<int>& order) {
         visited[node] = true;
-        for (int neighbor : adj[node]) {
-            if (!visited[neighbor]) {
-                dfs(neighbor, adj, visited, order);
+        // Check if the node exists in adj to avoid unnecessary calls
+        if (adj.find(node) != adj.end()) {
+            for (int neighbor : adj.at(node)) {
+                if (!visited[neighbor]) {
+                    dfs(neighbor, adj, visited, order);
+                }
             }
         }
         order.push(node); // Push node to the stack after finishing its neighbors
     }
-    void shrinkNodes(int node, const vector<vector<int>>& revAdj, vector<int>& sccId, int sccCount, vector<int>& sccProperties) {
+
+    void shrinkNodes(int node, const unordered_map<int, vector<int>>& revAdj, vector<int>& sccId, int sccCount, vector<int>& sccProperties) {
         sccId[node] = sccCount; // Mark the current node with its SCC ID
-        // Collect nodes in the current SCC and check for incoming edges
-        for (int neighbor : revAdj[node]) {
-            if (sccId[neighbor] == -1) {
-                shrinkNodes(neighbor, revAdj, sccId, sccCount, sccProperties); // Recursively mark all nodes in this SCC
+        // Check if the node exists in revAdj to avoid unnecessary calls
+        if (revAdj.find(node) != revAdj.end()) {
+            for (int neighbor : revAdj.at(node)) {
+                if (sccId[neighbor] == -1) {
+                    shrinkNodes(neighbor, revAdj, sccId, sccCount, sccProperties); // Recursively mark all nodes in this SCC
+                }
             }
         }
     }
