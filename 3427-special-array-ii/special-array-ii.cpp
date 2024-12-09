@@ -1,34 +1,36 @@
+#include <vector>
+#include <unordered_map>
+
 class Solution {
 public:
-    vector<bool> isArraySpecial(vector<int>& nums,
-                                vector<vector<int>>& queries) {
+    std::vector<bool> isArraySpecial(std::vector<int>& nums, std::vector<std::vector<int>>& queries) {
         int n = nums.size();
         std::vector<bool> rt(n - 1, true);
-        std::vector<bool> r;
-        for (int i = 0; i < nums.size() - 1; i++) {
-            if (!((nums[i + 1] - nums[i]) % 2)) {
+        std::vector<bool> results(queries.size());
+
+        // Precompute the special conditions in `rt`
+        for (int i = 0; i < n - 1; i++) {
+            if ((nums[i + 1] - nums[i]) % 2 == 0) {
                 rt[i] = false;
             }
         }
-         std::unordered_map<int, int> skip;
-        for (int k = 0; k < queries.size(); k++) {
-            bool result = true; // Identity element for AND
-            for (int m = queries[k][0]; m < queries[k][1]; m++) {
-                if(skip[m] == 0){
-                    result &= rt[m];
-                }else{
-                    result &= rt[m];
-                    m = max(skip[m],m);
-                }
-                if (!result){
-                    break; // Optimization: stop early if result is false
-                }
-            }
-            if(result){
-                skip[queries[k][0]] = max(queries[k][1]-1,skip[queries[k][0]]);
-            }
-            r.push_back(result);
+
+        // Use a prefix sum approach to quickly answer range queries
+        std::vector<int> prefixFalseCount(n, 0);
+        for (int i = 1; i < n; i++) {
+            prefixFalseCount[i] = prefixFalseCount[i - 1] + (rt[i - 1] ? 0 : 1);
         }
-        return r;
+
+        // Process each query
+        for (int k = 0; k < queries.size(); k++) {
+            int left = queries[k][0];
+            int right = queries[k][1] - 1; // Convert to 0-based index
+
+            // Check how many 'false' values are in the range
+            int falseCount = prefixFalseCount[right + 1] - prefixFalseCount[left];
+
+            results[k] = (falseCount == 0); // No false means all are true
+        }
+        return results;
     }
 };
