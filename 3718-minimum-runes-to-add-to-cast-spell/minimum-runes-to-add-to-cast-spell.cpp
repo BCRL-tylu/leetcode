@@ -1,38 +1,52 @@
+#include <vector>
+#include <stack>
+#include <unordered_map>
+#include <unordered_set>
+using namespace std;
+
 class Solution {
 public:
     int minRunesToAdd(int n, vector<int>& crystals, vector<int>& flowFrom, vector<int>& flowTo) {
-        // Build adjacency list and reverse adjacency list
-        vector<vector<int>> adj(n), revAdj(n);
+        // Initialize adjacency list using unordered_multimap
+        unordered_multimap<int, int> adj; // For normal graph
+        unordered_multimap<int, int> revAdj; // For reversed graph
+        
+        // Build the graph
         for (int i = 0; i < flowFrom.size(); i++) {
-            adj[flowFrom[i]].push_back(flowTo[i]);
-            revAdj[flowTo[i]].push_back(flowFrom[i]);
+            adj.insert({flowFrom[i], flowTo[i]});
+            revAdj.insert({flowTo[i], flowFrom[i]});
         }
+
         // Perform DFS to determine the order of nodes
         vector<bool> visited(n, false);
         stack<int> order;
         for (int i = 0; i < n; i++) {
             if (!visited[i]) {
-                dfs(i, adj, visited, order);
+                dfs(i, visited, order, adj);
             }
         }
-        //Find SCCs using the reverse graph
+
+        // Find SCCs using the reverse graph
         vector<int> sccId(n, -1);
         int sccCount = 0;
         vector<int> sccProperties; // To store properties of each SCC
+
         while (!order.empty()) {
             int node = order.top();
             order.pop();
             if (sccId[node] == -1) {
                 sccProperties.push_back(0); // Initialize new SCC properties
-                shrinkNodes(node, revAdj, sccId, sccCount, sccProperties);
+                shrinkNodes(node, sccId, sccCount, revAdj, sccProperties);
                 sccCount++;
             }
         }
-        //Mark the SCCs containing crystals
+
+        // Mark the SCCs containing crystals
         for (int crystal : crystals) {
             sccProperties[sccId[crystal]] |= 1; // Set crystal bit (bit 0)
         }
-        //Check incoming edges to SCCs
+
+        // Check incoming edges to SCCs
         vector<bool> hasIncoming(sccCount, false);
         for (int i = 0; i < flowFrom.size(); i++) {
             int u = sccId[flowFrom[i]], v = sccId[flowTo[i]];
@@ -40,6 +54,7 @@ public:
                 hasIncoming[v] = true; // Mark incoming edges for SCC v
             }
         }
+
         // Count SCCs that do not have crystals and do not have incoming edges
         int runesNeeded = 0;
         for (int i = 0; i < sccCount; i++) {
@@ -48,24 +63,31 @@ public:
                 runesNeeded++; // Need a rune for this SCC
             }
         }
+
         return runesNeeded;
     }
+
 private:
-    void dfs(int node, const vector<vector<int>>& adj, vector<bool>& visited, stack<int>& order) {
+    void dfs(int node, vector<bool>& visited, stack<int>& order, unordered_multimap<int, int>& adj) {
         visited[node] = true;
-        for (int neighbor : adj[node]) {
+        auto range = adj.equal_range(node);
+        for (auto it = range.first; it != range.second; ++it) {
+            int neighbor = it->second;
             if (!visited[neighbor]) {
-                dfs(neighbor, adj, visited, order);
+                dfs(neighbor, visited, order, adj);
             }
         }
         order.push(node); // Push node to the stack after finishing its neighbors
     }
-    void shrinkNodes(int node, const vector<vector<int>>& revAdj, vector<int>& sccId, int sccCount, vector<int>& sccProperties) {
+
+    void shrinkNodes(int node, vector<int>& sccId, int sccCount, unordered_multimap<int, int>& revAdj, vector<int>& sccProperties) {
         sccId[node] = sccCount; // Mark the current node with its SCC ID
-        // Collect nodes in the current SCC and check for incoming edges
-        for (int neighbor : revAdj[node]) {
+        // Collect nodes in the current SCC
+        auto range = revAdj.equal_range(node);
+        for (auto it = range.first; it != range.second; ++it) {
+            int neighbor = it->second;
             if (sccId[neighbor] == -1) {
-                shrinkNodes(neighbor, revAdj, sccId, sccCount, sccProperties); // Recursively mark all nodes in this SCC
+                shrinkNodes(neighbor, sccId, sccCount, revAdj, sccProperties); // Recursively mark all nodes in this SCC
             }
         }
     }
