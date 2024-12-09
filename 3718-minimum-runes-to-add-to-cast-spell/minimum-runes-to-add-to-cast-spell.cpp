@@ -1,8 +1,13 @@
+#include <vector>
+#include <stack>
+#include <deque>
+using namespace std;
+
 class Solution {
 public:
     int minRunesToAdd(int n, vector<int>& crystals, vector<int>& flowFrom, vector<int>& flowTo) {
-        // Build adjacency list and reverse adjacency list using unordered_map
-        unordered_map<int, vector<int>> adj, revAdj;
+        // Build adjacency list and reverse adjacency list using deque
+        vector<deque<int>> adj(n), revAdj(n);
         for (int i = 0; i < flowFrom.size(); i++) {
             adj[flowFrom[i]].push_back(flowTo[i]);
             revAdj[flowTo[i]].push_back(flowFrom[i]);
@@ -57,27 +62,21 @@ public:
     }
 
 private:
-    void dfs(int node, const unordered_map<int, vector<int>>& adj, vector<bool>& visited, stack<int>& order) {
+    void dfs(int node, const vector<deque<int>>& adj, vector<bool>& visited, stack<int>& order) {
         visited[node] = true;
-        // Check if the node exists in adj to avoid unnecessary calls
-        if (adj.find(node) != adj.end()) {
-            for (int neighbor : adj.at(node)) {
-                if (!visited[neighbor]) {
-                    dfs(neighbor, adj, visited, order);
-                }
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                dfs(neighbor, adj, visited, order);
             }
         }
         order.push(node); // Push node to the stack after finishing its neighbors
     }
 
-    void shrinkNodes(int node, const unordered_map<int, vector<int>>& revAdj, vector<int>& sccId, int sccCount, vector<int>& sccProperties) {
+    void shrinkNodes(int node, const vector<deque<int>>& revAdj, vector<int>& sccId, int sccCount, vector<int>& sccProperties) {
         sccId[node] = sccCount; // Mark the current node with its SCC ID
-        // Check if the node exists in revAdj to avoid unnecessary calls
-        if (revAdj.find(node) != revAdj.end()) {
-            for (int neighbor : revAdj.at(node)) {
-                if (sccId[neighbor] == -1) {
-                    shrinkNodes(neighbor, revAdj, sccId, sccCount, sccProperties); // Recursively mark all nodes in this SCC
-                }
+        for (int neighbor : revAdj[node]) {
+            if (sccId[neighbor] == -1) {
+                shrinkNodes(neighbor, revAdj, sccId, sccCount, sccProperties); // Recursively mark all nodes in this SCC
             }
         }
     }
