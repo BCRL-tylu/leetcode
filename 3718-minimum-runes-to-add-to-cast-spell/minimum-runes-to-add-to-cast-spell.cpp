@@ -40,11 +40,10 @@ public:
             hasCrystal[sccId[crystal]] = true; // Mark that the SCC contains a crystal
         }
 
-        // Initialize incoming edges tracking
+        // Check incoming edges to SCCs and count SCCs that do not have crystals and do not have incoming edges
         std::vector<bool> hasIncoming(sccCount, false);
         int runesNeeded = 0;
 
-        // Update the hasIncoming vector during the DFS for the original graph
         for (size_t i = 0; i < flowFrom.size(); i++) {
             int u = sccId[flowFrom[i]], v = sccId[flowTo[i]];
             if (u != v) {
