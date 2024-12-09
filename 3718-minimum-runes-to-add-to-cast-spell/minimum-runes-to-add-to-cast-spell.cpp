@@ -23,21 +23,21 @@ public:
         // Find SCCs using the reverse graph
         std::vector<int> sccId(n, -1);
         int sccCount = 0;
-        std::vector<int> sccProperties; // To store properties of each SCC
-
         while (!order.empty()) {
             int node = order.top();
             order.pop();
             if (sccId[node] == -1) {
-                sccProperties.push_back(0); // Initialize new SCC properties
-                shrinkNodes(node, revAdj, sccId, sccCount, sccProperties);
+                shrinkNodes(node, revAdj, sccId, sccCount);
                 sccCount++;
             }
         }
 
+        // Now that we have the total number of SCCs, we can initialize the properties vector
+        std::vector<bool> hasCrystal(sccCount, false); // Track if SCC contains crystals
+
         // Mark the SCCs containing crystals
         for (int crystal : crystals) {
-            sccProperties[sccId[crystal]] |= 1; // Set crystal bit (bit 0)
+            hasCrystal[sccId[crystal]] = true; // Mark that the SCC contains a crystal
         }
 
         // Check incoming edges to SCCs
@@ -52,8 +52,7 @@ public:
         // Count SCCs that do not have crystals and do not have incoming edges
         int runesNeeded = 0;
         for (int i = 0; i < sccCount; i++) {
-            // Check if the SCC has no crystals and no incoming edges
-            if (!(sccProperties[i] & 1) && !hasIncoming[i]) {
+            if (!hasCrystal[i] && !hasIncoming[i]) {
                 runesNeeded++; // Need a rune for this SCC
             }
         }
@@ -71,12 +70,12 @@ private:
         order.push(node); // Push node to the stack after finishing its neighbors
     }
 
-    void shrinkNodes(int node, const std::vector<std::vector<int>>& revAdj, std::vector<int>& sccId, int sccCount, std::vector<int>& sccProperties) {
+    void shrinkNodes(int node, const std::vector<std::vector<int>>& revAdj, std::vector<int>& sccId, int sccCount) {
         sccId[node] = sccCount; // Mark the current node with its SCC ID
         // Collect nodes in the current SCC
         for (int neighbor : revAdj[node]) {
             if (sccId[neighbor] == -1) {
-                shrinkNodes(neighbor, revAdj, sccId, sccCount, sccProperties); // Recursively mark all nodes in this SCC
+                shrinkNodes(neighbor, revAdj, sccId, sccCount);
             }
         }
     }
