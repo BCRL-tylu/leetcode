@@ -5,8 +5,9 @@ class Solution {
 public:
     int minRunesToAdd(int n, std::vector<int>& crystals, std::vector<int>& flowFrom, std::vector<int>& flowTo) {
         // Build adjacency list and reverse adjacency list
+        int edges = flowFrom.size();
         std::vector<std::vector<int>> adj(n), revAdj(n);
-        for (size_t i = 0; i < flowFrom.size(); i++) {
+        for (size_t i = 0; i < edges; i++) {
             adj[flowFrom[i]].push_back(flowTo[i]);
             revAdj[flowTo[i]].push_back(flowFrom[i]);
         }
@@ -44,7 +45,7 @@ public:
         vector<bool> hasIncoming(sccCount, true);
         int runesNeeded = 0;
 
-        for (size_t i = 0; i < flowFrom.size(); i++) {
+        for (size_t i = 0; i < edges; i++) {
             int u = sccId[flowFrom[i]], v = sccId[flowTo[i]];
             if (u != v) {
                 hasIncoming[v] = false; // Mark incoming edges for SCC v
