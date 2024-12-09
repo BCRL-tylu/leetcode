@@ -1,3 +1,6 @@
+#include <vector>
+#include <stack>
+
 class Solution {
 public:
     int minRunesToAdd(int n, std::vector<int>& crystals, std::vector<int>& flowFrom, std::vector<int>& flowTo) {
@@ -31,7 +34,7 @@ public:
         }
 
         // Now that we have the total number of SCCs, we can initialize the properties vector
-        std::vector<bool> hasCrystal(sccCount, false); // Track if SCC contains crystals
+        vector<bool> hasCrystal(sccCount, false); // Track if SCC contains crystals
 
         // Mark the SCCs containing crystals
         for (int crystal : crystals) {
@@ -39,19 +42,19 @@ public:
         }
 
         // Check incoming edges to SCCs and count SCCs that do not have crystals and do not have incoming edges
-        std::vector<bool> hasIncoming(sccCount, false); // Initialize to false
+        vector<bool> hasIncoming(sccCount, true);
+        int runesNeeded = 0;
 
         for (size_t i = 0; i < edges; i++) {
             int u = sccId[flowFrom[i]], v = sccId[flowTo[i]];
             if (u != v) {
-                hasIncoming[v] = true; // Mark that SCC v has incoming edges
+                hasIncoming[v] = false; // Mark incoming edges for SCC v
             }
         }
 
         // Count SCCs without crystals and without incoming edges
-        int runesNeeded = 0;
         for (int i = 0; i < sccCount; i++) {
-            if (!hasCrystal[i] && !hasIncoming[i]) {
+            if (!hasCrystal[i] && hasIncoming[i]) {
                 runesNeeded++; // Need a rune for this SCC
             }
         }
