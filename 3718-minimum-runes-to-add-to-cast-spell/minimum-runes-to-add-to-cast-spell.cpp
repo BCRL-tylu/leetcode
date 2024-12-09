@@ -13,6 +13,7 @@ public:
             adj[flowFrom[i]].push_back(flowTo[i]);
             revAdj[flowTo[i]].push_back(flowFrom[i]);
         }
+
         // Step 1: Find the finishing order using DFS
         vector<bool> visited(n, false);
         stack<int> order;
