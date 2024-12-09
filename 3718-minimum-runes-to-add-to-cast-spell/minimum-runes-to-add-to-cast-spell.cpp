@@ -2,38 +2,33 @@
 #include <vector>
 #include <stack>
 #include <unordered_set>
+#include <algorithm>
 using namespace std;
 
 class Solution {
 public:
     int minRunesToAdd(int n, vector<int>& crystals, vector<int>& flowFrom, vector<int>& flowTo) {
-        // Build adjacency list and reverse adjacency list
-        vector<vector<int>> adj(n), revAdj(n);
+        // Build adjacency list
+        vector<vector<int>> adj(n);
         for (int i = 0; i < flowFrom.size(); i++) {
             adj[flowFrom[i]].push_back(flowTo[i]);
-            revAdj[flowTo[i]].push_back(flowFrom[i]);
         }
 
-        // Step 1: Perform DFS to find the finishing order
-        vector<bool> visited(n, false);
-        stack<int> order;
-        for (int i = 0; i < n; i++) {
-            if (!visited[i]) dfs1(i, adj, visited, order);
-        }
-
-        // Step 2: Find strongly connected components (SCCs) using reverse graph
+        // Tarjan's algorithm variables
+        vector<int> discoveryTime(n, -1), lowLink(n, -1);
+        vector<bool> onStack(n, false);
+        stack<int> dfsStack;
         vector<int> sccId(n, -1);
-        int sccCount = 0;
-        while (!order.empty()) {
-            int node = order.top();
-            order.pop();
-            if (sccId[node] == -1) {
-                dfs2(node, revAdj, sccId, sccCount);
-                sccCount++;
+        int time = 0, sccCount = 0;
+
+        // Tarjan's algorithm to find SCCs
+        for (int i = 0; i < n; i++) {
+            if (discoveryTime[i] == -1) {
+                tarjanDFS(i, time, adj, discoveryTime, lowLink, onStack, dfsStack, sccId, sccCount);
             }
         }
 
-        // Step 3: Build SCC-level graph and check properties
+        // Determine properties of SCCs
         vector<bool> hasCrystal(sccCount, false);
         vector<unordered_set<int>> sccGraph(sccCount);
         for (int crystal : crystals) {
@@ -46,7 +41,7 @@ public:
             }
         }
 
-        // Step 4: Count SCCs that need additional runes
+        // Count SCCs with no incoming edges and no crystals
         vector<bool> hasIncoming(sccCount, false);
         for (int u = 0; u < sccCount; u++) {
             for (int v : sccGraph[u]) {
@@ -65,18 +60,35 @@ public:
     }
 
 private:
-    void dfs1(int node, const vector<vector<int>>& adj, vector<bool>& visited, stack<int>& order) {
-        visited[node] = true;
-        for (int neighbor : adj[node]) {
-            if (!visited[neighbor]) dfs1(neighbor, adj, visited, order);
-        }
-        order.push(node);
-    }
+    void tarjanDFS(int node, int& time, const vector<vector<int>>& adj,
+                   vector<int>& discoveryTime, vector<int>& lowLink,
+                   vector<bool>& onStack, stack<int>& dfsStack,
+                   vector<int>& sccId, int& sccCount) {
+        discoveryTime[node] = lowLink[node] = time++;
+        dfsStack.push(node);
+        onStack[node] = true;
 
-    void dfs2(int node, const vector<vector<int>>& revAdj, vector<int>& sccId, int sccCount) {
-        sccId[node] = sccCount;
-        for (int neighbor : revAdj[node]) {
-            if (sccId[neighbor] == -1) dfs2(neighbor, revAdj, sccId, sccCount);
+        for (int neighbor : adj[node]) {
+            if (discoveryTime[neighbor] == -1) {
+                // Neighbor not visited, recurse
+                tarjanDFS(neighbor, time, adj, discoveryTime, lowLink, onStack, dfsStack, sccId, sccCount);
+                lowLink[node] = min(lowLink[node], lowLink[neighbor]);
+            } else if (onStack[neighbor]) {
+                // Back edge to an ancestor
+                lowLink[node] = min(lowLink[node], discoveryTime[neighbor]);
+            }
+        }
+
+        // If node is root of an SCC
+        if (lowLink[node] == discoveryTime[node]) {
+            while (true) {
+                int u = dfsStack.top();
+                dfsStack.pop();
+                onStack[u] = false;
+                sccId[u] = sccCount;
+                if (u == node) break;
+            }
+            sccCount++;
         }
     }
 };
