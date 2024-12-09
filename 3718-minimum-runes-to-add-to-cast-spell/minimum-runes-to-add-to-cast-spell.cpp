@@ -57,7 +57,6 @@ public:
                 runesNeeded++; // Need a rune for this SCC
             }
         }
-
         return runesNeeded;
     }
 
