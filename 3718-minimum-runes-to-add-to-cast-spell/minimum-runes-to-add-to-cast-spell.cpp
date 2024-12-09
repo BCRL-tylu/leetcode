@@ -13,7 +13,6 @@ public:
             adj[flowFrom[i]].push_back(flowTo[i]);
             revAdj[flowTo[i]].push_back(flowFrom[i]);
         }
-
         // Step 1: Find the finishing order using DFS
         vector<bool> visited(n, false);
         stack<int> order;
@@ -22,7 +21,6 @@ public:
                 dfs(i, adj, visited, order);
             }
         }
-
         // Step 2: Identify shrunk nodes (SCCs)
         vector<int> sccId(n, -1);
         int sccCount = 0;
