@@ -10,7 +10,6 @@ public:
             adj[flowFrom[i]].push_back(flowTo[i]);
             revAdj[flowTo[i]].push_back(flowFrom[i]);
         }
-
         // Perform DFS to determine the order of nodes
         std::vector<bool> visited(n, false);
         std::stack<int> order;
@@ -19,27 +18,23 @@ public:
                 dfs(i, adj, visited, order);
             }
         }
-
         // Find SCCs using the reverse graph
         std::vector<int> sccId(n, -1);
         int sccCount = 0;
+        std::vector<int> sccProperties; // To store properties of each SCC
         while (!order.empty()) {
             int node = order.top();
             order.pop();
             if (sccId[node] == -1) {
-                shrinkNodes(node, revAdj, sccId, sccCount);
+                sccProperties.push_back(0); // Initialize new SCC properties
+                shrinkNodes(node, revAdj, sccId, sccCount, sccProperties);
                 sccCount++;
             }
         }
-
-        // Now that we have the total number of SCCs, we can initialize the properties vector
-        std::vector<bool> hasCrystal(sccCount, false); // Track if SCC contains crystals
-
         // Mark the SCCs containing crystals
         for (int crystal : crystals) {
-            hasCrystal[sccId[crystal]] = true; // Mark that the SCC contains a crystal
+            sccProperties[sccId[crystal]] |= 1; // Set crystal bit (bit 0)
         }
-
         // Check incoming edges to SCCs
         std::vector<bool> hasIncoming(sccCount, false);
         for (size_t i = 0; i < flowFrom.size(); i++) {
@@ -48,17 +43,16 @@ public:
                 hasIncoming[v] = true; // Mark incoming edges for SCC v
             }
         }
-
         // Count SCCs that do not have crystals and do not have incoming edges
         int runesNeeded = 0;
         for (int i = 0; i < sccCount; i++) {
-            if (!hasCrystal[i] && !hasIncoming[i]) {
+            // Check if the SCC has no crystals and no incoming edges
+            if (!(sccProperties[i] & 1) && !hasIncoming[i]) {
                 runesNeeded++; // Need a rune for this SCC
             }
         }
         return runesNeeded;
     }
-
 private:
     void dfs(int node, const std::vector<std::vector<int>>& adj, std::vector<bool>& visited, std::stack<int>& order) {
         visited[node] = true;
@@ -69,13 +63,12 @@ private:
         }
         order.push(node); // Push node to the stack after finishing its neighbors
     }
-
-    void shrinkNodes(int node, const std::vector<std::vector<int>>& revAdj, std::vector<int>& sccId, int sccCount) {
+    void shrinkNodes(int node, const std::vector<std::vector<int>>& revAdj, std::vector<int>& sccId, int sccCount, std::vector<int>& sccProperties) {
         sccId[node] = sccCount; // Mark the current node with its SCC ID
         // Collect nodes in the current SCC
         for (int neighbor : revAdj[node]) {
             if (sccId[neighbor] == -1) {
-                shrinkNodes(neighbor, revAdj, sccId, sccCount);
+                shrinkNodes(neighbor, revAdj, sccId, sccCount, sccProperties); 
             }
         }
     }
