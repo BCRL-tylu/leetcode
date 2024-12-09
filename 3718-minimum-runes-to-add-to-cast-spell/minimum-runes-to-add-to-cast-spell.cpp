@@ -2,57 +2,67 @@
 #include <vector>
 #include <stack>
 #include <unordered_set>
-#include <algorithm>
 using namespace std;
 
 class Solution {
 public:
     int minRunesToAdd(int n, vector<int>& crystals, vector<int>& flowFrom, vector<int>& flowTo) {
-        // Build adjacency list
-        vector<vector<int>> adj(n);
+        // Build adjacency list and reverse adjacency list
+        vector<vector<int>> adj(n), revAdj(n);
         for (int i = 0; i < flowFrom.size(); i++) {
             adj[flowFrom[i]].push_back(flowTo[i]);
+            revAdj[flowTo[i]].push_back(flowFrom[i]);
         }
 
-        // Tarjan's algorithm variables
-        vector<int> discoveryTime(n, -1), lowLink(n, -1);
-        vector<bool> onStack(n, false);
-        stack<int> dfsStack;
-        vector<int> sccId(n, -1);
-        int time = 0, sccCount = 0;
-
-        // Tarjan's algorithm to find SCCs
+        // Step 1: Find the finishing order using DFS
+        vector<bool> visited(n, false);
+        stack<int> order;
         for (int i = 0; i < n; i++) {
-            if (discoveryTime[i] == -1) {
-                tarjanDFS(i, time, adj, discoveryTime, lowLink, onStack, dfsStack, sccId, sccCount);
+            if (!visited[i]) {
+                dfs(i, adj, visited, order);
             }
         }
 
-        // Determine properties of SCCs
+        // Step 2: Identify strongly connected components (SCCs)
+        vector<int> sccId(n, -1);
+        int sccCount = 0;
+        while (!order.empty()) {
+            int node = order.top();
+            order.pop();
+            if (sccId[node] == -1) {
+                // Each time we start a new DFS, we found a new SCC
+                markSCC(node, revAdj, sccId, sccCount);
+                sccCount++;
+            }
+        }
+
+        // Step 3: Build SCC-level graph and check properties
         vector<bool> hasCrystal(sccCount, false);
         vector<unordered_set<int>> sccGraph(sccCount);
         for (int crystal : crystals) {
             hasCrystal[sccId[crystal]] = true;
         }
+
         for (int i = 0; i < flowFrom.size(); i++) {
             int u = sccId[flowFrom[i]], v = sccId[flowTo[i]];
             if (u != v) {
-                sccGraph[u].insert(v);
+                sccGraph[u].insert(v); // Build the SCC graph
             }
         }
 
-        // Count SCCs with no incoming edges and no crystals
+        // Step 4: Count SCCs that need additional runes
         vector<bool> hasIncoming(sccCount, false);
         for (int u = 0; u < sccCount; u++) {
             for (int v : sccGraph[u]) {
-                hasIncoming[v] = true;
+                hasIncoming[v] = true; // Mark incoming edges
             }
         }
 
+        // Calculate the number of additional runes needed
         int runesNeeded = 0;
         for (int i = 0; i < sccCount; i++) {
             if (!hasIncoming[i] && !hasCrystal[i]) {
-                runesNeeded++;
+                runesNeeded++; // Need a rune for this SCC
             }
         }
 
@@ -60,35 +70,22 @@ public:
     }
 
 private:
-    void tarjanDFS(int node, int& time, const vector<vector<int>>& adj,
-                   vector<int>& discoveryTime, vector<int>& lowLink,
-                   vector<bool>& onStack, stack<int>& dfsStack,
-                   vector<int>& sccId, int& sccCount) {
-        discoveryTime[node] = lowLink[node] = time++;
-        dfsStack.push(node);
-        onStack[node] = true;
-
+    void dfs(int node, const vector<vector<int>>& adj, vector<bool>& visited, stack<int>& order) {
+        visited[node] = true;
         for (int neighbor : adj[node]) {
-            if (discoveryTime[neighbor] == -1) {
-                // Neighbor not visited, recurse
-                tarjanDFS(neighbor, time, adj, discoveryTime, lowLink, onStack, dfsStack, sccId, sccCount);
-                lowLink[node] = min(lowLink[node], lowLink[neighbor]);
-            } else if (onStack[neighbor]) {
-                // Back edge to an ancestor
-                lowLink[node] = min(lowLink[node], discoveryTime[neighbor]);
+            if (!visited[neighbor]) {
+                dfs(neighbor, adj, visited, order);
             }
         }
+        order.push(node); // Push node to the stack after finishing its neighbors
+    }
 
-        // If node is root of an SCC
-        if (lowLink[node] == discoveryTime[node]) {
-            while (true) {
-                int u = dfsStack.top();
-                dfsStack.pop();
-                onStack[u] = false;
-                sccId[u] = sccCount;
-                if (u == node) break;
+    void markSCC(int node, const vector<vector<int>>& revAdj, vector<int>& sccId, int sccCount) {
+        sccId[node] = sccCount; // Mark the current node with its SCC ID
+        for (int neighbor : revAdj[node]) {
+            if (sccId[neighbor] == -1) {
+                markSCC(neighbor, revAdj, sccId, sccCount); // Recursively mark all nodes in this SCC
             }
-            sccCount++;
         }
     }
 };
