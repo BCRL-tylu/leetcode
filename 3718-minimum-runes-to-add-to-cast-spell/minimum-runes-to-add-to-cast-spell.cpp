@@ -1,7 +1,3 @@
-#include <vector>
-#include <stack>
-#include <deque>
-
 class Solution {
 public:
     int minRunesToAdd(int n, std::vector<int>& crystals, std::vector<int>& flowFrom, std::vector<int>& flowTo) {
