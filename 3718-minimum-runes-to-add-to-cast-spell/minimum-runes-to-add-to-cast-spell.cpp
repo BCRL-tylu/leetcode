@@ -23,35 +23,35 @@ public:
             }
         }
 
-        // Step 2: Identify strongly connected components (SCCs)
+        // Step 2: Identify shrunk nodes (SCCs)
         vector<int> sccId(n, -1);
         int sccCount = 0;
         while (!order.empty()) {
             int node = order.top();
             order.pop();
             if (sccId[node] == -1) {
-                // Each time we start a new DFS, we found a new SCC
-                markSCC(node, revAdj, sccId, sccCount);
+                shrinkNodes(node, revAdj, sccId, sccCount);
                 sccCount++;
             }
         }
 
         // Step 3: Build SCC-level graph and check properties
         vector<bool> hasCrystal(sccCount, false);
-        vector<unordered_set<int>> sccGraph(sccCount);
+        vector<bool> hasIncoming(sccCount, false);
         for (int crystal : crystals) {
-            hasCrystal[sccId[crystal]] = true;
+            hasCrystal[sccId[crystal]] = true; // Mark SCCs containing crystals
         }
 
+        // Build the SCC graph
+        vector<unordered_set<int>> sccGraph(sccCount);
         for (int i = 0; i < flowFrom.size(); i++) {
             int u = sccId[flowFrom[i]], v = sccId[flowTo[i]];
             if (u != v) {
-                sccGraph[u].insert(v); // Build the SCC graph
+                sccGraph[u].insert(v); // Connect shrunk nodes
             }
         }
 
         // Step 4: Count SCCs that need additional runes
-        vector<bool> hasIncoming(sccCount, false);
         for (int u = 0; u < sccCount; u++) {
             for (int v : sccGraph[u]) {
                 hasIncoming[v] = true; // Mark incoming edges
@@ -80,11 +80,11 @@ private:
         order.push(node); // Push node to the stack after finishing its neighbors
     }
 
-    void markSCC(int node, const vector<vector<int>>& revAdj, vector<int>& sccId, int sccCount) {
+    void shrinkNodes(int node, const vector<vector<int>>& revAdj, vector<int>& sccId, int sccCount) {
         sccId[node] = sccCount; // Mark the current node with its SCC ID
         for (int neighbor : revAdj[node]) {
             if (sccId[neighbor] == -1) {
-                markSCC(neighbor, revAdj, sccId, sccCount); // Recursively mark all nodes in this SCC
+                shrinkNodes(neighbor, revAdj, sccId, sccCount); // Recursively mark all nodes in this SCC
             }
         }
     }
