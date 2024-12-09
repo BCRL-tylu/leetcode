@@ -1,9 +1,3 @@
-#include <iostream>
-#include <vector>
-#include <stack>
-#include <unordered_set>
-using namespace std;
-
 class Solution {
 public:
     int minRunesToAdd(int n, vector<int>& crystals, vector<int>& flowFrom, vector<int>& flowTo) {
@@ -14,7 +8,6 @@ public:
             revAdj[flowTo[i]].push_back(flowFrom[i]);
         }
 
-        // Step 1: Find the finishing order using DFS
         vector<bool> visited(n, false);
         stack<int> order;
         for (int i = 0; i < n; i++) {
@@ -22,7 +15,7 @@ public:
                 dfs(i, adj, visited, order);
             }
         }
-        // Step 2: Identify shrunk nodes (SCCs)
+
         vector<int> sccId(n, -1);
         int sccCount = 0;
         while (!order.empty()) {
@@ -34,7 +27,6 @@ public:
             }
         }
 
-        // Step 3: Build SCC-level graph and check properties
         vector<bool> hasCrystal(sccCount, false);
         vector<bool> hasIncoming(sccCount, false);
         for (int crystal : crystals) {
@@ -50,17 +42,27 @@ public:
             }
         }
 
-        // Step 4: Count SCCs that need additional runes
         for (int u = 0; u < sccCount; u++) {
             for (int v : sccGraph[u]) {
                 hasIncoming[v] = true; // Mark incoming edges
             }
         }
 
-        // Calculate the number of additional runes needed
-        int runesNeeded = 0;
+        // Collect SCCs that do not have crystals and do not have incoming edges
+        vector<int> sccWithoutCrystal, sccWithoutIncoming;
         for (int i = 0; i < sccCount; i++) {
-            if (!hasIncoming[i] && !hasCrystal[i]) {
+            if (!hasCrystal[i]) {
+                sccWithoutCrystal.push_back(i);
+            }
+            if (!hasIncoming[i]) {
+                sccWithoutIncoming.push_back(i);
+            }
+        }
+
+        // Use binary search to find how many SCCs are both without crystals and without incoming edges
+        int runesNeeded = 0;
+        for (int scc : sccWithoutCrystal) {
+            if (binary_search(sccWithoutIncoming.begin(), sccWithoutIncoming.end(), scc)) {
                 runesNeeded++; // Need a rune for this SCC
             }
         }
