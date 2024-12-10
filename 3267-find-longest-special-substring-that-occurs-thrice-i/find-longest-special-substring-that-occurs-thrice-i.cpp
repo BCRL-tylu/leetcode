@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <unordered_set>
 
 class Solution {
 public:
@@ -41,25 +42,26 @@ public:
 
     int maximumLength(std::string s) {
         int n = s.size();
-        std::string cp ; // Current pattern
+        if (n == 0) return -1; // Handle empty string case
+
+        std::string cp; // Current pattern
         cp = s[0];
-        std::string combined;
         std::vector<int> z_ind;
+        std::unordered_set<char> found; // Use unordered_set for fast lookup
         int rtsz = -1;
+
         for (int i = 1; i < n; i++) {
-            if (s[i] != cp.back()||i==(n-1)) {
-                combined = cp + "$" + s; // Combine current pattern and input string
+            if (s[i] != cp.back()|| (i == (n - 1) )) {
+                std::string combined = cp + "$" + s; // Combine current pattern and input string
                 z_ind = computeZArray(combined);
-                z_ind = vector<int>(z_ind.begin()+cp.size(), z_ind.end());
+                z_ind = std::vector<int>(z_ind.begin() + cp.size() + 1, z_ind.end());
                 rtsz = std::max(rtsz, findMaxI(z_ind));
+                found.insert(cp.back()); // Use insert instead of push_back
                 cp = s[i]; // Start a new current pattern
             } else {
                 cp += s[i]; // Extend the current pattern
             }
         }
-        if(rtsz == 0){
-            return -1;
-        }
-        return rtsz;
+        return (rtsz == 0) ? -1 : rtsz; // Return -1 if no valid length found
     }
 };
