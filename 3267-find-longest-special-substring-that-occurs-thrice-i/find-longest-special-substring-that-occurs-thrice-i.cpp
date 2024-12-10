@@ -1,7 +1,6 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <numeric>
 
 class Solution {
 public:
@@ -26,43 +25,41 @@ public:
     }
 
     int findMaxI(const std::vector<int>& vec) {
-        std::vector<int> count(vec.size() + 1, 0);
-        for (int num : vec) {
-            if (num >= 0 && num < count.size()) {
-                count[num]++;
+        int maxI = 0;
+        for (int i = 1; ; ++i) {
+            int count = std::count_if(vec.begin(), vec.end(), [i](int num) {
+                return num >= i;
+            });
+            if (count >= 3) {
+                maxI = i; 
+            } else {
+                break; 
             }
         }
-
-        int totalCount = 0;
-        for (int i = count.size() - 1; i >= 0; --i) {
-            totalCount += count[i];
-            if (totalCount >= 3) {
-                return i; // Found the largest i with at least 3 occurrences
-            }
-        }
-        return 0; // No such i found
+        return maxI; 
     }
 
     int maximumLength(std::string s) {
         int n = s.size();
-        if (n == 0) return -1; // Handle edge case for empty string
-        
-        std::string cp;
-        cp += s[0]; // Start with the first character
+        std::string cp ; // Current pattern
+        cp = s[0];
+        std::string combined;
         std::vector<int> z_ind;
         int rtsz = -1;
-
-        for (int i = 1; i < n; ++i) {
-            if (s[i] != cp.back() || i == (n - 1)) {
-                std::string combined = cp + "$" + s; // Combine current pattern and input string
+        for (int i = 1; i < n; i++) {
+            if (s[i] != cp.back()||i==(n-1)) {
+                combined = cp + "$" + s; // Combine current pattern and input string
                 z_ind = computeZArray(combined);
-                z_ind.erase(z_ind.begin(), z_ind.begin() + cp.size() + 1); // Remove prefix Z values
+                z_ind = vector<int>(z_ind.begin()+cp.size(), z_ind.end());
                 rtsz = std::max(rtsz, findMaxI(z_ind));
                 cp = s[i]; // Start a new current pattern
             } else {
                 cp += s[i]; // Extend the current pattern
             }
         }
-        return (rtsz == 0) ? -1 : rtsz; // Return -1 if no valid length found
+        if(rtsz == 0){
+            return -1;
+        }
+        return rtsz;
     }
 };
