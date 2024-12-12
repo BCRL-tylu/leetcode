@@ -2,7 +2,6 @@ class Solution {
 public:
     int findMinimumTime(vector<int>& strength) {
         int n = strength.size(); // Let n be the number of swords (or locks).
-
         // Step 0: Construct weight matrix
         // Create a matrix where weight[i][j] represents the time it takes for sword i to break lock j.
         int weight[n][n];
@@ -34,7 +33,6 @@ public:
                 // Mark the current sword as visited.
                 visited_sword[current_sword] = true; 
                 int delta = numeric_limits<int>::max(), next_lock = -1; // Initialize again delta = \infty and next lock.
-
                 //  Update slack values and find the smallest slack
                 for (int lock = 0; lock < n; ++lock) {
                     if (!visited_lock[lock]) {
