@@ -1,173 +1,84 @@
-template <typename T>
-struct hungarian
-{ // km
-    int n;
-    vector<int> matchx;
-    vector<int> matchy;
-    vector<int> pre;
-    vector<bool> visx;
-    vector<bool> visy;
-    vector<T> lx;
-    vector<T> ly;
-    vector<vector<T>> g;
-    vector<T> slack;
-    T inf;
-    T res;
-    queue<int> q;
-    int org_n;
-    int org_m;
 
-    hungarian(int _n, int _m)
-    {
-        org_n = _n;
-        org_m = _m;
-        n = max(_n, _m);
-        inf = numeric_limits<T>::max();
-        res = 0;
-        g = vector<vector<T>>(n, vector<T>(n));
-        matchx = vector<int>(n, -1);
-        matchy = vector<int>(n, -1);
-        pre = vector<int>(n);
-        visx = vector<bool>(n);
-        visy = vector<bool>(n);
-        lx = vector<T>(n, -inf);
-        ly = vector<T>(n);
-        slack = vector<T>(n);
-    }
+class Solution {
+public:
+    int findMinimumTime(vector<int>& strength) {
+        int n = strength.size();
 
-    void addEdge(int u, int v, int w)
-    {
-        g[u][v] = max(w, 0); 
-    }
-
-    bool check(int v)
-    {
-        visy[v] = true;
-        if (matchy[v] != -1)
-        {
-            q.push(matchy[v]);
-            visx[matchy[v]] = true;
-            return false;
+        // Step 0: Construct weight matrix
+        // Create a matrix where weight[i][j] represents the time it takes for sword i to break lock j.
+        vector<vector<int>> weight(n, vector<int>(n));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                weight[i][j] = (int)ceil((double)strength[j] / (i + 1));
+            }
         }
-        while (v != -1)
-        {
-            matchy[v] = pre[v];
-            swap(v, matchx[pre[v]]);
-        }
-        return true;
-    }
 
-    void bfs(int i)
-    {
-        while (!q.empty())
-        {
-            q.pop();
-        }
-        q.push(i);
-        visx[i] = true;
-        while (true)
-        {
-            while (!q.empty())
-            {
-                int u = q.front();
-                q.pop();
-                for (int v = 0; v < n; v++)
-                {
-                    if (!visy[v])
-                    {
-                        T delta = lx[u] + ly[v] - g[u][v];
-                        if (slack[v] >= delta)
-                        {
-                            pre[v] = u;
-                            if (delta)
-                            {
-                                slack[v] = delta;
-                            }
-                            else if (check(v))
-                            {
-                                return;
-                            }
+        // Hungarian algorithm variables
+        // Dual potentials for swords and locks, initialized to 0.
+        vector<int> y_sword(n, 0), y_lock(n, 0);
+        // Matched pairs of swords and locks, initialized to -1 (unmatched).
+        vector<int> matched_lock(n, -1), matched_sword(n, -1);
+
+        // Main loop: Process each sword to find its optimal match
+        for (int sword = 0; sword < n; ++sword) {
+            vector<int> min_slack(n, numeric_limits<int>::max()); // Minimum slack values for each lock
+            vector<int> slack_owner(n, -1); // The sword responsible for each slack value
+            vector<bool> visited_sword(n, false), visited_lock(n, false); // Visited markers
+
+            int current_sword = sword, current_lock = -1;
+
+            while (true) {
+                // Mark the current sword as visited
+                visited_sword[current_sword] = true;
+                int delta = numeric_limits<int>::max(), next_lock = -1;
+
+                // Step 1: Update slack values and find the smallest slack
+                for (int lock = 0; lock < n; ++lock) {
+                    if (!visited_lock[lock]) {
+                        int cost = weight[current_sword][lock] - y_sword[current_sword] - y_lock[lock];
+                        if (cost < min_slack[lock]) {
+                            min_slack[lock] = cost;
+                            slack_owner[lock] = current_sword;
+                        }
+                        if (min_slack[lock] < delta) {
+                            delta = min_slack[lock];
+                            next_lock = lock;
                         }
                     }
                 }
-            }
-            T a = inf;
-            for (int j = 0; j < n; j++)
-            {
-                if (!visy[j])
-                {
-                    a = min(a, slack[j]);
-                }
-            }
-            for (int j = 0; j < n; j++)
-            {
-                if (visx[j])
-                { // S
-                    lx[j] -= a;
-                }
-                if (visy[j])
-                { // T
-                    ly[j] += a;
-                }
-                else
-                { // T'
-                    slack[j] -= a;
-                }
-            }
-            for (int j = 0; j < n; j++)
-            {
-                if (!visy[j] && slack[j] == 0 && check(j))
-                {
-                    return;
-                }
-            }
-        }
-    }
 
-    int solve()
-    {
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                lx[i] = max(lx[i], g[i][j]);
+                // Step 2: Update dual variables to adjust for the smallest slack/potential 
+                for (int i = 0; i < n; ++i) {
+                    if (visited_sword[i]) y_sword[i] += delta;
+                    if (visited_lock[i]) y_lock[i] -= delta;
+                    else min_slack[i] -= delta;
+                }
+
+                current_lock = next_lock;
+                visited_lock[current_lock] = true;
+                int sword_owner = slack_owner[current_lock];
+
+                // Step 3: Augment the matching if an unmatched lock is found
+                if (matched_sword[current_lock] == -1) {
+                    while (current_lock != -1) {
+                        int prev_lock = matched_lock[sword_owner];
+                        matched_sword[current_lock] = sword_owner;
+                        matched_lock[sword_owner] = current_lock;
+                        current_lock = prev_lock;
+                        sword_owner = (current_lock != -1) ? slack_owner[current_lock] : -1;
+                    }
+                    break;
+                }
+                // Step 4: Move to the next sword in the alternating path
+                current_sword = matched_sword[current_lock];
             }
         }
 
-        for (int i = 0; i < n; i++)
-        {
-            fill(slack.begin(), slack.end(), inf);
-            fill(visx.begin(), visx.end(), false);
-            fill(visy.begin(), visy.end(), false);
-            bfs(i);
-        }
-
-        for (int i = 0; i < n; i++)
-        {
-            if (g[i][matchx[i]] > 0)
-            {
-                res += g[i][matchx[i]];
-            }
-            else
-            {
-                matchx[i] = -1;
-            }
-        }
-        return res;
-    }
-};
-
-class Solution {
-    
-public:
-    int findMinimumTime(vector<int>& strength) {
-        const int n = strength.size();
-        hungarian<int> h(n, n);
+        // Step 5: Calculate the total minimum time from the optimal matching
+        int total_time = 0;
         for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                h.addEdge(i, j, 1000000 - (strength[i] + j) / (j + 1));
-            }
+            total_time += weight[i][matched_lock[i]];
         }
-        return n * 1000000LL - h.solve();
+        return total_time;
     }
 };
