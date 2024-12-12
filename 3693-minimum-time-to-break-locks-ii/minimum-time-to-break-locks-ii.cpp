@@ -47,7 +47,6 @@ public:
                     }
                 }
 
-                // Step 2: Update dual variables to adjust for the smallest slack/potential 
                 for (int i = 0; i < n; ++i) {
                     if (visited_sword[i]) y_sword[i] += delta;
                     if (visited_lock[i]) y_lock[i] -= delta;
@@ -58,7 +57,6 @@ public:
                 visited_lock[current_lock] = true;
                 int sword_owner = slack_owner[current_lock];
 
-                // Step 3: Augment the matching if an unmatched lock is found
                 if (matched_sword[current_lock] == -1) {
                     while (current_lock != -1) {
                         int prev_lock = matched_lock[sword_owner];
@@ -69,12 +67,11 @@ public:
                     }
                     break;
                 }
-                // Step 4: Move to the next sword in the alternating path
                 current_sword = matched_sword[current_lock];
             }
         }
 
-        // Step 5: Calculate the total minimum time from the optimal matching
+        //  Calculate the total minimum time from the optimal matching
         int total_time = 0;
         for (int i = 0; i < n; ++i) {
             total_time += weight[i][matched_lock[i]];
