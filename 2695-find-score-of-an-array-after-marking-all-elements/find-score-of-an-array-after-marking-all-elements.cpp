@@ -1,33 +1,22 @@
 class Solution {
 public:
-    std::unordered_map<int, int> storeOrderAndIndex(const std::vector<int>& v) {
-        std::vector<std::pair<int, int>> valueIndexPairs;
-        for (int i = 0; i < v.size(); ++i) {
-            valueIndexPairs.emplace_back(v[i], i);
-        }
-        std::sort(valueIndexPairs.begin(), valueIndexPairs.end());
-        std::unordered_map<int, int> orderIndexMap;
-
-        for (int i = 0; i < valueIndexPairs.size(); ++i) {
-            orderIndexMap[i] = valueIndexPairs[i].second;
-        }
-        return orderIndexMap;
-    }
-
     long long findScore(vector<int>& nums) {
-        unordered_map<int, int> hm = storeOrderAndIndex(nums);
-        unordered_map<int, int> hashmap;
+        std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>>> pq;
         int n = nums.size();
-        std::vector<bool> marked(n+1, false);
-        for (size_t i = 0; i < n; ++i) {
-            hashmap[i] = nums[i];
+        // Fill the min-heap with values and their indices
+        for (int i = 0; i < n; ++i) {
+            pq.emplace(nums[i], i);
         }
+        std::vector<bool> marked(n+1, false);
+
         long long ans = 0;
         for (int i = 0; i < n; i++) {
-            int temp = hm[i];
+            auto pair = pq.top();
+            pq.pop();
+            int temp = pair.second;
             if (!marked[temp]) {
-                ans += hashmap[temp];
-                if(temp>=1){
+                ans += pair.first;
+                if(temp>0){
                 marked[temp - 1] = true;
                 }
                 marked[temp + 1] = true;
