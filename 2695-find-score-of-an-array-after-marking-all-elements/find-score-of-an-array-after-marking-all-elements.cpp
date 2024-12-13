@@ -7,7 +7,7 @@ public:
         for (int i = 0; i < n; ++i) {
             pq.emplace(nums[i], i);
         }
-        std::vector<bool> marked(n+1, true);
+        std::vector<bool> marked(n+2, true);
 
         long long ans = 0;
         for (int i = 0; i < n; i++) {
@@ -16,7 +16,9 @@ public:
             int temp = pair.second;
             if (marked[temp]) {
                 ans += pair.first;
-                marked[max(temp - 1,0)] = false;
+                if(temp>0){
+                marked[temp - 1] = false;
+                }
                 marked[temp + 1] = false;
             }
         }
