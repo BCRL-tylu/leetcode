@@ -26,7 +26,7 @@ public:
         for (int i = 0; i < n; i++) {
             int temp = hm[i];
             if (!marked[temp]) {
-                ans += hashmap[hm[i]];
+                ans += hashmap[temp];
                 if(temp>=1){
                 marked[temp - 1] = true;
                 }
