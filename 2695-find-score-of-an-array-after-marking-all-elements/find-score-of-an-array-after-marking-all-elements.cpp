@@ -16,9 +16,7 @@ public:
             int temp = pair.second;
             if (marked[temp]) {
                 ans += pair.first;
-                if(temp>0){
-                marked[temp - 1] = false;
-                }
+                marked[max(temp - 1,0)] = false;
                 marked[temp + 1] = false;
             }
         }
