@@ -7,19 +7,19 @@ public:
         for (int i = 0; i < n; ++i) {
             pq.emplace(nums[i], i);
         }
-        std::vector<bool> marked(n+1, false);
+        std::vector<bool> marked(n+1, true);
 
         long long ans = 0;
         for (int i = 0; i < n; i++) {
             auto pair = pq.top();
             pq.pop();
             int temp = pair.second;
-            if (!marked[temp]) {
+            if (marked[temp]) {
                 ans += pair.first;
                 if(temp>0){
-                marked[temp - 1] = true;
+                marked[temp - 1] = false;
                 }
-                marked[temp + 1] = true;
+                marked[temp + 1] = false;
             }
         }
         return ans;
