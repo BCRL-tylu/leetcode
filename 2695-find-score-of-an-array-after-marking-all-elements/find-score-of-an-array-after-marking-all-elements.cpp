@@ -18,16 +18,19 @@ public:
         unordered_map<int, int> hm = storeOrderAndIndex(nums);
         unordered_map<int, int> hashmap;
         int n = nums.size();
+        std::vector<bool> marked(n+1, false);
         for (size_t i = 0; i < n; ++i) {
             hashmap[i] = nums[i];
         }
         long long ans = 0;
         for (int i = 0; i < n; i++) {
-            int ind = hashmap[hm[i]];
-            if (ind != -1) {
-                ans += ind;
-                hashmap[hm[i] - 1] = -1;
-                hashmap[hm[i] + 1] = -1;
+            int temp = hm[i];
+            if (!marked[temp]) {
+                ans += hashmap[hm[i]];
+                if(temp>=1){
+                marked[temp - 1] = true;
+                }
+                marked[temp + 1] = true;
             }
         }
         return ans;
