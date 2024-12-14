@@ -1,25 +1,32 @@
 class Solution {
 public:
-    static long long continuousSubarrays(vector<int>& nums) {
-        const int n=nums.size();
-        long long cnt=0;
-        map<int, int> hasX;
-        for(int l=0, r=0; r<n; r++){
-            hasX[nums[r]]++;
-            while(l<r && prev(hasX.end())->first-hasX.begin()->first>2){
-                int f=--hasX[nums[l]];
-                if (f==0) hasX.erase(nums[l]);
-                l++;
+    long long continuousSubarrays(vector<int>& nums) {
+        // Map to maintain sorted frequency map of current window
+        map<int, int> freq;
+        int left = 0, right = 0;
+        int n = nums.size();
+        long long count = 0;  // Total count of valid subarrays
+
+        while (right < n) {
+            // Add current element to frequency map
+            freq[nums[right]]++;
+
+            // While window violates the condition |nums[i] - nums[j]| ≤ 2
+            // Shrink window from left
+            while (freq.rbegin()->first - freq.begin()->first > 2) {
+                // Remove leftmost element from frequency map
+                freq[nums[left]]--;
+                if (freq[nums[left]] == 0) {
+                    freq.erase(nums[left]);
+                }
+                left++;
             }
-            cnt+=r-l+1LL;
+
+            // Add count of all valid subarrays ending at right
+            count += right - left + 1;
+            right++;
         }
-        return cnt;
+
+        return count;
     }
 };
-
-auto init = []() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    return 'c';
-}();
