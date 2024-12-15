@@ -1,23 +1,45 @@
+
 class Solution {
 public:
-    double maxAverageRatio(vector<vector<int>>& classes, int extraStudents) {
+    double maxAverageRatio(std::vector<std::vector<int>>& classes, int extraStudents) {
         int n = classes.size();
-        std::set<std::pair<double, int>> mySet;
-        double rt =0;
-        for(int i=0; i<n;i++){
-            vector<int> temp = classes[i];
-            rt += double (temp[0])/temp[1];
-            mySet.insert({double(temp[1]-temp[0])/(temp[1]+1)/temp[1],i});
+        double totalRatio = 0.0;
+
+        // Priority queue to store the gain of adding an extra student (max-heap)
+        auto gain = [](const std::pair<double, int>& a, const std::pair<double, int>& b) {
+            return a.first < b.first; // Max-heap: larger gain comes first
+        };
+        std::priority_queue<std::pair<double, int>, std::vector<std::pair<double, int>>, decltype(gain)> pq(gain);
+
+        // Calculate initial total ratio and populate priority queue
+        for (int i = 0; i < n; ++i) {
+            int pass = classes[i][0], total = classes[i][1];
+            double currentRatio = double(pass) / total;
+            double gainWithExtra = double(pass + 1) / (total + 1) - currentRatio;
+            totalRatio += currentRatio;
+            pq.emplace(gainWithExtra, i);
         }
-        int toadd = extraStudents;
-        while(toadd--){
-            auto maxp = mySet.rbegin();
-            rt += maxp->first;
-            int b = classes[maxp->second][1]++;
-            pair<double, int> updated = {double(maxp->first)*b/(b+2),maxp->second};
-            mySet.insert(updated);
-            mySet.erase(--mySet.end());
+
+        // Distribute extra students
+        while (extraStudents--) {
+            auto [maxGain, index] = pq.top();
+            pq.pop();
+
+            // Update the class with the extra student
+            int& pass = classes[index][0];
+            int& total = classes[index][1];
+            pass++;
+            total++;
+
+            // Recalculate gain for the updated class
+            double newRatio = double(pass) / total;
+            double newGain = double(pass + 1) / (total + 1) - newRatio;
+
+            // Update total ratio and push new gain to the priority queue
+            totalRatio += maxGain;
+            pq.emplace(newGain, index);
         }
-        return rt/n;
+
+        return totalRatio / n;
     }
 };
