@@ -14,7 +14,6 @@ public:
         orderedPairs.push({(temppair.first)*multiplier,temppair.second});
     }
 
-
     for(int i = 0; i < n; ++i){
         auto temppair = orderedPairs.top();
         orderedPairs.pop();
