@@ -14,13 +14,12 @@ public:
         orderedPairs.push({(temppair.first)*multiplier,temppair.second});
     }
 
-    vector<int> rt(n);
 
     for(int i = 0; i < n; ++i){
         auto temppair = orderedPairs.top();
         orderedPairs.pop();
-        rt[temppair.second] = temppair.first;
+        nums[temppair.second] = temppair.first;
     }
-    return rt;
+    return nums;
     }
 };
