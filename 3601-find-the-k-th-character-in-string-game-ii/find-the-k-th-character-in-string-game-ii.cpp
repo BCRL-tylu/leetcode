@@ -15,7 +15,7 @@ public:
         long long cp = std::pow(2, n);
         long long k_pos = k;
         string cs = "a";
-        int set = std::min(n,10);
+        int set = std::min(n,6);
         for (int i = 0; i < set; i++) {
             if (operations[i]) {
                 cs += shiftString(cs);
@@ -26,7 +26,7 @@ public:
 
          std::stack<int> do_operations;
         long long k_prev = k_pos;
-        while (cp > 1024) {
+        while (cp > 64) {
             cp /= 2;
             k_pos %= cp;
             if(k_pos ==0){
