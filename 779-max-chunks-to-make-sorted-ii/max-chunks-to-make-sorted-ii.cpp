@@ -7,21 +7,16 @@ public:
         std::priority_queue<int> temp_pq;
         int n = arr.size();
         int seg = 0;
+        std::unordered_map<int, int> myMap;
         for (int i = 0; i < n; i++) {
             pq.push(arr[i]);
-            temp_pq = pq;
-            int ind = i;
-            while (!temp_pq.empty()) {
-                int top = temp_pq.top();
-                if (top == sortedArr[ind]) {
-                    temp_pq.pop();
-                    ind--;
-                }else{
-                    break;
-                }
+            if(++myMap[sortedArr[i]]==0){
+                myMap.erase(sortedArr[i]);
             }
-            if(temp_pq.empty()){
-                pq = temp_pq;
+            if(--myMap[arr[i]]==0){
+                myMap.erase(arr[i]);
+            }
+            if(myMap.size() == 0){
                 seg++;
             }
         }
