@@ -7,15 +7,13 @@ public:
         int seg = 0;
         std::unordered_map<int, int> myMap;
         for (int i = 0; i < n; i++) {
-            if(++myMap[sortedArr[i]]==0){
+            if(!++myMap[sortedArr[i]]){
                 myMap.erase(sortedArr[i]);
             }
-            if(--myMap[arr[i]]==0){
+            if(!--myMap[arr[i]]){
                 myMap.erase(arr[i]);
             }
-            if(myMap.empty()){
-                seg++;
-            }
+            seg+=myMap.empty();
         }
         return seg;
     }
