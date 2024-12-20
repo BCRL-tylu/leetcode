@@ -16,17 +16,7 @@ public:
             }
         }
     }
-
-    ~matrix3D() {
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                delete[] matrix[i][j];
-            }
-            delete[] matrix[i];
-        }
-        delete[] matrix;
-    }
-
+    //~matrix3D() = default;
     void setCell(int x, int y, int z) {
         if (!matrix[x][y][z]) { // Only increment if it was previously 0
             matrix[x][y][z] = true;
@@ -50,13 +40,12 @@ public:
         if (matrix[x][y][z]) { // Only decrement if it was previously 1
             matrix[x][y][z] = false;
             int k = layer_count[x];
-
+            
             // Remove current count entry
             count_content[k].erase(x);
             if (count_content[k].empty()) {
                 count_content.erase(k);
             }
-
             // Decrement layer count and check if needs to be added to count_content
             layer_count[x]--;
             if (layer_count[x] > 0) {
