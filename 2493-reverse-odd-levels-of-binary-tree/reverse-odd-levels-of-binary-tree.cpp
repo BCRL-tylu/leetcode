@@ -1,7 +1,7 @@
 class Solution {
 public:
     TreeNode* reverseOddLevels(TreeNode* root) {
-        std::queue<TreeNode*> q; // store even levels
+        std::queue<TreeNode*> q;  // store even levels
         std::deque<TreeNode*> dq; // store odd levels
         q.push(root);
         // Perform level order traversal
@@ -17,17 +17,15 @@ public:
                     TreeNode* node_front = dq.front();
                     dq.pop_back();
                     dq.pop_front();
-                        // Swap values between front and back nodes
-                        auto back = node_back->val;
-                        node_back->val = node_front->val;
-                        node_front->val = back;
-                        // Add valid children to the next level
-                        if (node_front->left){
-                            q.push(node_front->left);
-                            q.push(node_front->right);
-                            temp_dq.push_front(node_back->right);
-                            temp_dq.push_front(node_back->left);
-                        } 
+                    // Swap values between front and back nodes
+                    std::swap(node_back->val, node_front->val);
+                    // Add valid children to the next level
+                    if (node_front->left) {
+                        q.push(node_front->left);
+                        q.push(node_front->right);
+                        temp_dq.push_front(node_back->right);
+                        temp_dq.push_front(node_back->left);
+                    }
                 }
                 while (!temp_dq.empty()) {
                     q.push(temp_dq.front());
