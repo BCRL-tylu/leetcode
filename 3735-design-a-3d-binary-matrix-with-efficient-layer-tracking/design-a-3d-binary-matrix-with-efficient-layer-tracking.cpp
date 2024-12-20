@@ -1,37 +1,71 @@
+#include <unordered_map>
+#include <map>
+#include <set>
+using namespace std;
+
 class matrix3D {
-    vector<vector<vector<int>>> v;
-    vector<int> c;
-    map<int, set<int>> f;
+private:
+    unordered_map<int, int> layer_count; // Count of 1's in each layer
+    map<int, set<int>> count_content; // counts of layers with their indices
+    int size;
+
 public:
-    matrix3D(int n) : v(vector<vector<vector<int>>>(n, vector<vector<int>>(n, vector<int>(n)))),
-    c(vector<int>(n)) {
-        for (int i = 0; i < n; ++i) {
-            f[0].insert(i);
+    bool*** matrix;
+
+    matrix3D(int n) {
+        size = n;
+        matrix = new bool**[size];
+        for (int i = 0; i < size; ++i) {
+            matrix[i] = new bool*[size];
+            for (int j = 0; j < size; ++j) {
+                matrix[i][j] = new bool[size](); 
+            }
         }
     }
-    
+
+    ~matrix3D() {
+        for (int i = 0; i < size; ++i) {
+            for (int j = 0; j < size; ++j) {
+                delete[] matrix[i][j];
+            }
+            delete[] matrix[i];
+        }
+        delete[] matrix;
+    }
+
     void setCell(int x, int y, int z) {
-        if (v[x][y][z] == 1) return;;
-        v[x][y][z] = 1;
-        f[c[x]].erase(x);
-        if (f[c[x]].empty()) {
-            f.erase(c[x]);
+        if (!matrix[x][y][z]) { // Only increment if it was previously 0
+            matrix[x][y][z] = true;
+            int k = layer_count[x];
+            if (k > 0) {
+                count_content[k].erase(x);
+                if(count_content[k].empty()){
+                count_content.erase(k);
+                }
+            }
+            count_content[++layer_count[x]].insert(x);
         }
-        f[++c[x]].insert(x);
     }
-    
+
     void unsetCell(int x, int y, int z) {
-        if (v[x][y][z] == 0) return;
-        v[x][y][z] = 0;
-        f[c[x]].erase(x);
-        if (f[c[x]].empty()) {
-            f.erase(c[x]);
+        if (matrix[x][y][z]) { // Only decrement if it was previously 1
+            matrix[x][y][z] = false;
+            int k = layer_count[x];
+            count_content[k].erase(x);
+            if(count_content[k].empty()){
+                count_content.erase(k);
+            }
+            layer_count[x]--;
+            if (layer_count[x] > 0) {
+                count_content[layer_count[x]].insert(x);
+            }
         }
-        f[--c[x]].insert(x);
     }
-    
+
     int largestMatrix() {
-        return *f.rbegin()->second.rbegin();
+        if (count_content.empty()) return size-1; //
+        auto last = count_content.rbegin();
+        return *last->second.rbegin(); 
     }
 };
 
