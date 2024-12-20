@@ -17,7 +17,6 @@ public:
                     TreeNode* node_front = dq.front();
                     dq.pop_back();
                     dq.pop_front();
-                    if (node_back && node_front) {
                         // Swap values between front and back nodes
                         auto back = node_back->val;
                         node_back->val = node_front->val;
@@ -29,7 +28,6 @@ public:
                             temp_dq.push_front(node_back->right);
                             temp_dq.push_front(node_back->left);
                         } 
-                    }
                 }
                 while (!temp_dq.empty()) {
                     q.push(temp_dq.front());
@@ -40,8 +38,10 @@ public:
                 for (int i = 0; i < size; ++i) {
                     TreeNode* node = q.front();
                     q.pop();
-                    if (node->left) dq.push_back(node->left);
-                    if (node->right) dq.push_back(node->right);
+                    if (node->left) {
+                        dq.push_back(node->left);
+                        dq.push_back(node->right);
+                    }
                 }
             }
         }
