@@ -12,8 +12,6 @@
 class Solution {
 public:
     TreeNode* reverseOddLevels(TreeNode* root) {
-        if (!root) return nullptr;
-
         std::vector<std::vector<int>> levels; // To store values of each level
         std::queue<TreeNode*> q;
         q.push(root);
