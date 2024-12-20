@@ -1,8 +1,3 @@
-#include <unordered_map>
-#include <map>
-#include <set>
-using namespace std;
-
 class matrix3D {
 private:
     unordered_map<int, int> layer_count; // Count of 1's in each layer
@@ -11,7 +6,6 @@ private:
 
 public:
     bool*** matrix;
-
     matrix3D(int n) {
         size = n;
         matrix = new bool**[size];
@@ -22,17 +16,6 @@ public:
             }
         }
     }
-
-    ~matrix3D() {
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
-                delete[] matrix[i][j];
-            }
-            delete[] matrix[i];
-        }
-        delete[] matrix;
-    }
-
     void setCell(int x, int y, int z) {
         if (!matrix[x][y][z]) { // Only increment if it was previously 0
             matrix[x][y][z] = true;
@@ -63,7 +46,7 @@ public:
     }
 
     int largestMatrix() {
-        if (count_content.empty()) return size-1; //
+        if (count_content.empty()) return size-1; // if all 0 count just return the largest layer number
         auto last = count_content.rbegin();
         return *last->second.rbegin(); 
     }
