@@ -3,7 +3,6 @@ public:
     TreeNode* reverseOddLevels(TreeNode* root) {
         std::queue<TreeNode*> q; // store even levels
         std::deque<TreeNode*> dq; // store odd levels
-
         q.push(root);
         // Perform level order traversal
         bool odd_line = true;
