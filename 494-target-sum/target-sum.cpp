@@ -9,11 +9,10 @@ class Solution {
         // Recursive case: explore '+' and '-' branches
         int add = dfs(nums, target, index + 1, currentSum + nums[index]);
         int subtract = dfs(nums, target, index + 1, currentSum - nums[index]);
-        
         return add + subtract;
     }
 public:
     int findTargetSumWays(vector<int>& nums, int target) {
-        return dfs(nums, target, 0, 0);
+        return dfs(nums, abs(target), 0, 0);
     }
 };
