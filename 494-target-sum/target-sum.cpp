@@ -1,7 +1,5 @@
 #include <vector>
 #include <unordered_map>
-#include <functional>
-#include <cmath>
 
 class Solution {
 public:
@@ -21,34 +19,25 @@ public:
         // Check if target is achievable with the non-zero sums
         if (target > totalSum || target < -totalSum) return 0;
 
-        // Define the DFS function with memoization
-        std::unordered_map<int, std::unordered_map<int, int>> memo;
+        // Adjust target for negative indices
+        int adjustedTarget = target + totalSum;
+        if (adjustedTarget % 2 != 0) return 0; // Target must be even for split
 
-        std::function<int(int, int)> dfs = [&](int currentSum, int index) {
-            // Base cases
-            if (currentSum == target) return 1;
-            if (index == nums.size()) return 0;
+        int halfTarget = adjustedTarget / 2;
+        int n = nums.size();
+        std::vector<int> dp(halfTarget + 1, 0);
+        dp[0] = 1; // One way to make sum 0 (using no elements)
 
-            // Memoization check
-            if (memo[currentSum].count(index)) return memo[currentSum][index];
-
-            // Recursive DFS
-            int skip = dfs(currentSum, index + 1); // Don't include the current number
-            int include = 0;
-
-            // Only include if the current number is not zero
-            if (nums[index] != 0) {
-                include = dfs(currentSum - 2 * nums[index], index + 1); // Convert + to -
+        // Dynamic Programming to count ways to reach halfTarget
+        for (int num : nums) {
+            if (num != 0) { // Only process non-zero elements
+                for (int j = halfTarget; j >= num; --j) {
+                    dp[j] += dp[j - num];
+                }
             }
-
-            // Store result in memo
-            return memo[currentSum][index] = skip + include;
-        };
-
-        // Calculate the number of ways using the non-zero elements
-        int ways = dfs(totalSum, 0);
+        }
 
         // Multiply by 2^zeroCount for the combinations of zeros
-        return ways * (1 << zeroCount);  // 1 << zeroCount is equivalent to 2^zeroCount
+        return dp[halfTarget] * (1 << zeroCount);  // 1 << zeroCount is equivalent to 2^zeroCount
     }
 };
