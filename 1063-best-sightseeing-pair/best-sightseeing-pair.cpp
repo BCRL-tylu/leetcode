@@ -9,6 +9,5 @@ public:
            max_rt =max(max_rt,values[i]+i+ma);
         }
         return max_rt;
-
     }
 };
