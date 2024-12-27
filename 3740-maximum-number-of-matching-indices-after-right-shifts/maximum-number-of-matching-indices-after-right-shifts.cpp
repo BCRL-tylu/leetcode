@@ -16,8 +16,7 @@ public:
         for (int i = 0; i < n; ++i) {
             if (hm.count(nums1[i])) {
                 for (int idx : hm[nums1[i]]) {
-                    int distance = (idx - i + n) % n; // Right shift distance
-                    max_matches = max(max_matches, ++distance_vector[distance]);
+                    max_matches = max(max_matches, ++distance_vector[(idx - i + n) % n]);// Right shift distance
                 }
             }
         }
