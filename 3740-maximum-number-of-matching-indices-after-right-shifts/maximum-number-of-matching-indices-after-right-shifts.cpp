@@ -19,9 +19,7 @@ public:
         for (int i = 0; i < n; ++i) {
             if (hm.count(nums1[i])) {
                 for (int idx : hm[nums1[i]]) {
-                    int diff = idx - i;
-                    int distance = precomputedModulo[diff + n];
-                    max_matches = max(max_matches, ++distance_vector[distance]);
+                    max_matches = max(max_matches, ++distance_vector[precomputedModulo[idx - i + n]]);
                 }
             }
         }
