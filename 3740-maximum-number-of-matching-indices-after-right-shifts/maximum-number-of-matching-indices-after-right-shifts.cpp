@@ -6,21 +6,21 @@ public:
 
         // Step 1: Build the hashmap for nums2
         for (int i = 0; i < n; ++i) {
-            hm[nums2[i]].push_back(i);
+            hm[nums2[i]].emplace_back(i);
         }
-        // Step 2: Initialize the distance vector
+
+        // Step 2: Calculate the right shift distances and track the maximum matches
         vector<int> distance_vector(n, 0);
-        int m = 0;
-        // Step 3: Calculate the right shift distances
+        int max_matches = 0;
+
         for (int i = 0; i < n; ++i) {
             if (hm.count(nums1[i])) {
                 for (int idx : hm[nums1[i]]) {
                     int distance = (idx - i + n) % n; // Right shift distance
-                    m = max(m,++distance_vector[distance]);
+                    max_matches = max(max_matches, ++distance_vector[distance]);
                 }
             }
         }
-        // Step 4: Return the maximum value in distance vector
-        return m;
+        return max_matches;
     }
 };
