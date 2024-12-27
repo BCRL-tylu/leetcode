@@ -23,7 +23,6 @@ public:
                 }
             }
         }
-
         return max_matches;
     }
 };
