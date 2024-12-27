@@ -8,15 +8,13 @@ public:
         for (int i = 0; i < n; ++i) {
             hm[nums2[i]].emplace_back(i);
         }
-
         // Step 2: Calculate the right shift distances and track the maximum matches
         vector<int> distance_vector(n, 0);
         int max_matches = 0;
-
         for (int i = 0; i < n; ++i) {
             if (hm.count(nums1[i])) {
                 for (int idx : hm[nums1[i]]) {
-                    max_matches = max(max_matches, ++distance_vector[(idx - i + n) % n]);// Right shift distance
+                    max_matches = max(max_matches, ++distance_vector[(idx-i+n) % n]);// Right shift distance
                 }
             }
         }
