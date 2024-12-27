@@ -3,7 +3,6 @@ public:
     int maximumMatchingIndices(vector<int>& nums1, vector<int>& nums2) {
         int n = nums1.size();
         unordered_map<int, vector<int>> hm;
-
         // Step 1: Build the hashmap for nums2
         for (int i = 0; i < n; ++i) {
             hm[nums2[i]].emplace_back(i);
