@@ -8,7 +8,6 @@ public:
         for (int i = 0; i < n; ++i) {
             hm[nums2[i]].push_back(i);
         }
-
         // Step 2: Initialize the distance vector
         vector<int> distance_vector(n, 0);
         int m = 0;
