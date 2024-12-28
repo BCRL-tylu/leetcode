@@ -45,9 +45,7 @@ public:
             int middle_sum = windowSum[i];
             int right_sum = A[i + k].first;
             int right_index = A[i + k].second;
-            
             int total_sum = left_sum + middle_sum + right_sum;
-            
             if (total_sum > max_sum) {
                 max_sum = total_sum;
                 result = {left_index, i, right_index};
