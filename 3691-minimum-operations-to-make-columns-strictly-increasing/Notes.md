@@ -1,0 +1,1 @@
+<h2>minimum-operations-to-make-columns-strictly-increasing Notes</h2><hr>[ Time taken: 5 m 40 s ]
