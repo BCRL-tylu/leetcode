@@ -1,22 +1,19 @@
 class Solution {
 public:
     string convert(string s, int numRows) {
-        std::reverse(s.begin(), s.end());
+        if(numRows == 1){
+            return s;
+        }
         std::vector<string> vec(numRows);
-        while (!s.empty()) {
-            int position = 0;
-            while (position < numRows && !s.empty()) {
-                char e = s.back();
-                s.pop_back();
-                vec[position] += e;
-                position ++;
-            }
-            position -= 2;
-            while (position >= 1 && !s.empty()) {
-                char m = s.back();
-                s.pop_back();
-                vec[position] += m;
-                position--;
+        int n = s.size();
+        int series = 2*numRows-2;
+        for(int i = 0; i<n;i++){
+            int cp = i % series;
+            char e = s[i];
+            if(cp<= numRows-1){
+                vec[cp]+=e;
+            }else{
+                vec[series-cp]+=e;
             }
         }
         std::string result;
