@@ -12,11 +12,10 @@ public:
 
         for(int i = 0; i<n;i++){
             int cp = i % series;
-            char e = s[i];
             if(cp<= k){
-                vec[cp]+=e;
+                vec[cp]+=s[i];
             }else{
-                vec[series-cp]+=e;
+                vec[series-cp]+=s[i];
             }
         }
 
