@@ -26,7 +26,7 @@ public:
             // Calculate minimum cost for the current day
             int oneDayCost = dp[i] + costs[0];
             int sevenDayCost = (!day7.empty()) ? dp[day7.front().first - 1] + costs[1] : dp[i] + costs[1];
-            int thirtyDayCost = (!day30.empty()) ? dp[day30.front().first - 1] + costs[2] :dp[i] +  costs[2];
+            int thirtyDayCost = (!day30.empty()) ? dp[day30.front().first - 1] + costs[2] :dp[i] + costs[2];
 
             dp[i + 1] = std::min({oneDayCost, sevenDayCost, thirtyDayCost});
 
