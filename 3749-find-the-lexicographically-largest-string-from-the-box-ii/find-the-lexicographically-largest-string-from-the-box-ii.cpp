@@ -3,46 +3,52 @@
 
 class Solution {
 public:
-    string answerString(string w, int f) {
+    std::string answerString(std::string w, int f) {
+        char maxCh = 'a';
+        int n = w.size();
         if (f == 1) return w;
 
-        char maxCh = 'a'; // records the maximum char
-        int n = w.size();
-
         int k = n - f + 1;
-        string ans = "";
 
         // Find the maximum character in the word
         for (char c : w) {
-            maxCh = max(maxCh, c); // Updated variable name
-            if(maxCh == 'z'){
-                break;
-            }
+            maxCh = std::max(maxCh, c);
         }
 
-        string maxStr = "";  // To keep track of the largest substring
-        int startIdx = 0;         // To track the starting index of the max substring
+        std::string maxStr = "";
+        int startIdx = 0;
 
         // Traverse the string to find substrings starting with maxCh
         for (int i = 0; i < n; i++) {
             if (w[i] == maxCh) {
-                string tempAns = "";
-                tempAns += maxCh; // Updated variable name
-                // keep appending elements until reach string length limit or/reach word's boundry or/ meet another maximum char (unless consecutively with starting maxCh)
-                while (i + 1 < n && tempAns.size() < min(k, n - i) && (w[i + 1] != maxCh || tempAns.back() == maxCh)) {
-                    tempAns += w[++i];
+                int j = i + 1;
+                int len = 1;
+
+                // Efficiently append characters without constructing the string
+                while (j < n && len < k && (w[j] != maxCh || w[j - 1] == maxCh)) {
+                    len++;
+                    j++;
                 }
-                // Compare tempAns with current largest substring
-                if (tempAns > maxStr) {
-                    maxStr = tempAns; // Update the largest substring
-                    startIdx = i;     // Update the index of the largest substring
+
+                // Compare character by character to avoid creating temp strings
+                bool isBetter = false;
+                for (int p = 0; p < len; p++) {
+                    if (i + p >= n || startIdx + p >= n) break;
+                    if (w[i + p] != w[startIdx + p]) {
+                        isBetter = w[i + p] > w[startIdx + p];
+                        break;
+                    }
+                }
+
+                if (isBetter || maxStr.empty()) {
+                    maxStr = w.substr(i, len);
+                    startIdx = i;
                 }
             }
         }
 
         int sz = maxStr.size();
-        string tempAdd = w.substr(startIdx + 1, min(k - sz, n - startIdx));
-        ans = maxStr + tempAdd; // Combine the largest substring with the additional characters
-        return ans; // Return the result trimmed to size k
+        std::string tempAdd = w.substr(startIdx + sz, std::min(k - sz, n - (startIdx + sz)));
+        return maxStr + tempAdd;
     }
 };
