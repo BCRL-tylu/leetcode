@@ -24,7 +24,7 @@ public:
 
                 // Keep appending elements until we reach the limit
                 // Stop when reaching the boundary of the word, the substring limit, or encountering another mc not connected consecutively
-                while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc) &&i + 1 < len) {
+                while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc) && i + 1 < len) {
                     cs += word[++i];
                 }
 
