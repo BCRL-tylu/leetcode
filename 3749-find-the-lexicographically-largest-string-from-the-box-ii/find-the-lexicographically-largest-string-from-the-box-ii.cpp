@@ -1,3 +1,6 @@
+#include <string>
+#include <algorithm>
+
 class Solution {
 public:
     string answerString(string word, int f) {
@@ -22,14 +25,24 @@ public:
                 string cs = ""; // Current substring
                 cs += mc;
 
-                // Keep appending elements until we reach the limit
-                // Stop when reaching the boundary of the word, the substring limit, or encountering another mc not connected consecutively
+                // Compare characters while building `cs`
+                int lsPos = 1; // Position in the current `ls` to compare
                 while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc) && i + 1 < len) {
-                    cs += word[++i];
+                    char nextChar = word[++i];
+                    cs += nextChar;
+
+                    // Compare the current `cs` character with the corresponding `ls` character
+                    if (lsPos < ls.size() && nextChar < ls[lsPos]) {
+                        break; // Stop if the current substring can't be better
+                    }
+                    if (lsPos < ls.size() && nextChar > ls[lsPos]) {
+                        ls.clear(); // Invalidate `ls` since `cs` is better
+                    }
+                    lsPos++;
                 }
 
-                // Update the largest substring if the current one is better
-                if (cs > ls) {
+                // Update `ls` and `lse` if `cs` is better
+                if (ls.empty() || cs.size() > ls.size()) {
                     ls = cs;
                     lse = i;
                 }
@@ -37,10 +50,10 @@ public:
         }
 
         int lss = ls.size(); // Largest substring size
-        // Return the result trimmed to the desired size
+        // Construct the remaining substring
         string rem = word.substr(lse + 1, min(sl - lss, len - lse));
         res = ls + rem;
 
-        return res; 
+        return res;
     }
 };
