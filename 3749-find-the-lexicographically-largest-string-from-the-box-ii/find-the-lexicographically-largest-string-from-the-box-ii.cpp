@@ -27,6 +27,7 @@ public:
 
                 // Compare characters while building `cs`
                 int lsPos = 1; // Position in the current `ls` to compare
+                bool smaller = false;
                 while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc) && i + 1 < len) {
                     char nextChar = word[++i];
                     cs += nextChar;
@@ -36,13 +37,13 @@ public:
                         break; // Stop if the current substring can't be better
                     }
                     if (rs && nextChar > ls[lsPos]) {
-                        ls.clear(); // Invalidate `ls` since `cs` is better
+                        smaller = true; // Invalidate `ls` since `cs` is better
                     }
                     lsPos++;
                 }
 
                 // Update `ls` and `lse` if `cs` is better
-                if (ls.empty() || cs.size() > ls.size()) {
+                if (smaller || cs.size() > ls.size()) {
                     ls = cs;
                     lse = i;
                 }
