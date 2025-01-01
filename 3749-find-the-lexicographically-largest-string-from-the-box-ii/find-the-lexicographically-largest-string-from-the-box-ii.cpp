@@ -26,7 +26,7 @@ public:
                 int lsPos = 1; // Position in the current `ls` to compare
                  // Keep appending elements until we reach the limit
                 // Stop when reaching the boundary of the word, the substring limit, or encountering another mc not connected consecutively
-                while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc) ) {
+                while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc)) {
                     char nextChar = word[++i];
                     cs += nextChar;
                     bool rs = lsPos < ls.size();
