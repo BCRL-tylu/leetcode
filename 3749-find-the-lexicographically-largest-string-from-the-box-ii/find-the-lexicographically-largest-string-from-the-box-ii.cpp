@@ -1,6 +1,3 @@
-#include <string>
-#include <algorithm>
-
 class Solution {
 public:
     string answerString(string word, int f) {
@@ -27,7 +24,8 @@ public:
 
                 // Compare characters while building `cs`
                 int lsPos = 1; // Position in the current `ls` to compare
-                
+                 // Keep appending elements until we reach the limit
+                // Stop when reaching the boundary of the word, the substring limit, or encountering another mc not connected consecutively
                 while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc) && i + 1 < len) {
                     char nextChar = word[++i];
                     cs += nextChar;
@@ -35,8 +33,7 @@ public:
                     // Compare the current `cs` character with the corresponding `ls` character
                     if (rs && nextChar < ls[lsPos]) {
                         break; // Stop if the current substring can't be better
-                    }
-                    if (rs && nextChar > ls[lsPos]) {
+                    }else if (rs && nextChar > ls[lsPos]) {
                         ls.clear(); // Invalidate `ls` since `cs` is better
                     }
                     lsPos++;
