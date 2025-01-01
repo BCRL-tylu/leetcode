@@ -24,8 +24,7 @@ public:
             if (w[i] == maxCh) {
                 string tempAns = "";
                 tempAns += maxCh; // Updated variable name
-
-                // Collect characters while the conditions hold
+                // keep appending elements until reach string length limit or/reach word's boundry or/ meet another maximum char (unless consecutively with starting maxCh)
                 while (i + 1 < n && tempAns.size() < min(k, n - i) && (w[i + 1] != maxCh || tempAns.back() == maxCh)) {
                     tempAns += w[++i];
                 }
