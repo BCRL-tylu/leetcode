@@ -4,9 +4,10 @@
 class Solution {
 public:
     string answerString(string w, int f) {
-        char maxCh = 'a'; // Renamed to maxCh
-        int n = w.size();
         if (f == 1) return w;
+
+        char maxCh = 'a'; // records the maximum char
+        int n = w.size();
 
         int k = n - f + 1;
         string ans = "";
@@ -14,6 +15,9 @@ public:
         // Find the maximum character in the word
         for (char c : w) {
             maxCh = max(maxCh, c); // Updated variable name
+            if(maxCh == 'z'){
+                break;
+            }
         }
 
         string maxStr = "";  // To keep track of the largest substring
