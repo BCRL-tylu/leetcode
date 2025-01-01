@@ -3,52 +3,46 @@
 
 class Solution {
 public:
-    std::string answerString(std::string w, int f) {
-        char maxCh = 'a';
-        int n = w.size();
-        if (f == 1) return w;
+    std::string answerString(std::string word, int f) {
+        if (f == 1) return word;
 
-        int k = n - f + 1;
+        char maxChar = 'a'; // Maximum character in the word
+        int length = word.size();
+        int subLength = length - f + 1; // Length of the substring to be formed
+        std::string result = "";
 
         // Find the maximum character in the word
-        for (char c : w) {
-            maxCh = std::max(maxCh, c);
+        for (char ch : word) {
+            maxChar = std::max(maxChar, ch);
         }
 
-        std::string maxStr = "";
-        int startIdx = 0;
+        std::string largestSub = "";  // To keep track of the largest substring
+        int largestSubEnd = 0;        // To track the ending index of the largest substring
 
-        // Traverse the string to find substrings starting with maxCh
-        for (int i = 0; i < n; i++) {
-            if (w[i] == maxCh) {
-                int j = i + 1;
-                int len = 1;
+        // Traverse the string to find substrings starting with maxChar
+        for (int i = 0; i < length; i++) {
+            if (word[i] == maxChar) {
+                std::string currentSub = "";
+                currentSub += maxChar;
 
-                // Efficiently append characters without constructing the string
-                while (j < n && len < k && (w[j] != maxCh || w[j - 1] == maxCh)) {
-                    len++;
-                    j++;
+                // Keep appending elements until we reach the limit
+                while (i + 1 < length && currentSub.size() < std::min(subLength, length - i) &&
+                       (word[i + 1] != maxChar || currentSub.back() == maxChar)) {
+                    currentSub += word[++i];
                 }
 
-                // Compare character by character to avoid creating temp strings
-                bool isBetter = false;
-                for (int p = 0; p < len; p++) {
-                    if (i + p >= n || startIdx + p >= n) break;
-                    if (w[i + p] != w[startIdx + p]) {
-                        isBetter = w[i + p] > w[startIdx + p];
-                        break;
-                    }
-                }
-
-                if (isBetter || maxStr.empty()) {
-                    maxStr = w.substr(i, len);
-                    startIdx = i;
+                // Update the largest substring if the current one is better
+                if (currentSub > largestSub) {
+                    largestSub = currentSub;
+                    largestSubEnd = i;
                 }
             }
         }
 
-        int sz = maxStr.size();
-        std::string tempAdd = w.substr(startIdx + sz, std::min(k - sz, n - (startIdx + sz)));
-        return maxStr + tempAdd;
+        int largestSubSize = largestSub.size();
+        std::string remainingSub = word.substr(largestSubEnd + 1, std::min(subLength - largestSubSize, length - largestSubEnd));
+        result = largestSub + remainingSub;
+
+        return result; // Return the result trimmed to the desired size
     }
 };
