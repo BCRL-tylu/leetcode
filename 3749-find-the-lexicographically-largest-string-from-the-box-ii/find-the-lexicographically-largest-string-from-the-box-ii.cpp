@@ -4,45 +4,32 @@
 class Solution {
 public:
     std::string answerString(std::string word, int numFriends) {
-        char maxchar = 'a'; // Renamed from maxm to maxchar
-        int n = word.size();
-        if (numFriends == 1) return word;
+        return sln1(word, numFriends);
+    }
 
-        int k = n - numFriends + 1;
-        std::string ans = "";
+private:
+    std::string sln1(const std::string& s, int l) {
+        if (l == 1) return s;
 
-        // Find the maximum character in the word
-        for (char c : word) {
-            maxchar = std::max(maxchar, c); // Updated variable name
-        }
-        
-        std::string maxstring = "";  // To keep track of the largest substring
-        int start_index = 0;         // To track the starting index of the max substring
-        
-        // Traverse the string to find substrings starting with maxchar
-        for (int i = 0; i < n; i++) {
-            if (word[i] == maxchar) {
-                std::string temp_ans = "";
-                temp_ans += maxchar; // Updated variable name
-                
-                // Collect characters while the conditions hold
-                while (i + 1 < n && temp_ans.size() < std::min(k, n - i) && (word[i + 1] != maxchar || temp_ans.back() == maxchar)) {
-                    temp_ans += word[++i];
-                }
-                
-                // Compare temp_ans with current largest substring
-                if (temp_ans > maxstring) {
-                    maxstring = temp_ans; // Update the largest substring
-                    start_index = i;      // Update the index of the largest substring
-                }
+        int k = 0;
+        int i = 0;
+        int j = 1;
+        int n = s.length();
+
+        while (j + k < n) {
+            int diff = s[i + k] - s[j + k];
+            if (diff == 0) {
+                k++;
+            } else if (diff > 0) {
+                j = j + k + 1;
+                k = 0;
+            } else {
+                i = std::max(i + k + 1, j);
+                j = i + 1;
+                k = 0;
             }
         }
-        
-        // Build the answer based on the largest substring found
-        int sz = maxstring.size();
-        std::string temp_add = word.substr(start_index + 1, std::min(k - sz, n - start_index));
-        ans = maxstring + temp_add; // Combine the largest substring with the additional characters
-        
-        return ans; // Return the result trimmed to size k
+
+        return s.substr(i, std::min(n, i + n - l + 1) - i);
     }
 };
