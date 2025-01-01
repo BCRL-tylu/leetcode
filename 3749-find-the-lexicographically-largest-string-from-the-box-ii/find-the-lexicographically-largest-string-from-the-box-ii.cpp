@@ -28,7 +28,6 @@ public:
                 while (i + 1 < n && tempAns.size() < min(k, n - i) && (w[i + 1] != maxCh || tempAns.back() == maxCh)) {
                     tempAns += w[++i];
                 }
-
                 // Compare tempAns with current largest substring
                 if (tempAns > maxStr) {
                     maxStr = tempAns; // Update the largest substring
