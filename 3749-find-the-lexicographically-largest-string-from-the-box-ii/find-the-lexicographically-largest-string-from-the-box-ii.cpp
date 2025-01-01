@@ -37,9 +37,10 @@ public:
         }
 
         int lss = ls.size(); // Largest substring size
+        // Return the result trimmed to the desired size
         string rem = word.substr(lse + 1, min(sl - lss, len - lse));
         res = ls + rem;
 
-        return res; // Return the result trimmed to the desired size
+        return res; 
     }
 };
