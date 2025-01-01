@@ -30,12 +30,12 @@ public:
                 while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc) && i + 1 < len) {
                     char nextChar = word[++i];
                     cs += nextChar;
-
+                    bool rs = lsPos < ls.size();
                     // Compare the current `cs` character with the corresponding `ls` character
-                    if (lsPos < ls.size() && nextChar < ls[lsPos]) {
+                    if (rs && nextChar < ls[lsPos]) {
                         break; // Stop if the current substring can't be better
                     }
-                    if (lsPos < ls.size() && nextChar > ls[lsPos]) {
+                    if (rs && nextChar > ls[lsPos]) {
                         ls.clear(); // Invalidate `ls` since `cs` is better
                     }
                     lsPos++;
