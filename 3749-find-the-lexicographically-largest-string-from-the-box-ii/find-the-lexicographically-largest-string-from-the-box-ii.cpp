@@ -3,33 +3,44 @@
 
 class Solution {
 public:
-    std::string answerString(std::string word, int numFriends) {
-        return sln1(word, numFriends);
-    }
+    string answerString(string w, int f) {
+        char maxCh = 'a'; // Renamed to maxCh
+        int n = w.size();
+        if (f == 1) return w;
 
-private:
-    std::string sln1(const std::string& s, int l) {
-        if (l == 1) return s;
+        int k = n - f + 1;
+        string ans = "";
 
-        int k = 0;
-        int i = 0;
-        int j = 1;
-        int n = s.length();
+        // Find the maximum character in the word
+        for (char c : w) {
+            maxCh = max(maxCh, c); // Updated variable name
+        }
 
-        while (j + k < n) {
-            int diff = s[i + k] - s[j + k];
-            if (diff == 0) {
-                k++;
-            } else if (diff > 0) {
-                j = j + k + 1;
-                k = 0;
-            } else {
-                i = std::max(i + k + 1, j);
-                j = i + 1;
-                k = 0;
+        string maxStr = "";  // To keep track of the largest substring
+        int startIdx = 0;         // To track the starting index of the max substring
+
+        // Traverse the string to find substrings starting with maxCh
+        for (int i = 0; i < n; i++) {
+            if (w[i] == maxCh) {
+                string tempAns = "";
+                tempAns += maxCh; // Updated variable name
+
+                // Collect characters while the conditions hold
+                while (i + 1 < n && tempAns.size() < min(k, n - i) && (w[i + 1] != maxCh || tempAns.back() == maxCh)) {
+                    tempAns += w[++i];
+                }
+
+                // Compare tempAns with current largest substring
+                if (tempAns > maxStr) {
+                    maxStr = tempAns; // Update the largest substring
+                    startIdx = i;     // Update the index of the largest substring
+                }
             }
         }
 
-        return s.substr(i, std::min(n, i + n - l + 1) - i);
+        int sz = maxStr.size();
+        string tempAdd = w.substr(startIdx + 1, min(k - sz, n - startIdx));
+        ans = maxStr + tempAdd; // Combine the largest substring with the additional characters
+        return ans; // Return the result trimmed to size k
     }
 };
