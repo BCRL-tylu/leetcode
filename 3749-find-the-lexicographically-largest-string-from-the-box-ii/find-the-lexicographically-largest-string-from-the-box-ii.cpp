@@ -28,7 +28,7 @@ public:
                 // Stop when reaching the boundary of the word, the substring limit, or encountering another mc not connected consecutively
                 while (cs.size() < min(sl, len - i) && (word[i + 1] != mc || cs.back() == mc)) {
                     char nextChar = word[++i];
-                    cs += nextChar;
+                    
                     bool rs = lsPos < ls.size();
                     // Compare the current `cs` character with the corresponding `ls` character
                     if (rs && nextChar < ls[lsPos]) {
@@ -36,6 +36,7 @@ public:
                     }else if (rs && nextChar > ls[lsPos]) {
                         ls.clear(); // Invalidate `ls` since `cs` is better
                     }
+                    cs += nextChar;
                     lsPos++;
                 }
 
