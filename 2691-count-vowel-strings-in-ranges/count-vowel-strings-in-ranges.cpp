@@ -1,12 +1,11 @@
 class Solution {
-
+private:
+        bool isVowel(char ch) {
+            return ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' ||ch == 'u';
+        };
 public:
     vector<int> vowelStrings(vector<string>& words,
                              vector<vector<int>>& queries) {
-        auto isVowel = [](char ch) {
-            return ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' ||
-                   ch == 'u';
-        };
         int n = words.size();
         vector<int> prefixsum(n + 1, 0);
         for (int i = 0; i < n; i++) {
