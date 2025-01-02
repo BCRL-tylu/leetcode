@@ -1,8 +1,9 @@
 class Solution {
 private:
-        bool isVowel(char ch) {
-            return ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' ||ch == 'u';
-        };
+    bool isVowel(char ch) {
+        return ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u';
+    };
+
 public:
     vector<int> vowelStrings(vector<string>& words,
                              vector<vector<int>>& queries) {
@@ -16,9 +17,9 @@ public:
             }
         }
         int k = queries.size();
-        vector<int> ans(k, -1);
+        vector<int> ans;
         for (int j = 0; j < k; j++) {
-            ans[j] = prefixsum[queries[j][1] + 1] - prefixsum[queries[j][0]];
+            ans.push_back(prefixsum[queries[j][1] + 1] - prefixsum[queries[j][0]]);
         }
         return ans;
     }
