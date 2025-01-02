@@ -39,7 +39,6 @@ public:
                     lsPos++;
                 }
 
-                // Update `ls` and `lse` if `cs` is better
                 if (ls.empty() || cs.size() > ls.size()) {
                     ls = cs;
                     lse = i;
@@ -47,8 +46,7 @@ public:
             }
         }
 
-        int lss = ls.size(); // Largest substring size
-        // Construct the remaining substring
+        int lss = ls.size(); 
         string rem = word.substr(lse + 1, min(sl - lss, len - lse));
         res = ls + rem;
 
