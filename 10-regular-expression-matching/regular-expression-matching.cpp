@@ -1,12 +1,14 @@
+#include <unordered_map>
+#include <string>
+#include <functional>
+using namespace std;
+
 class Solution {
+private:
+    unordered_map<string, bool> memo; // Memoization map
 
-public:
-bool isMatch(string s, string p) {
-    // Memoization map to store results for substrings
-    unordered_map<string, bool> memo;
-
-    // Helper recursive function with memoization
-    function<bool(int, int)> matchHelper = [&](int i, int j) {
+    // Recursive helper function
+    bool matchHelper(const string& s, const string& p, int i, int j) {
         // Create a unique key for the current state
         string key = to_string(i) + "," + to_string(j);
         if (memo.find(key) != memo.end()) {
@@ -29,19 +31,23 @@ bool isMatch(string s, string p) {
         // Handle '*' in the pattern
         if (j + 1 < p.size() && p[j + 1] == '*') {
             // Skip the '*' (zero occurrences of preceding element) or use it (consume one character)
-            memo[key] = matchHelper(i, j + 2) || (firstMatch && matchHelper(i + 1, j));
+            memo[key] = matchHelper(s, p, i, j + 2) || (firstMatch && matchHelper(s, p, i + 1, j));
             return memo[key];
         }
 
         // Regular character match or '.'
         if (firstMatch) {
-            memo[key] = matchHelper(i + 1, j + 1);
+            memo[key] = matchHelper(s, p, i + 1, j + 1);
             return memo[key];
         }
 
         return memo[key] = false; // No match
-    };
+    }
 
-    return matchHelper(0, 0);
-}
+public:
+    bool isMatch(string s, string p) {
+        // Clear the memoization map before starting a new match
+        memo.clear();
+        return matchHelper(s, p, 0, 0);
+    }
 };
