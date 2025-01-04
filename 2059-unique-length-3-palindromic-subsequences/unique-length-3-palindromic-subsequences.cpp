@@ -1,35 +1,44 @@
 class Solution {
 public:
     int countPalindromicSubsequence(string s) {
-        // Use a 2D boolean array instead of an int matrix for memory efficiency
-        std::vector<std::vector<bool>> matrix(26, std::vector<bool>(26, false));
-        std::vector<int> firstPos(26, -1);
-        std::vector<int> lastPos(26, -1);
-        int ans = 0;
+    std::vector<std::vector<bool>> matrix(26, std::vector<bool>(26,true));
+    std::vector<int> value(26, 0);
+    std::vector<bool> visited(26, false);
+    std::vector<int> ans_value(26, 0);
+    int ans = 0;
 
-        // Step 1: Record the first and last positions of each character
-        for (int i = 0; i < s.size(); ++i) {
-            int current = s[i] - 'a';
-            if (firstPos[current] == -1) {
-                firstPos[current] = i;
-            }
-            lastPos[current] = i;
-        }
-
-        // Step 2: Check for palindromes
+    for (char c : s) {
+        int current = c - 'a';
+        
+        bool fm = false;
+        // Step (1): Update the matrix and value for all visited letters
         for (int i = 0; i < 26; ++i) {
-            if (firstPos[i] != -1 && lastPos[i] > firstPos[i]) {
-                // Use a set to track unique characters between first and last positions
-                std::vector<bool> seen(26, false);
-                for (int j = firstPos[i] + 1; j < lastPos[i]; ++j) {
-                    int midChar = s[j] - 'a';
-                    if (!seen[midChar]) {
-                        seen[midChar] = true;
-                        ans++;
+            if (visited[i]) {
+                if (matrix[i][current]) {
+                    matrix[i][current] = !matrix[i][current];
+                    if(current == i){
+                        fm = true;
                     }
+                    value[i]++;
                 }
             }
         }
-        return ans;
+
+        // Step (2): Mark the letter as visited if it's met for the first time
+        if (!visited[current]) {
+            visited[current] = true;
+        } else {
+                ans_value[current] =value[current];
+                if(fm){
+                    ans_value[current]--;
+                }
+        }
+    }
+
+    for(int i =0; i<26;i++){
+        ans += ans_value[i];
+        
+    }
+    return ans;
     }
 };
