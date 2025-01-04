@@ -1,11 +1,10 @@
-#include <unordered_set>
-#include <vector>
-#include <string>
-
 class Solution {
 public:
-    int countPalindromicSubsequence(const std::string& s) {
-        std::vector<int> firstPos(26, -1), lastPos(26, -1);
+    int countPalindromicSubsequence(string s) {
+        // Use a 2D boolean array instead of an int matrix for memory efficiency
+        std::vector<std::vector<bool>> matrix(26, std::vector<bool>(26, false));
+        std::vector<int> firstPos(26, -1);
+        std::vector<int> lastPos(26, -1);
         int ans = 0;
 
         // Step 1: Record the first and last positions of each character
@@ -17,18 +16,20 @@ public:
             lastPos[current] = i;
         }
 
-        // Step 2: Count unique palindromes for each character as the outer pair
+        // Step 2: Check for palindromes
         for (int i = 0; i < 26; ++i) {
             if (firstPos[i] != -1 && lastPos[i] > firstPos[i]) {
-                // Use an unordered_set to track unique middle characters
-                std::unordered_set<char> middleChars;
+                // Use a set to track unique characters between first and last positions
+                std::vector<bool> seen(26, false);
                 for (int j = firstPos[i] + 1; j < lastPos[i]; ++j) {
-                    middleChars.insert(s[j]);
+                    int midChar = s[j] - 'a';
+                    if (!seen[midChar]) {
+                        seen[midChar] = true;
+                        ans++;
+                    }
                 }
-                ans += middleChars.size();
             }
         }
-
         return ans;
     }
 };
