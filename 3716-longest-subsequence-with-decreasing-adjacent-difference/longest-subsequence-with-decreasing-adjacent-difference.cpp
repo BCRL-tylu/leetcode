@@ -31,11 +31,11 @@ public:
             }
 
             // Ensure non-increasing difference property by propagating maximum values downward.
+            // The gaps between numbers (absolute differences) are not contiguous, so we propagate the maximum subsequence lengths downward to ensure the values at smaller differences are correctly updated.
             for (int j = max_n - 1; j >= 0; j--) {
                 dp[num][j] = max(dp[num][j], dp[num][j + 1]);
             }
         }
-
         return res; // Return the length of the longest subsequence.
     }
 };
