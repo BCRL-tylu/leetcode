@@ -30,7 +30,6 @@ public:
                 res = max(res, dp[num][diff]);
             }
 
-
             // Ensure non-increasing difference property by propagating maximum values downward.
             for (int j = max_n - 1; j >= 0; j--) {
                 dp[num][j] = max(dp[num][j], dp[num][j + 1]);
