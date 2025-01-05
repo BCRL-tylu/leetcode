@@ -14,9 +14,8 @@ public:
         // Iterate over each number in the input array.
         for (int i = 0; i < n; i++) {
             int num = nums[i]; // Current number in the array.
-            vector<int> tp = dp[num]; // Temporary copy of dp[num] to update for current number.
-            
-            tp[max_n] = 1; // Start a new subsequence with 'num'.
+
+            dp[num][max_n] = 1; // Start a new subsequence with 'num'.
 
             // Iterate through all potential previous numbers (1 to max_n).
             for (int j = 1; j <= max_n; j++) {
@@ -25,13 +24,12 @@ public:
                 int diff = abs(num - j); // Calculate the absolute difference between 'num' and 'j'.
                 
                 // Update the DP value for the current number and difference.
-                tp[diff] = max(tp[diff], 1 + dp[j][diff]);
+                dp[num][diff] = max(dp[num][diff], 1 + dp[j][diff]);    
                 
                 // Update the global result with the maximum subsequence length found so far.
-                res = max(res, tp[diff]);
+                res = max(res, dp[num][diff]);
             }
 
-            dp[num] = tp; // Update dp[num] with the temporary array.
 
             // Ensure non-increasing difference property by propagating maximum values downward.
             for (int j = max_n - 1; j >= 0; j--) {
