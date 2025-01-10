@@ -1,46 +1,44 @@
-#include <unordered_map>
-#include <string>
-#include <vector>
-#include <algorithm>
-using namespace std;
-
 class Solution {
 public:
     vector<string> wordSubsets(vector<string>& words1, vector<string>& words2) {
-        unordered_map<char, int> w2m; // Maximum frequency of each letter across words2
+        vector<int> w2m(26);
+        int m = words2.size(), n= words1.size();
 
-        // Build the maximum frequency map for words2
-        for (const string& word : words2) {
-            unordered_map<char, int> current_map;
-            for (char c : word) {
-                current_map[c]++;
-                w2m[c] = max(w2m[c], current_map[c]);
+        for(int i =0; i<m;i++){
+            vector<int> current_vec(26);
+            string temp_word = words2[i];
+            for(int j =0;j<temp_word.size();j++){
+                int now = temp_word[j]-'a';
+                w2m[now] = max(w2m[now],++current_vec[now]);
             }
         }
-
         vector<string> ans;
+        int sz = w2m.size();
+        vector<int> nonZeroIndices;
 
-        // Check each word in words1
-        for (const string& word : words1) {
-            unordered_map<char, int> current_map;
-            for (char c : word) {
-                current_map[c]++;
+    // Collect indices of non-zero elements
+    for (size_t i = 0; i < sz; ++i) {
+        if (w2m[i] != 0) {
+            nonZeroIndices.push_back(i);
+        }
+    }
+        for(int i = 0; i<n;i++){
+            vector<int> current_vec1(26);
+            string temp_word1 = words1[i];
+            for(int j =0;j<temp_word1.size();j++){
+                current_vec1[temp_word1[j]-'a']++;
             }
-
-            // Check if word satisfies the maximum frequency constraints
-            bool isUniversal = true;
-            for (const auto& [key, value] : w2m) {
-                if (current_map[key] < value) {
-                    isUniversal = false;
+            bool p = true;
+            for(int k :nonZeroIndices){
+                if(current_vec1[k]<w2m[k]){
+                    p = false;
                     break;
                 }
             }
-
-            if (isUniversal) {
-                ans.push_back(word);
-            }
+            if(p) ans.push_back(temp_word1);
         }
-
         return ans;
     }
 };
+
+
