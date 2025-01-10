@@ -9,8 +9,7 @@ public:
             string temp_word = words2[i];
             for(int j =0;j<temp_word.size();j++){
                 int now = temp_word[j]-'a';
-                current_vec[now]++;
-                w2m[now] = max(w2m[now],current_vec[now]);
+                w2m[now] = max(w2m[now],++current_vec[now]);
             }
         }
         vector<string> ans;
