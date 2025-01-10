@@ -15,6 +15,14 @@ public:
         }
         vector<string> ans;
         int sz = w2m.size();
+        vector<int> nonZeroIndices;
+
+    // Collect indices of non-zero elements
+    for (size_t i = 0; i < sz; ++i) {
+        if (w2m[i] != 0) {
+            nonZeroIndices.push_back(i);
+        }
+    }
         for(int i = 0; i<n;i++){
             vector<int> current_vec1(26);
             string temp_word1 = words1[i];
@@ -22,7 +30,7 @@ public:
                 current_vec1[temp_word1[j]-'a']++;
             }
             bool p = true;
-            for(int k =0;k<26;k++){
+            for(int k :nonZeroIndices){
                 if(current_vec1[k]<w2m[k]){
                     p = false;
                     break;
