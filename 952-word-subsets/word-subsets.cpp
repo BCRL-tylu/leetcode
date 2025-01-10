@@ -1,43 +1,40 @@
 class Solution {
 public:
     vector<string> wordSubsets(vector<string>& words1, vector<string>& words2) {
-        vector<int> w2m(26);
-        int m = words2.size(), n= words1.size();
+        vector<int> w2m(26); // Maximum frequency of each letter across all words in words2
 
-        for(int i =0; i<m;i++){
+        // Build the maximum frequency vector for words2
+        for (const string& word : words2) {
             vector<int> current_vec(26);
-            string temp_word = words2[i];
-            for(int j =0;j<temp_word.size();j++){
-                int now = temp_word[j]-'a';
-                current_vec[now]++;
-                w2m[now] = max(w2m[now],current_vec[now]);
+            for (char c : word) {
+                current_vec[c - 'a']++;
+                w2m[c - 'a'] = max(w2m[c - 'a'], current_vec[c - 'a']);
             }
         }
-        vector<string> ans;
-        int sz = w2m.size();
-        vector<int> nonZeroIndices;
 
-    // Collect indices of non-zero elements
-    for (size_t i = 0; i < sz; ++i) {
-        if (w2m[i] != 0) {
-            nonZeroIndices.push_back(i);
-        }
-    }
-        for(int i = 0; i<n;i++){
+        vector<string> ans;
+
+        // Iterate through words1 and check if they are universal
+        for (const string& word : words1) {
             vector<int> current_vec1(26);
-            string temp_word1 = words1[i];
-            for(int j =0;j<temp_word1.size();j++){
-                current_vec1[temp_word1[j]-'a']++;
+            for (char c : word) {
+                current_vec1[c - 'a']++;
             }
-            bool p = true;
-            for(int k :nonZeroIndices){
-                if(current_vec1[k]<w2m[k]){
-                    p = false;
+
+            // Check if word satisfies the maximum frequency constraints
+            bool isUniversal = true;
+            for (int i = 0; i < 26; ++i) {
+                if (current_vec1[i] < w2m[i]) {
+                    isUniversal = false;
                     break;
                 }
             }
-            if(p) ans.push_back(temp_word1);
+
+            if (isUniversal) {
+                ans.push_back(word);
+            }
         }
+
         return ans;
     }
 };
