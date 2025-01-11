@@ -22,6 +22,7 @@ public:
         }
 
         long long P = 0, Q = 0, U = 0, V = 0, W = 0;
+        // sum of squares for the number of different elements on right
         for (auto& [_, f] : rmap) {
             Q = (Q + (f * f) % MOD) % MOD;
         }
@@ -30,23 +31,32 @@ public:
             int x = a[mid];
 
             // Update the frequency maps
-            P = (P - (lmap[x] * lmap[x]) % MOD + MOD) % MOD;
+           // P = p - left[mode]^2
+
+            // Q = Q - right[mode]^2
             Q = (Q - (rmap[x] * rmap[x]) % MOD + MOD) % MOD;
+            // U = U - left[mode]*right[mode]
             U = (U - (lmap[x] * rmap[x]) % MOD + MOD) % MOD;
-            V = (V - (lmap[x] * lmap[x] % MOD * rmap[x] % MOD) + MOD) % MOD;
-            W = (W - (lmap[x] * rmap[x] % MOD * rmap[x] % MOD) + MOD) % MOD;
+            // V = v - left[mode]^2*right[mode]
+            V = (V - (lmap[x] * lmap[x] * rmap[x] % MOD) + MOD) % MOD;
+            // w = W-left[mode]*right[mode]^2
+            W = (W - (lmap[x] * rmap[x] * rmap[x] % MOD) + MOD) % MOD;
+
+            // remove current mode from right map
             rmap[x]--;
 
-            P = (P + (lmap[x] * lmap[x]) % MOD) % MOD;
+
             Q = (Q + (rmap[x] * rmap[x]) % MOD) % MOD;
             U = (U + (lmap[x] * rmap[x]) % MOD) % MOD;
             V = (V + (lmap[x] * lmap[x] % MOD * rmap[x] % MOD)) % MOD;
             W = (W + (lmap[x] * rmap[x] % MOD * rmap[x] % MOD)) % MOD;
 
-            // Calculate left and right
+            // Calculate left and right sizes
             int left = mid;
             int right = n - 1 - mid;
+            // total ways of selecting arbiatry two from right and left
             res = (res + (choose2(left) * choose2(right)) % MOD) % MOD;
+
             res = (res - (choose2(left - lmap[x]) * choose2(right - rmap[x]) % MOD) + MOD) % MOD;
 
             // Adjust for the various cases
