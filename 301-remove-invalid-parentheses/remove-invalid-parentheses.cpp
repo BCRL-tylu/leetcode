@@ -1,59 +1,61 @@
 class Solution {
+private:
+    vector<string> res;
+
 public:
-vector<string> ans;
-unordered_map<string,int> map;//Just to prevent by taking duplicate string in ans
-void solve(string s,int minimum_removal_allowed)
-{
-    if(map[s]!=0)//for checking that string is already exist in map or not
-        return;
-    else
-        map[s]++;//when current string is not present than insert that on map
-    
-    if(minimum_removal_allowed==0)//when minimum removal removal that is required in given string is 0
-    {
-        int minimum_removal_now=getminimuminvalid(s);//here we are checking that the current string even after removal of required number of brackets is valid or not
-        if(minimum_removal_now==0)//it means that the string after removal is valid, then insert that in ans
-        {   
-            ans.push_back(s);
-        }
-        return;
+    vector<string> removeInvalidParentheses(string s) {
+        helper(s, 0, 0, {'(', ')'});
+        return res;
     }
-    for(int i=0;i<s.size();i++)
-    {
-        string left=s.substr(0,i);//taken as it runs till (i-1) and we are skipping ith bracket
-        string right=s.substr(i+1);//from i+1 to end or s.size()
-        
-        solve(left+right,minimum_removal_allowed-1);//calling again by combining left and right
-    }
-    return;
-}
-int getminimuminvalid(string s)
-{
-    stack<char>stack;
-    int i=0;
-    
-    while(i<s.size())
-    {
-        if(s[i]=='(')//when "(" simply insert that on stack
-            stack.push('(');
-        else if(s[i]==')')//2 cases when bracket is ")"
-        {
-            if(stack.empty()==false && stack.top()=='(')//if top of stack is "(" then pop
-            {
-                stack.pop();
+
+    void helper(string s, int left, int right, const vector<char>& para){
+        int len=s.length();
+        int counter=0;
+        // Analysis
+        //  "()())()"
+        while(right<len){
+            char ch= s[right];
+            if(ch== para[0]){
+                counter++;
             }
-            else
-                 stack.push(')');//otherwise push on stack
+            else if(ch==para[1]){
+                counter--;
+            }
+            if(counter< 0){
+                break;
+            }
+            right++;
+
         }
-        i++;
+
+        // Case 1
+        if(counter<0){
+            while(left<=right){
+                char ch= s[left];
+                if(ch!= para[1] || (left>0 && s[left]==s[left-1])){
+                    left++;
+                    continue;
+                }
+                // "(())()"
+                s.erase(left,1);
+                helper(s,left,right,para);
+                s.insert(s.begin()+left, para[1]);
+                left++;
+
+            }
+        }
+        // Case 2
+        else if(counter>0){
+            reverse(s.begin(),s.end());
+            helper(s,0,0,{')','(' });
+        }
+        // Case 3
+        else{
+            res.push_back(para[0]=='('? s : string(s.rbegin(), s.rend()));
+        }
     }
-    return stack.size();
-}
-vector<string> removeInvalidParentheses(string s) 
-{
-    int minimum_removals=getminimuminvalid(s);
+
+
+
     
-    solve(s,minimum_removals);
-    return ans;
-}
 };
