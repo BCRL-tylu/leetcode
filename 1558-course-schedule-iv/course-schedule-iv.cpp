@@ -11,19 +11,18 @@ public:
         }
 
         // Topological Sort and Matrix Propagation with Bitwise Optimization
-        vector<bitset<500>> isPrerequisite(numCourses); // Replace matrix with bitset (faster updates)
+        vector<bitset<200>> isPrerequisite(numCourses); // Replace matrix with bitset (faster updates)
         queue<int> q;
         // Add all nodes with in-degree 0 to the queue
         for (int i = 0; i < numCourses; ++i) {
             if (inDegree[i] == 0) q.push(i);
         }
         while (!q.empty()) {
-            int course = q.front();
+            int current = q.front();
             q.pop();
-
-            for (int next : adj[course]) {
-                isPrerequisite[next] |= isPrerequisite[course];
-                isPrerequisite[next][course] = true;
+            for (int next : adj[current]) {
+                isPrerequisite[next] |= isPrerequisite[current];
+                isPrerequisite[next][current] = true;
                 if (--inDegree[next] == 0) {
                     q.push(next);
                 }
