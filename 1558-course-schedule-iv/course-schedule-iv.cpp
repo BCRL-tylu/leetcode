@@ -1,3 +1,4 @@
+
 class Solution {
 public:
     vector<bool> checkIfPrerequisite(int numCourses, vector<vector<int>>& prerequisites, vector<vector<int>>& queries) {
@@ -12,7 +13,6 @@ public:
         // Topological Sort and Matrix Propagation with Bitwise Optimization
         vector<bitset<500>> isPrerequisite(numCourses); // Replace matrix with bitset (faster updates)
         queue<int> q;
-
         // Add all nodes with in-degree 0 to the queue
         for (int i = 0; i < numCourses; ++i) {
             if (inDegree[i] == 0) q.push(i);
