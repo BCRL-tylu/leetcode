@@ -1,37 +1,39 @@
-
 class Solution {
 public:
-    vector<bool> checkIfPrerequisite(int numCourses, vector<vector<int>>& prerequisites, vector<vector<int>>& queries) {
-        // Build graph and in-degree array
-        vector<vector<int>> adj(numCourses);
-        vector<int> inDegree(numCourses, 0);
-        for (auto& prereq : prerequisites) {
-            adj[prereq[0]].push_back(prereq[1]);
-            inDegree[prereq[1]]++;
+    vector<bool> checkIfPrerequisite(int n, vector<vector<int>>& pre, vector<vector<int>>& q) {
+        // Build adjacency list and in-degree array
+        vector<vector<int>> adj(n);
+        vector<int> inDeg(n, 0);
+        for (auto& p : pre) {
+            adj[p[0]].push_back(p[1]);
+            inDeg[p[1]]++;
         }
 
-        // Topological Sort and Matrix Propagation with Bitwise Optimization
-        vector<bitset<200>> isPrerequisite(numCourses); // Replace matrix with bitset (faster updates)
-        queue<int> q;
+        // Topological Sort and Propagation using bitset
+        vector<bitset<200>> prereq(n); // Store prerequisite info
+        queue<int> todo;
+
         // Add all nodes with in-degree 0 to the queue
-        for (int i = 0; i < numCourses; ++i) {
-            if (inDegree[i] == 0) q.push(i);
+        for (int i = 0; i < n; ++i) {
+            if (inDeg[i] == 0) todo.push(i);
         }
-        while (!q.empty()) {
-            int current = q.front();
-            q.pop();
-            for (int next : adj[current]) {
-                isPrerequisite[next] |= isPrerequisite[current];
-                isPrerequisite[next][current] = true;
-                if (--inDegree[next] == 0) {
-                    q.push(next);
+
+        while (!todo.empty()) {
+            int cur = todo.front();
+            todo.pop();
+            for (int nxt : adj[cur]) {
+                prereq[nxt] |= prereq[cur]; // Merge prerequisite info
+                prereq[nxt][cur] = true;   // Add current node as prerequisite
+                if (--inDeg[nxt] == 0) {
+                    todo.push(nxt);
                 }
             }
         }
+        
         // Answer Queries
         vector<bool> ans;
-        for (auto& query : queries) {
-            ans.push_back(isPrerequisite[query[1]][query[0]]);
+        for (auto& p : q) {
+            ans.push_back(prereq[p[1]][p[0]]);
         }
         return ans;
     }
