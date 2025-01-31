@@ -1,67 +1,114 @@
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,abm,bmi2")
+
+static const auto io_sync_off = []() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    return nullptr;
+}();
+
+// class Solution {
+//   public:
+//     int largestIsland(std::vector<std::vector<int>> &grid) {
+//         int groupId = -1, n = grid.size();
+//         int groupSize[n * n + 1];
+//         std::memset(groupSize, 0, sizeof(groupSize));
+
+//         auto dfs = [&](this auto &&dfs, int i, int j) -> int {
+//             if (i < 0 || i >= n || j < 0 || j >= n || grid[i][j] < 1) {
+//                 return 0;
+//             }
+//             grid[i][j] = groupId;
+//             return 1 + dfs(i + 1, j) + dfs(i - 1, j) + dfs(i, j + 1) + dfs(i, j - 1);
+//         };
+
+//         for (int i = 0; i < n; ++i) {
+//             for (int j = 0; j < n; ++j) {
+//                 if (grid[i][j] > 0) {
+//                     groupSize[~(groupId - 1)] = dfs(i, j);
+//                     --groupId;
+//                 }
+//             }
+//         }
+
+//         int res = 0;
+//         std::unordered_set<int> check;
+//         for (int i = 0; i < n; ++i) {
+//             for (int j = 0; j < n; ++j) {
+//                 if (grid[i][j] == 0) {
+//                     check.clear();
+//                     int cur = 1;
+//                     if (i - 1 >= 0 && check.insert(grid[i - 1][j]).second) {
+//                         cur += groupSize[~(grid[i - 1][j] - 1)];
+//                     }
+//                     if (i + 1 < n && check.insert(grid[i + 1][j]).second) {
+//                         cur += groupSize[~(grid[i + 1][j] - 1)];
+//                     }
+//                     if (j - 1 >= 0 && check.insert(grid[i][j - 1]).second) {
+//                         cur += groupSize[~(grid[i][j - 1] - 1)];
+//                     }
+//                     if (j + 1 < n && check.insert(grid[i][j + 1]).second) {
+//                         cur += groupSize[~(grid[i][j + 1] - 1)];
+//                     }
+//                     res = std::max(res, cur);
+//                 }
+//             }
+//         }
+
+//         return res == 0 ? n * n : res;
+//     }
+// };
+
 class Solution {
-private:
-    int dfs(vector<vector<int>>& grid, vector<vector<int>>& colour_grid, int i, int j, int colourID) {
-        if (i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == 0 || colour_grid[i][j] != 0)
-            return 0;
+  public:
+    int largestIsland(std::vector<std::vector<int>> &grid) {
+        int groupId = -1, n = grid.size();
+        int groupSize[n * n + 1];
+        std::memset(groupSize, 0, sizeof(groupSize));
 
-        colour_grid[i][j] = colourID; // Assign cluster ID
-        int size = 1;
+        auto dfs = [&](this auto &&dfs, int i, int j) -> int {
+            if (i < 0 || i >= n || j < 0 || j >= n || grid[i][j] < 1) {
+                return 0;
+            }
+            grid[i][j] = groupId;
+            return 1 + dfs(i + 1, j) + dfs(i - 1, j) + dfs(i, j + 1) + dfs(i, j - 1);
+        };
 
-        // Explore 4 directions
-        size += dfs(grid, colour_grid, i + 1, j, colourID);
-        size += dfs(grid, colour_grid, i - 1, j, colourID);
-        size += dfs(grid, colour_grid, i, j + 1, colourID);
-        size += dfs(grid, colour_grid, i, j - 1, colourID);
-
-        return size;
-    }
-public:
-    int largestIsland(vector<vector<int>>& grid) {
-        int rows = grid.size();
-        int cols = grid[0].size();
-        vector<vector<int>> colour_grid(rows, vector<int>(cols, 0));     // Store cluster IDs
-        unordered_map<int, int> clusterSize; // Store size of each cluster
-
-        int maxSize = 0;
-        int colourID = 1; // Start coloring from 1
-
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
-                if (grid[i][j] == 1 && colour_grid[i][j] == 0) {
-                    int size = dfs(grid, colour_grid, i, j, colourID);
-                    clusterSize[colourID] = size;
-                    maxSize = max(maxSize, size);
-                    colourID++;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] > 0) {
+                    groupSize[~(groupId - 1)] = dfs(i, j);
+                    --groupId;
                 }
             }
         }
-        int ans = INT_MIN;
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
+
+        int res = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
                 if (grid[i][j] == 0) {
-                        int nums = 0;
-                        vector<int> clu_id;
-                        if(i!=0){
-                            nums+= clusterSize[colour_grid[i-1][j]];
-                            clu_id.push_back(colour_grid[i-1][j]);
-                        }
-                        if(i != rows-1 && find(clu_id.begin(), clu_id.end(), colour_grid[i+1][j]) == clu_id.end()){
-                            nums+= clusterSize[colour_grid[i+1][j]];
-                            clu_id.push_back(colour_grid[i+1][j]);
-                        }
-                        if(j!=0 && find(clu_id.begin(), clu_id.end(), colour_grid[i][j-1]) == clu_id.end()){
-                            nums+= clusterSize[colour_grid[i][j-1]];
-                            clu_id.push_back(colour_grid[i][j-1]);
-                        }
-                        if(j != cols-1 && find(clu_id.begin(), clu_id.end(), colour_grid[i][j+1]) == clu_id.end()){
-                            nums+= clusterSize[colour_grid[i][j+1]];
-                            clu_id.push_back(colour_grid[i][j+1]);
-                        }
-                        ans = max(ans, nums+1);
+                    int cur = 1;
+                    int a = (i > 0) ? grid[i - 1][j] : 0;
+                    int b = (i + 1 < n) ? grid[i + 1][j] : 0;
+                    int c = (j > 0) ? grid[i][j - 1] : 0;
+                    int d = (j + 1 < n) ? grid[i][j + 1] : 0;
+                    if (a != 0) {
+                        cur += groupSize[~(grid[i - 1][j] - 1)];
+                    }
+                    if (b != 0 && b != a) {
+                        cur += groupSize[~(grid[i + 1][j] - 1)];
+                    }
+                    if (c != 0 && c != a && c != b) {
+                        cur += groupSize[~(grid[i][j - 1] - 1)];
+                    }
+                    if (d != 0 && d != a && d != b && d != c) {
+                        cur += groupSize[~(grid[i][j + 1] - 1)];
+                    }
+                    res = std::max(res, cur);
                 }
             }
         }
-        if(ans == INT_MIN) return clusterSize[1];
-        return ans;
+
+        return res == 0 ? n * n : res;
     }
 };
