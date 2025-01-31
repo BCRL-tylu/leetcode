@@ -1,114 +1,61 @@
-#pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,abm,bmi2")
-
-static const auto io_sync_off = []() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(nullptr);
-    return nullptr;
-}();
-
-// class Solution {
-//   public:
-//     int largestIsland(std::vector<std::vector<int>> &grid) {
-//         int groupId = -1, n = grid.size();
-//         int groupSize[n * n + 1];
-//         std::memset(groupSize, 0, sizeof(groupSize));
-
-//         auto dfs = [&](this auto &&dfs, int i, int j) -> int {
-//             if (i < 0 || i >= n || j < 0 || j >= n || grid[i][j] < 1) {
-//                 return 0;
-//             }
-//             grid[i][j] = groupId;
-//             return 1 + dfs(i + 1, j) + dfs(i - 1, j) + dfs(i, j + 1) + dfs(i, j - 1);
-//         };
-
-//         for (int i = 0; i < n; ++i) {
-//             for (int j = 0; j < n; ++j) {
-//                 if (grid[i][j] > 0) {
-//                     groupSize[~(groupId - 1)] = dfs(i, j);
-//                     --groupId;
-//                 }
-//             }
-//         }
-
-//         int res = 0;
-//         std::unordered_set<int> check;
-//         for (int i = 0; i < n; ++i) {
-//             for (int j = 0; j < n; ++j) {
-//                 if (grid[i][j] == 0) {
-//                     check.clear();
-//                     int cur = 1;
-//                     if (i - 1 >= 0 && check.insert(grid[i - 1][j]).second) {
-//                         cur += groupSize[~(grid[i - 1][j] - 1)];
-//                     }
-//                     if (i + 1 < n && check.insert(grid[i + 1][j]).second) {
-//                         cur += groupSize[~(grid[i + 1][j] - 1)];
-//                     }
-//                     if (j - 1 >= 0 && check.insert(grid[i][j - 1]).second) {
-//                         cur += groupSize[~(grid[i][j - 1] - 1)];
-//                     }
-//                     if (j + 1 < n && check.insert(grid[i][j + 1]).second) {
-//                         cur += groupSize[~(grid[i][j + 1] - 1)];
-//                     }
-//                     res = std::max(res, cur);
-//                 }
-//             }
-//         }
-
-//         return res == 0 ? n * n : res;
-//     }
-// };
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <unordered_set>
 
 class Solution {
-  public:
-    int largestIsland(std::vector<std::vector<int>> &grid) {
-        int groupId = -1, n = grid.size();
-        int groupSize[n * n + 1];
+public:
+    int largestIsland(std::vector<std::vector<int>>& grid) {
+        int n = grid.size();
+        int groupSize[n * n + 1]; // Sizes of the islands
         std::memset(groupSize, 0, sizeof(groupSize));
+        int groupId = 1; // Start group IDs from 1
+        std::vector<std::vector<int>> color_mat(n, std::vector<int>(n, 0)); // Color matrix
 
-        auto dfs = [&](this auto &&dfs, int i, int j) -> int {
-            if (i < 0 || i >= n || j < 0 || j >= n || grid[i][j] < 1) {
-                return 0;
+        // DFS function as a lambda
+        auto dfs = [&](auto&& dfs, int i, int j) -> int {
+            if (i < 0 || i >= n || j < 0 || j >= n || grid[i][j] != 1 || color_mat[i][j] != 0) {
+                return 0; // Return 0 if out of bounds, not land, or already colored
             }
-            grid[i][j] = groupId;
-            return 1 + dfs(i + 1, j) + dfs(i - 1, j) + dfs(i, j + 1) + dfs(i, j - 1);
+            color_mat[i][j] = groupId; // Mark the cell with the group ID
+            return 1 + dfs(dfs, i + 1, j) + dfs(dfs, i - 1, j) + dfs(dfs, i, j + 1) + dfs(dfs, i, j - 1);
         };
 
+        // Color the islands and calculate their sizes
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
-                if (grid[i][j] > 0) {
-                    groupSize[~(groupId - 1)] = dfs(i, j);
-                    --groupId;
+                if (grid[i][j] == 1 && color_mat[i][j] == 0) {
+                    groupSize[groupId] = dfs(dfs, i, j);
+                    groupId++;
                 }
             }
         }
 
         int res = 0;
+        // Check for each water cell the sizes of adjacent islands
         for (int i = 0; i < n; ++i) {
             for (int j = 0; j < n; ++j) {
                 if (grid[i][j] == 0) {
-                    int cur = 1;
-                    int a = (i > 0) ? grid[i - 1][j] : 0;
-                    int b = (i + 1 < n) ? grid[i + 1][j] : 0;
-                    int c = (j > 0) ? grid[i][j - 1] : 0;
-                    int d = (j + 1 < n) ? grid[i][j + 1] : 0;
-                    if (a != 0) {
-                        cur += groupSize[~(grid[i - 1][j] - 1)];
-                    }
-                    if (b != 0 && b != a) {
-                        cur += groupSize[~(grid[i + 1][j] - 1)];
-                    }
-                    if (c != 0 && c != a && c != b) {
-                        cur += groupSize[~(grid[i][j - 1] - 1)];
-                    }
-                    if (d != 0 && d != a && d != b && d != c) {
-                        cur += groupSize[~(grid[i][j + 1] - 1)];
+                    int cur = 1; // Start with the current cell turning into land
+                    std::unordered_set<int> adjacentGroups; // Store unique group IDs
+
+                    // Check adjacent cells for their group IDs
+                    if (i > 0) adjacentGroups.insert(color_mat[i - 1][j]);
+                    if (i + 1 < n) adjacentGroups.insert(color_mat[i + 1][j]);
+                    if (j > 0) adjacentGroups.insert(color_mat[i][j - 1]);
+                    if (j + 1 < n) adjacentGroups.insert(color_mat[i][j + 1]);
+
+                    // Add sizes of the adjacent groups
+                    for (int group : adjacentGroups) {
+                        if (group > 0) { // Only consider valid group IDs
+                            cur += groupSize[group];
+                        }
                     }
                     res = std::max(res, cur);
                 }
             }
         }
 
-        return res == 0 ? n * n : res;
+        return res == 0 ? n * n : res; // Return the size of the largest island or n*n if no land exists
     }
 };
