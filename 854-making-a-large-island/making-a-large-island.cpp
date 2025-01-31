@@ -25,6 +25,7 @@ public:
         int maxSize = 0;
         int colourID = 1; // Start coloring from 1
 
+        // First pass: identify clusters and their sizes
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
                 if (grid[i][j] == 1 && colour_grid[i][j] == 0) {
@@ -35,33 +36,35 @@ public:
                 }
             }
         }
-        int ans = INT_MIN;
+
+        int ans = maxSize; // Start with the largest island size found
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
                 if (grid[i][j] == 0) {
-                        int nums = 0;
-                        vector<int> clu_id;
-                        if(i!=0){
-                            nums+= clusterSize[colour_grid[i-1][j]];
-                            clu_id.push_back(colour_grid[i-1][j]);
+                    unordered_set<int> uniqueClusters; // Use a set to track unique cluster IDs
+                    int nums = 0;
+
+                    // Check neighbors
+                    for (int di = -1; di <= 1; di++) {
+                        for (int dj = -1; dj <= 1; dj++) {
+                            if (abs(di) + abs(dj) == 1) { // Only consider orthogonal neighbors
+                                int ni = i + di;
+                                int nj = j + dj;
+                                if (ni >= 0 && ni < rows && nj >= 0 && nj < cols) {
+                                    int neighbourClusterID = colour_grid[ni][nj];
+                                    if (neighbourClusterID > 0 && uniqueClusters.insert(neighbourClusterID).second) {
+                                        nums += clusterSize[neighbourClusterID];
+                                    }
+                                }
+                            }
                         }
-                        if(i != rows-1 && find(clu_id.begin(), clu_id.end(), colour_grid[i+1][j]) == clu_id.end()){
-                            nums+= clusterSize[colour_grid[i+1][j]];
-                            clu_id.push_back(colour_grid[i+1][j]);
-                        }
-                        if(j!=0 && find(clu_id.begin(), clu_id.end(), colour_grid[i][j-1]) == clu_id.end()){
-                            nums+= clusterSize[colour_grid[i][j-1]];
-                            clu_id.push_back(colour_grid[i][j-1]);
-                        }
-                        if(j != cols-1 && find(clu_id.begin(), clu_id.end(), colour_grid[i][j+1]) == clu_id.end()){
-                            nums+= clusterSize[colour_grid[i][j+1]];
-                            clu_id.push_back(colour_grid[i][j+1]);
-                        }
-                        ans = max(ans, nums+1);
+                    }
+
+                    ans = max(ans, nums + 1); // Account for the current water cell
                 }
             }
         }
-        if(ans == INT_MIN) return clusterSize[1];
+
         return ans;
     }
 };
