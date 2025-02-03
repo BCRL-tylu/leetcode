@@ -48,11 +48,12 @@ public:
         }
 
         dp[0] = 0; // Base case
+        // for each number we need to calculate the optimal cost
         for (int num : nums) {
             vector<ll> newDp = dp; // Temporary copy of dp
             vector<ll> combCost(1 << n, 0);
 
-            // Compute cost for each combination
+            // Compute cost for each combination based on current num
             for (int i = 1; i < (1 << n); ++i) {
                 ll cost = (num % hm[i] == 0) ? 0 : ((num / hm[i] + 1) * hm[i] - num) % hm[i];
                 combCost[i] = cost;
@@ -62,11 +63,8 @@ public:
             for (int i = 0; i < (1 << n); ++i) {
                 if (dp[i] == LLONG_MAX) continue; // Skip unreachable states
                 for (int j = 1; j < (1 << n); ++j) {
-                    ll nmask = i | j;
-                    ll ncost = dp[i] + combCost[j];
-                    if (ncost < newDp[nmask]) {
-                        newDp[nmask] = ncost;
-                    }
+                    ll nmask = i | j; // initially j since i = 0 
+                    newDp[nmask] = min(newDp[nmask],dp[i] + combCost[j]); // calcualte the cost based on current cost on the bitcombination
                 }
             }
             dp = newDp; // Update dp for the next number
