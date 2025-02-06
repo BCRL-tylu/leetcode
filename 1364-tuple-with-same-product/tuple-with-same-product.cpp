@@ -1,8 +1,4 @@
 class Solution {
-    private:
-    long long factorial(int n) {
-    return std::llround(std::tgamma(n + 1)); // Round to nearest integer
-}
 public:
     int tupleSameProduct(vector<int>& nums) {
         unordered_map<int,int> hm;
@@ -13,10 +9,9 @@ public:
         }
         int ans = 0;
         for(auto&[key, value]:hm){
-            if(value>=2){
-                ans+=4*value*(value-1);
-            }
+            if(value<2)continue;
+            ans+=value*(value-1);
         }
-        return ans;
+        return ans*4;
     }
 };
