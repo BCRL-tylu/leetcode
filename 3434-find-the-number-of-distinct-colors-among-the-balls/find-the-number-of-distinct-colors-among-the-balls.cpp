@@ -5,7 +5,7 @@ public:
         vector<int> ans;
         int count = 0;
         for(auto& q:queries){
-            if(i_c.count(q[0])&& i_c[q[0]] == q[1]){
+            if(i_c[q[0]] == q[1]){
                 ans.push_back(count);
                 continue;
             }
