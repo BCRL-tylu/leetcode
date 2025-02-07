@@ -14,11 +14,9 @@ public:
             }
             if(!c_i.count(q1)) count++;
             c_i[q1]++;
-            if(k){
-                if(--c_i[c]==0){
+            if(k & --c_i[c]==0){
                     c_i.erase(c);
                     count--;
-                }
             }
             i_c[q0] = q1;
             ans.push_back(count);
