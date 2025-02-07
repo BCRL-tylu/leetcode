@@ -1,7 +1,7 @@
 class Solution {
 public:
     vector<int> queryResults(int limit, vector<vector<int>>& queries) {
-        unordered_map<int,set<int>> c_i;
+        unordered_map<int,int> c_i;
         unordered_map<int,int> i_c;
         vector<int> ans;
         int count = 0;
@@ -13,13 +13,11 @@ public:
             if(!c_i.count(q[1])){
                 count++;
             }
-            c_i[q[1]].insert(q[0]);
-            // if q[0] was coloured
+            c_i[q[1]]++;
             if(i_c.count(q[0])){
-                // earse the  from the set;
-                c_i[i_c[q[0]]].erase(q[0]);
+                c_i[i_c[q[0]]]--;
                 // 
-                if(c_i[i_c[q[0]]].size()==0){
+                if(c_i[i_c[q[0]]]==0){
                     c_i.erase(i_c[q[0]]);
                     count--;
                 }
