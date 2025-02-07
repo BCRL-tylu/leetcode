@@ -9,21 +9,16 @@ public:
                 ans.push_back(count);
                 continue;
             }
-            if(!c_i.count(q[1])){
-                count++;
-            }
+            if(!c_i.count(q[1])) count++;
             c_i[q[1]]++;
             if(i_c.count(q[0])){
                 c_i[i_c[q[0]]]--;
-                // 
                 if(c_i[i_c[q[0]]]==0){
                     c_i.erase(i_c[q[0]]);
                     count--;
                 }
-                i_c[q[0]] = q[1];
-            }else{
-                i_c[q[0]] = q[1];
             }
+            i_c[q[0]] = q[1];
             ans.push_back(count);
         }
         return ans;
