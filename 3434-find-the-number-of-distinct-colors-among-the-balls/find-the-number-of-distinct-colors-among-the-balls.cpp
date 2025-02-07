@@ -13,8 +13,7 @@ public:
             if(!c_i.count(q[1])) count++;
             c_i[q[1]]++;
             if(k){
-                c_i[i_c[q[0]]]--;
-                if(c_i[i_c[q[0]]]==0){
+                if(--c_i[i_c[q[0]]]==0){
                     c_i.erase(i_c[q[0]]);
                     count--;
                 }
