@@ -5,13 +5,14 @@ public:
         vector<int> ans;
         int count = 0;
         for(auto& q:queries){
-            if(i_c[q[0]] == q[1]){
+            bool k =i_c.count(q[0]);
+            if(k && i_c[q[0]] == q[1]){
                 ans.push_back(count);
                 continue;
             }
             if(!c_i.count(q[1])) count++;
             c_i[q[1]]++;
-            if(i_c.count(q[0])){
+            if(k){
                 c_i[i_c[q[0]]]--;
                 if(c_i[i_c[q[0]]]==0){
                     c_i.erase(i_c[q[0]]);
