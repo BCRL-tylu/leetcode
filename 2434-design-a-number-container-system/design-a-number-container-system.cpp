@@ -1,22 +1,22 @@
 class NumberContainers {
 private:
     unordered_map<int, int> c; // Maps index -> number
-    unordered_map<int, map<int, int>> n_i; // Maps number -> {index, dummy_value}
+    unordered_map<int, set<int>> n_i; // Maps number -> sorted indices
 
 public:
     void change(int index, int number) {
         if (auto it = c.find(index); it != c.end()) {
             int prev = it->second;
-            n_i[prev].erase(index);
-            if (n_i[prev].empty()) n_i.erase(prev);
+            auto& indexSet = n_i[prev];
+            indexSet.erase(index);
+            if (indexSet.empty()) n_i.erase(prev); // Erase only if necessary
         }
         c[index] = number;
-        n_i[number][index] = 1; // Store index as key (dummy value = 1)
+        n_i[number].insert(index); // Store index in set
     }
 
     int find(int number) {
-        auto it = n_i.find(number);  // Declare `it` separately
-        if (it == n_i.end()) return -1;
-        return it->second.begin()->first; // Return smallest index
+        auto it = n_i.find(number);
+        return (it == n_i.end() || it->second.empty()) ? -1 : *it->second.begin();
     }
 };
