@@ -1,22 +1,28 @@
 class NumberContainers {
-private:
-    unordered_map<int, int> c; // Maps index -> number
-    unordered_map<int, map<int, int>> n_i; // Maps number -> {index, dummy_value}
-
 public:
-    void change(int index, int number) {
-        if (auto it = c.find(index); it != c.end()) {
-            int prev = it->second;
-            n_i[prev].erase(index);
-            if (n_i[prev].empty()) n_i.erase(prev);
-        }
-        c[index] = number;
-        n_i[number][index] = 1; // Store index as key (dummy value = 1)
+    unordered_map<int,priority_queue<int,vector<int>,greater<int>>>m;
+    unordered_map<int,int>m1;
+    NumberContainers() {
+        
     }
-
-    int find(int number) {
-        auto it = n_i.find(number);  // Declare `it` separately
-        if (it == n_i.end()) return -1;
-        return it->second.begin()->first; // Return smallest index
+    
+    void change(int i, int n) {
+        m1[i]=n;
+        m[n].push(i);
+    }
+    
+    int find(int n) {
+        while(!m[n].empty() && m1[m[n].top()]!=n){
+            m[n].pop();
+        }
+        if(m[n].empty()) return -1;
+        return m[n].top();
     }
 };
+
+/**
+ * Your NumberContainers object will be instantiated and called as such:
+ * NumberContainers* obj = new NumberContainers();
+ * obj->change(index,number);
+ * int param_2 = obj->find(number);
+ */
