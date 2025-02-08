@@ -16,7 +16,7 @@ public:
 
     int find(int number) {
         auto it = n_i.find(number);  // Declare `it` separately
-        if (it == n_i.end()) return -1;
+        if (it == n_i.end() || it->second.empty()) return -1;
         return it->second.begin()->first; // Return smallest index
     }
 };
