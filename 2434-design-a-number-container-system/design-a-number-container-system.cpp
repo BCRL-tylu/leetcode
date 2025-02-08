@@ -1,29 +1,22 @@
 class NumberContainers {
 private:
-    unordered_map<int,int> c;
-    unordered_map<int, set<int>> n_i;
-    
+    unordered_map<int, int> c; // Maps index -> number
+    unordered_map<int, map<int, int>> n_i; // Maps number -> {index, dummy_value}
+
 public:
-    NumberContainers() {} // Properly initialize vector 'c'
-    
     void change(int index, int number) {
-        if (!c.count(index)) {
-            n_i[number].insert(index);
-            c[index] = number;
-            return;
-        }
-        n_i[c[index]].erase(index);
-        if (n_i[c[index]].empty()) { // Fix: use .empty() instead of size() == 0
-            n_i.erase(c[index]);
+        if (auto it = c.find(index); it != c.end()) {
+            int prev = it->second;
+            n_i[prev].erase(index);
+            if (n_i[prev].empty()) n_i.erase(prev);
         }
         c[index] = number;
-        n_i[number].insert(index);
+        n_i[number][index] = 1; // Store index as key (dummy value = 1)
     }
-    
+
     int find(int number) {
-        if (!n_i.count(number)) {
-            return -1;
-        }
-        return *n_i[number].begin();
+        auto it = n_i.find(number);  // Declare `it` separately
+        if (it == n_i.end() || it->second.empty()) return -1;
+        return it->second.begin()->first; // Return smallest index
     }
 };
