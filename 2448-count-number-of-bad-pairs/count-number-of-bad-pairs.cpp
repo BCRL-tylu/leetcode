@@ -1,15 +1,19 @@
 class Solution {
 public:
     long long countBadPairs(vector<int>& nums) {
-        unordered_map<int, int> freq;
-        long long n = nums.size(), goodPairs = 0;
+        unordered_map<int, long long> freq;
+        long long goodPairs = 0;
+        int n = nums.size();
         
+        // One-pass: compute the number of good pairs on the fly.
         for (int i = 0; i < n; i++) {
-            int key = nums[i] - i;
-            goodPairs += freq[key]; // Count the number of previous occurrences
-            freq[key]++; // Update the frequency
+            int diff = nums[i] - i;
+            goodPairs += freq[diff];
+            freq[diff]++;
         }
         
-        return n * (n - 1) / 2 - goodPairs;
+        // Total number of pairs.
+        long long totalPairs = (long long)n * (n - 1) / 2;
+        return totalPairs - goodPairs;
     }
 };
