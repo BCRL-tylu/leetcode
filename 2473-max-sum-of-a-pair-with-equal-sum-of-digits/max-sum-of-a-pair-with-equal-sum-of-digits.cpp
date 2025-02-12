@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <unordered_map>
 using namespace std;
 
 class Solution {
@@ -16,12 +15,12 @@ private:
 
 public:
     int maximumSum(vector<int>& nums) {
-        unordered_map<int, pair<int, int>> hm;
+        vector<pair<int, int>> hm(82, {0, 0});  // Using fixed-size vector instead of hashmap
         int ans = -1;
 
         for (int num : nums) {
             int ind = sumdigit(num);
-            auto& [first, second] = hm[ind];  // Reference to avoid extra copies
+            auto& [first, second] = hm[ind];
 
             if (num > first) {
                 second = first;
@@ -29,8 +28,7 @@ public:
             } else if (num > second) {
                 second = num;
             }
-
-            if (second != 0) {  // Ensure we have at least two numbers
+            if (second > 0) {  // Ensure two valid numbers exist
                 ans = max(ans, first + second);
             }
         }
