@@ -16,14 +16,14 @@ public:
                 num /= 10;
             }
             auto& [f, s] = hm[ind];
+            if(k<=s) continue;
+            
             if (k > f) {
                 s = f;
                 f = k;
             } else if (k > s) {
                 s = k;
-            }else{
-                continue;
-            }
+            } 
             ans = max(ans, f + s);
         }
         return ans;
