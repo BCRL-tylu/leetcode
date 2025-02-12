@@ -17,11 +17,10 @@ public:
             }
             auto& [f, s] = hm[ind];
             if(k<=s) continue;
-            
             if (k > f) {
                 s = f;
                 f = k;
-            } else if (k > s) {
+            } else {
                 s = k;
             } 
             ans = max(ans, f + s);
