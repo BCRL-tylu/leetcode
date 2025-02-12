@@ -11,21 +11,20 @@ public:
         for (int num : nums) {
             int k = num;  // Store original number before modifying num
             int ind = 0;
-
             while (num) {
                 ind += num % 10;
                 num /= 10;
             }
-
             auto& [f, s] = hm[ind];
-
             if (k > f) {
                 s = f;
                 f = k;
             } else if (k > s) {
                 s = k;
+            }else{
+                continue;
             }
-                ans = max(ans, f + s);
+            ans = max(ans, f + s);
         }
         return ans;
     }
