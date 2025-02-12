@@ -15,7 +15,7 @@ private:
 
 public:
     int maximumSum(vector<int>& nums) {
-        vector<pair<int, int>> hm(82, {0, 0});  // Using fixed-size vector instead of hashmap
+        vector<pair<int, int>> hm(82, {INT_MIN, INT_MIN});  // Using fixed-size vector instead of hashmap
         int ans = -1;
         for (int num : nums) {
             int ind = sumdigit(num);
@@ -28,9 +28,7 @@ public:
             } else{
                 continue;
             }
-            if (s > 0) {  // Ensure two valid numbers exist
-                ans = max(ans, f + s);
-            }
+            ans = max(ans, f + s);
         }
         return ans;
     }
