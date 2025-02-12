@@ -3,22 +3,6 @@
 #include <unordered_map>
 using namespace std;
 
-class tt {
-    int first = INT_MIN, second = INT_MIN;
-public:
-    void insert(int x) {
-        if (x > first) {
-            second = first;
-            first = x;
-        } else if (x > second) {
-            second = x;
-        }
-    }
-    int gsum() const {
-        return first + second;
-    }
-};
-
 class Solution {
 private:
     int sumdigit(int k) {
@@ -32,15 +16,24 @@ private:
 
 public:
     int maximumSum(vector<int>& nums) {
-        unordered_map<int, tt> hm;
+        unordered_map<int, pair<int, int>> hm;
         int ans = -1;
 
         for (int num : nums) {
             int ind = sumdigit(num);
-            hm[ind].insert(num);
-            ans = max(ans, hm[ind].gsum());
-        }
+            auto& [first, second] = hm[ind];  // Reference to avoid extra copies
 
+            if (num > first) {
+                second = first;
+                first = num;
+            } else if (num > second) {
+                second = num;
+            }
+
+            if (second != 0) {  // Ensure we have at least two numbers
+                ans = max(ans, first + second);
+            }
+        }
         return ans;
     }
 };
