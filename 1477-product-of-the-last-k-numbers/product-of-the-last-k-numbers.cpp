@@ -2,11 +2,9 @@
 using namespace std;
 
 class ProductOfNumbers {
-    vector<int> pd; // Prefix products
+    vector<int> pd{1}; // Prefix products
 public:
-    ProductOfNumbers() {
-        pd.push_back(1); // Initialize with 1 to simplify multiplication
-    }
+    ProductOfNumbers() {}
 
     void add(int num) {
         if (num) {
