@@ -15,10 +15,21 @@ public:
         }
     }
 
+    const int MOD = 1e9 + 7;
 
+    int modPow(int base, int exp, int mod) {
+        long long res = 1;
+        while (exp > 0) {
+            if (exp & 1)
+                res = res * base % mod;
+            base = (long long)base * base % mod;
+            exp >>= 1;
+        }
+        return res;
+    }
 
     int getProduct(int k) {
-        return k < pd.size() ? pd.back() / pd[pd.size() - k - 1] : 0;
-        //return k < pd.size() ? (int)(1LL * pd.back() * modPow(pd[pd.size() - 1 - k], MOD - 2, MOD) % MOD) : 0;
+        //return k < pd.size() ? pd.back() / pd[pd.size() - k - 1] : 0;
+        return k < pd.size() ? (int)(1LL * pd.back() * modPow(pd[pd.size() - 1 - k], MOD - 2, MOD) % MOD) : 0;
     }
 };
