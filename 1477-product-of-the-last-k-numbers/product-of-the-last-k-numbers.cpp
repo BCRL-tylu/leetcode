@@ -15,7 +15,7 @@ public:
         }
     }
 
-    const int MOD = 2147483647;
+    const int MOD = 1e9+7;
 
     int modPow(int base, int exp, int mod) {
         long long res = 1;
