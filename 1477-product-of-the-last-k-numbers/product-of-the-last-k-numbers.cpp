@@ -31,8 +31,6 @@ public:
     }
 
     int getProduct(int k) {
-        if ((int)pd.size() <= k)
-            return 0;
-        return (int)(1LL * pd.back() * modPow(pd[pd.size() - 1 - k], MOD - 2, MOD) % MOD);
+        return k < pd.size() ? (int)(1LL * pd.back() * modPow(pd[pd.size() - 1 - k], MOD - 2, MOD) % MOD) : 0;
     }
 };
