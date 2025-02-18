@@ -1,24 +1,20 @@
 class Solution {
-public:
-    int fact[8] = {1, 1, 2, 6, 24, 120, 720, 5040};
-    unordered_set<string> st;
-    int uniquePerms(string& s) {
-        int cnt[26] = {};
-        for (auto ch : s)
-            ++cnt[ch - 'A'];
-        auto res = fact[s.size()];
-        for (auto n : cnt)
-            res /= fact[n];
-        return res;
-    }
-    int dfs(string& s, string seq = "", int pos = 0) {
-        if (pos >= s.size()) {
-            return st.insert(seq).second ? uniquePerms(seq) : 0;
+private:
+    int dfs(vector<int>& letter) {
+        int count = 0;
+        for(int i = 0; i < 26; i++) {
+            if(letter[i] == 0) continue;
+            letter[i]--; // Use the letter
+            count += 1 + dfs(letter); // Count this sequence and recurse
+            letter[i]++; // Backtrack
         }
-        return dfs(s, seq, pos + 1) + dfs(s, seq + s[pos], pos + 1);
+        return count;
     }
+
+public:
     int numTilePossibilities(string tiles) {
-        sort(begin(tiles), end(tiles));
-        return dfs(tiles) - 1;
+        vector<int> letter(26, 0);
+        for(char c : tiles) letter[c - 'A']++; // Count frequency of each letter
+        return dfs(letter);
     }
 };
