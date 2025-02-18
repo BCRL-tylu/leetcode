@@ -1,4 +1,3 @@
-//@BCRL-tylu
 const int sz =101;
 class Solution {
 public:
