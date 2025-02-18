@@ -9,7 +9,6 @@ public:
                 int l = i;
                 while (i < n && pattern[++i] == 'D') {}
                 reverse(ans.begin()+l,ans.begin()+i+1);
-                i--;
             }
         }
         return ans;
