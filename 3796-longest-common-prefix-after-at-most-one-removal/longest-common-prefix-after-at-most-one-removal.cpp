@@ -1,9 +1,13 @@
 class Solution {
 public:
     int longestCommonPrefix(string s, string t) {
-        int j = 0, i = 0;
-        for (; i < s.size() && j < t.size() && i - j < 2; ++i)
-            j += s[i] == t[j];
-        return j;
+        int i = 0, d = 0;
+        for (; i < s.length() && i - d < t.length(); ++i) {
+            if (s[i] != t[i - d]) {
+                if (d == 1) break;
+                d = 1;
+            }
+        }
+        return i - d;
     }
 };
