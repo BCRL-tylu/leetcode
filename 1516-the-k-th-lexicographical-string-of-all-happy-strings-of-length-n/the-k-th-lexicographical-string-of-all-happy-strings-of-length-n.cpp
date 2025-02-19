@@ -1,5 +1,5 @@
 char ap[3] = {'a', 'b', 'c'};
-const std::unordered_map<char, std::vector<char>> m = {
+const unordered_map<char, vector<char>> m = {
     {'a', {'b', 'c'}},
     {'b', {'a', 'c'}},
     {'c', {'a', 'b'}}
@@ -17,7 +17,7 @@ public:
         k -= ind * ini;
 
         for (int i = n - 1; i >= 1; i--) {
-            ini >>=1;
+            ini>>=1;
             ind = (k-1) / ini;
             k -= ind * ini;
             ans.push_back(m.at(ans.back())[ind]);
