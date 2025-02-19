@@ -15,7 +15,6 @@ public:
        for (int i = 0; i < 26; i++) {
             // no such letter next
             if (l[i] == INT_MAX)  continue;
-
             int begin = l[i], last = r[s[begin]-'a'];
 
             for (int j = begin; j < n; j++) {
