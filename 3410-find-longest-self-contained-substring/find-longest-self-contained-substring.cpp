@@ -12,27 +12,18 @@ public:
         }
         
         int ans = -1;
-        // Only consider starting positions that are the first occurrence of their letter.
-        for (int i = 0; i < n; i++) {
-            if (i != l[s[i]-'a']) continue;
-            
-            int current_max = r[s[i]-'a'];
-            // Try to extend the substring [i, j].
-            for (int j = i; j < n; j++) {
-                // If a letter appears that started before i, we must break.
-                if (l[s[j]-'a'] < i)
-                    break;
-                current_max = max(current_max, r[s[j]-'a']);
-                
-                // When j reaches current_max, all letters in [i,j] have their full range inside.
-                if (j == current_max) {
-                    // Make sure it is not equal to the whole string.
-                    if (!(i == 0 && j == n - 1))
-                        ans = max(ans, j - i + 1);
+       for (int i = 0; i < 26; i++) {
+            if (l[i] == INT_MAX)  // Letter i doesn't appear in s.
+                continue;
+            int begin = l[i], last = r[s[begin]-'a'];
+            for (int j = begin; j < n; j++) {
+                if (l[s[j]-'a'] < begin) break;
+                last = max(last, r[s[j]-'a']);
+                if (j == last && !(begin == 0 && j == n - 1)) {
+                        ans = max(ans, j - begin + 1);
                 }
             }
         }
-        
         return ans;
     }
 };
