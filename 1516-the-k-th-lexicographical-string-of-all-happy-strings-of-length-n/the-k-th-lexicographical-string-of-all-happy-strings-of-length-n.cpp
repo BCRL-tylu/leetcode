@@ -1,7 +1,7 @@
 char ap[3] = {'a', 'b', 'c'};
 const unordered_map<char, vector<char>> m = {
     {'a', {'b', 'c'}}, {'b', {'a', 'c'}}, {'c', {'a', 'b'}}};
-    
+
 class Solution {
 public:
     string getHappyString(int n, int k) {
@@ -18,8 +18,7 @@ public:
             ini /= 2;
             ind = (k - 1) / ini;         // Ensure ind remains valid
             k -= ind * ini;              // Adjust k
-            char last_char = ans.back(); // Fix shadowing issue
-            ans.push_back(m.at(last_char)[ind]);
+            ans.push_back(m.at(ans.back())[ind]);
         }
         return ans;
     }
