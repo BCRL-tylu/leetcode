@@ -17,7 +17,7 @@ public:
         k -= ind * ini;
 
         for (int i = n - 1; i >= 1; i--) {
-            ini/=2;
+            ini >>=1;
             ind = (k-1) / ini;
             k -= ind * ini;
             ans.push_back(m.at(ans.back())[ind]);
