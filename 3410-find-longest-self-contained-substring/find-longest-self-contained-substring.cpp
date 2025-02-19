@@ -13,8 +13,7 @@ public:
         
         int ans = -1;
        for (int i = 0; i < 26; i++) {
-            if (l[i] == INT_MAX)  // Letter i doesn't appear in s.
-                continue;
+            if (l[i] == INT_MAX)  continue;
             int begin = l[i], last = r[s[begin]-'a'];
             for (int j = begin; j < n; j++) {
                 if (l[s[j]-'a'] < begin) break;
