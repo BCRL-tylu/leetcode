@@ -11,7 +11,6 @@ public:
             first[idx] = min(first[idx], i);
             last[idx] = max(last[idx], i);
         }
-
         vector<pair<int, int>> intervals;
         for (int c = 0; c < 26; c++) {
             if (first[c] == n) continue; // Character not in `s`
