@@ -13,14 +13,17 @@ public:
         
         int ans = -1;
        for (int i = 0; i < 26; i++) {
+            // no such letter next
             if (l[i] == INT_MAX)  continue;
+
             int begin = l[i], last = r[s[begin]-'a'];
+
             for (int j = begin; j < n; j++) {
-                if (l[s[j]-'a'] < begin) break;
-                last = max(last, r[s[j]-'a']);
-                if (j == last && !(begin == 0 && j == n - 1)) {
-                        ans = max(ans, j - begin + 1);
-                }
+                char x = s[j]-'a';
+                if (l[x] < begin) break; // X-begin-X-last, cannot have begin as begining of the substring
+
+                last = max(last, r[x]); // begin-X-last-X or begin-X--X-last
+                if (j == last && !(begin == 0 && j == n - 1)) ans = max(ans, j - begin + 1);
             }
         }
         return ans;
