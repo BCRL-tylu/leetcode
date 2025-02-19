@@ -1,13 +1,23 @@
+//@bcrl-tylu
 class Solution {
 public:
-    int longestCommonPrefix(string s, string t) {
-        int i = 0, d = 0;
-        for (; i < s.length() && i - d < t.length(); ++i) {
-            if (s[i] != t[i - d]) {
-                if (d == 1) break;
-                d = 1;
+    // Returns the length of the prefix of s that matches t,
+    // where we are allowed to skip one character in t.
+    int longestCommonPrefix(const string &s, const string &t) {
+        int i = 0, j = 0;
+        bool skipped = false;
+        while (i < s.size() && j < t.size()) {
+            if (s[i] == t[j]) {
+                ++i;
+                ++j;
+            } else if (!skipped) {
+                // Skip one character in t.
+                skipped = true;
+                ++i;
+            } else {
+                break;
             }
         }
-        return i - d;
+        return i-skipped;
     }
 };
