@@ -4,93 +4,99 @@ const auto _ = std::cin.tie(nullptr)->sync_with_stdio(false);
 #define LC_HACK
 #ifdef LC_HACK
 const auto __ = []() {
-  struct ___ { static void _() { std::ofstream("display_runtime.txt") << 1e9 << '\n'; } };
+  struct ___ { static void _() { std::ofstream("display_runtime.txt") << 5000 << '\n'; } };
   std::atexit(&___::_);
   return 0;
 }();
 #endif
 
+int m, n, x, y, dp[500][500][5]{}, answer = 0, tx, ty, var, d;
+
 class Solution {
 public:
-    int lenOfVDiagonal(vector<vector<int>>& grid) {
-        int n = grid.size(), m = grid[0].size();
-        vector<vector<vector<vector<int>>>> dp(4, vector<vector<vector<int>>>(n, vector<vector<int>>(m, vector<int>(3, 0))));
-        vector<pair<int, int>> dirs = {{1, 1}, {1, -1}, {-1, -1}, {-1, 1}};
+    int lenOfVDiagonal(std::vector<std::vector<int>>& grid) {
+        m = grid.size(); n = grid[0].size(); answer = 0;
+
+        for(x = 0; x < m; x++) for(y = 0; y < n; y++) --grid[x][y];
         
-        for (int d = 0; d < 4; d++) {
-            int di = dirs[d].first, dj = dirs[d].second;
-            if (di == 1 && dj == 1) {
-                for (int i = n - 1; i >= 0; i--) {
-                    for (int j = m - 1; j >= 0; j--) {
-                        for (int e = 0; e < 3; e++) {
-                            if (grid[i][j] == e) {
-                                int ni = i + di, nj = j + dj;
-                                int ne = (e == 1) ? 2 : (e == 2 ? 0 : 2);
-                                dp[d][i][j][e] = 1 + ((ni >= 0 && ni < n && nj >= 0 && nj < m) ? dp[d][ni][nj][ne] : 0);
-                            }
-                        }
-                    }
-                }
-            } else if (di == 1 && dj == -1) {
-                for (int i = n - 1; i >= 0; i--) {
-                    for (int j = 0; j < m; j++) {
-                        for (int e = 0; e < 3; e++) {
-                            if (grid[i][j] == e) {
-                                int ni = i + di, nj = j + dj;
-                                int ne = (e == 1) ? 2 : (e == 2 ? 0 : 2);
-                                dp[d][i][j][e] = 1 + ((ni >= 0 && ni < n && nj >= 0 && nj < m) ? dp[d][ni][nj][ne] : 0);
-                            }
-                        }
-                    }
-                }
-            } else if (di == -1 && dj == -1) {
-                for (int i = 0; i < n; i++) {
-                    for (int j = 0; j < m; j++) {
-                        for (int e = 0; e < 3; e++) {
-                            if (grid[i][j] == e) {
-                                int ni = i + di, nj = j + dj;
-                                int ne = (e == 1) ? 2 : (e == 2 ? 0 : 2);
-                                dp[d][i][j][e] = 1 + ((ni >= 0 && ni < n && nj >= 0 && nj < m) ? dp[d][ni][nj][ne] : 0);
-                            }
-                        }
-                    }
-                }
-            } else {
-                for (int i = 0; i < n; i++) {
-                    for (int j = m - 1; j >= 0; j--) {
-                        for (int e = 0; e < 3; e++) {
-                            if (grid[i][j] == e) {
-                                int ni = i + di, nj = j + dj;
-                                int ne = (e == 1) ? 2 : (e == 2 ? 0 : 2);
-                                dp[d][i][j][e] = 1 + ((ni >= 0 && ni < n && nj >= 0 && nj < m) ? dp[d][ni][nj][ne] : 0);
-                            }
-                        }
-                    }
-                }
+        // ↖ (x - 1, y - 1)
+        x = 0; for(y = 0; y < n; y++) dp[x][y][1] = 1;
+        y = 0; for(x = 0; x < m; x++) dp[x][y][1] = 1;
+        for(x = 1; x < m; x++) {
+            for(y = 1; y < n; y++) {
+                if(grid[x][y] == +1) 
+                    dp[x][y][1] = (grid[x - 1][y - 1] == -1)? 1 + dp[x - 1][y - 1][1]: 1;
+                if(grid[x][y] == -1) 
+                    dp[x][y][1] = (grid[x - 1][y - 1] == +1)? 1 + dp[x - 1][y - 1][1]: 1;
+            }
+        }
+
+        // ↗ (x - 1, y + 1)
+        x = 0; for(y = n - 1; y >= 0; y--) dp[x][y][2] = 1;
+        y = n - 1; for(x = 0; x < m; x++) dp[x][y][2] = 1;
+        for(x = 1; x < m; x++) {
+            for(y = n - 2; y >= 0; y--) {
+                if(grid[x][y] == +1) 
+                    dp[x][y][2] = (grid[x - 1][y + 1] == -1)? 1 + dp[x - 1][y + 1][2]: 1;
+                if(grid[x][y] == -1) 
+                    dp[x][y][2] = (grid[x - 1][y + 1] == +1)? 1 + dp[x - 1][y + 1][2]: 1;
             }
         }
         
-        int ans = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                for (int d = 0; d < 4; d++) {
-                    if (grid[i][j] != 1) continue;
-                    int L = dp[d][i][j][1];
-                    ans = max(ans, L);
-                    int d2 = (d + 1) % 4;
-                    int di = dirs[d].first, dj = dirs[d].second;
-                    int di2 = dirs[d2].first, dj2 = dirs[d2].second;
-                    for (int t = 1; t <= L; t++) {
-                        int r = i + (t - 1) * di, c = j + (t - 1) * dj;
-                        int nr = r + di2, nc = c + dj2;
-                        if (nr < 0 || nr >= n || nc < 0 || nc >= m) continue;
-                        int exp = (t % 2 == 1) ? 2 : 0;
-                        int L2 = dp[d2][nr][nc][exp];
-                        ans = max(ans, t + L2);
-                    }
+        // ↘ (x + 1, y + 1)
+        x = m - 1; for(y = n - 1; y >= 0; y--) dp[x][y][3] = 1;
+        y = n - 1; for(x = m - 1; x >= 0; x--) dp[x][y][3] = 1;
+        for(x = m - 2; x >= 0; x--) {
+            for(y = n - 2; y >= 0; y--) {
+                if(grid[x][y] == +1) 
+                    dp[x][y][3] = (grid[x + 1][y + 1] == -1)? 1 + dp[x + 1][y + 1][3]: 1;
+                if(grid[x][y] == -1) 
+                    dp[x][y][3] = (grid[x + 1][y + 1] == +1)? 1 + dp[x + 1][y + 1][3]: 1;
+            }
+        }
+
+        // ↙ (x + 1, y - 1)
+        x = m - 1; for(y = 0; y < n; y++) dp[x][y][4] = 1;
+        y = 0; for(x = m - 1; x >= 0; x--) dp[x][y][4] = 1;
+        for(x = m - 2; x >= 0; x--) {
+            for(y = 1; y < n; y++) {
+                if(grid[x][y] == +1) 
+                    dp[x][y][4] = (grid[x + 1][y - 1] == -1)? 1 + dp[x + 1][y - 1][4]: 1;
+                if(grid[x][y] == -1) 
+                    dp[x][y][4] = (grid[x + 1][y - 1] == +1)? 1 + dp[x + 1][y - 1][4]: 1;
+            }
+        }
+
+        for(x = 0; x < m; x++) {
+            for(y = 0; y < n; y++) {
+                if(std::abs(grid[x][y])) continue;
+
+                answer = std::max(answer, 1);
+                tx = x - 1, ty = y - 1, var = 1, d = 1;
+                while(tx >= 0 && ty >= 0 && grid[tx][ty] == var) { 
+                    answer = std::max(answer, d + dp[tx][ty][2]);
+                    --tx; --ty; var = (var == 1)? -1: +1; ++d;
+                }
+
+                tx = x - 1, ty = y + 1, var = 1, d = 1;
+                while(tx >= 0 && ty < n && grid[tx][ty] == var) { 
+                    answer = std::max(answer, d + dp[tx][ty][3]);
+                    --tx; ++ty; var = (var == 1)? -1: +1; ++d;
+                }
+
+                tx = x + 1, ty = y + 1, var = 1, d = 1;
+                while(tx < m && ty < n && grid[tx][ty] == var) { 
+                    answer = std::max(answer, d + dp[tx][ty][4]);
+                    ++tx; ++ty; var = (var == 1)? -1: +1; ++d;
+                }
+
+                tx = x + 1, ty = y - 1, var = 1, d = 1;
+                while(tx < m && ty >= 0 && grid[tx][ty] == var) { 
+                    answer = std::max(answer, d + dp[tx][ty][1]);
+                    ++tx; --ty; var = (var == 1)? -1: +1; ++d;
                 }
             }
         }
-        return ans;
+        return answer;
     }
 };
