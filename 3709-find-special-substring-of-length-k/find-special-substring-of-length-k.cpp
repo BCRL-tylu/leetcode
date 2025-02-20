@@ -8,9 +8,7 @@ public:
                 i++;
                 c++;
             }
-            if(c == k){
-                return true;
-            }
+            if(c == k) return true;
         }
         return false;
     }
