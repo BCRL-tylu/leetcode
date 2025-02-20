@@ -8,27 +8,17 @@ class Solution {
 private:
     bool backtrack(TrieNode* node, string& s, int n) {
         if (s.size() == n) {
-            if (!node->isEnd) return true;
-            return false;
+            return !node->isEnd;
         }
-        
-        if (!node->left) {
-            s.push_back('0');
-            return true;
-        }
+        if (!node->left) { s.push_back('0'); return true;}
         s.push_back('0');
         if (backtrack(node->left, s, n)) return true;
         s.pop_back(); // Undo
 
-        if (!node->right) {
-            s.push_back('1');
-            return true;
-        }
-
+        if (!node->right) {s.push_back('1'); return true;}
         s.push_back('1');
         if (backtrack(node->right, s, n)) return true;
         s.pop_back(); // Undo
-
         return false;
     }
 
@@ -36,7 +26,6 @@ public:
     string findDifferentBinaryString(vector<string>& nums) {
         TrieNode* root = new TrieNode();
         int n = nums[0].size();
-
         for (auto s : nums) {
             TrieNode* node = root;
             for (char c : s) {
@@ -50,14 +39,11 @@ public:
             }
             node->isEnd = true;
         }
-
         string s;
         backtrack(root, s, n);
-        
         while(s.size()<n){
             s.push_back('0');
         }
-
         return s;
     }
 };
