@@ -17,7 +17,7 @@ public:
             }
             // at stop check whether number of pieces >= required (i.e >=k segments with size >=m)
             if(piece>=k+1){ // we have too small size
-               l =m+1;
+                l =m+1;
             }else{
                 r =m;
             }
