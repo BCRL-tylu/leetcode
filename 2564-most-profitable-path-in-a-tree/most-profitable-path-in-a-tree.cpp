@@ -2,9 +2,7 @@ class Solution {
 public:
     int mostProfitablePath(vector<vector<int>>& edges, int bob, vector<int>& amount) {
         int n = amount.size();
-        unordered_map<int, vector<int>> adj;
-
-        // Build adjacency list
+        vector<vector<int>> adj(n);
         for (auto& edge : edges) {
             adj[edge[0]].push_back(edge[1]);
             adj[edge[1]].push_back(edge[0]);
@@ -13,11 +11,9 @@ public:
         // Bob's path tracking with efficient backtracking DFS
         vector<int> bobp;
         vector<int> visited(n, 0);
-
         function<bool(int)> findBobPath = [&](int node) {
             bobp.push_back(node);
             if (node == bob) return true;  // Found Bob, stop recursion
-            
             visited[node] = 1;
             for (int son : adj[node]) {
                 if (!visited[son] && findBobPath(son)) {
@@ -30,7 +26,6 @@ public:
 
         findBobPath(0);
         reverse(bobp.begin(), bobp.end());
-
         // Bob clears amounts on his path
         vector<int> amount_clear_time(n, INT_MAX);
         for (int i = 0; i < bobp.size(); i++) {
@@ -48,17 +43,14 @@ public:
             vector<int> tp = aq.top();
             aq.pop();
             int cnode = tp[0], profit = tp[1], time = tp[2];
-
             if (visited_alice[cnode]) continue;
             visited_alice[cnode] = 1;
-
             // Calculate profit at the current node
             if (amount_clear_time[cnode] == time) {
-                profit += amount[cnode] / 2;
+                profit += amount[cnode]>>1;
             } else if (amount_clear_time[cnode] > time) {
                 profit += amount[cnode];
             }
-
             bool isLeaf = true;
             for (int son : adj[cnode]) {
                 if (!visited_alice[son]) {
@@ -66,12 +58,10 @@ public:
                     aq.push({son, profit, time + 1});
                 }
             }
-
             if (isLeaf) {
                 max_profit = max(max_profit, profit);
             }
         }
-
         return max_profit;
     }
 };
