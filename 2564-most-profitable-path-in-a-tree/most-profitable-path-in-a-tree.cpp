@@ -3,65 +3,60 @@ public:
     int mostProfitablePath(vector<vector<int>>& edges, int bob, vector<int>& amount) {
         int n = amount.size();
         vector<vector<int>> adj(n);
-        for (auto& edge : edges) {
-            adj[edge[0]].push_back(edge[1]);
-            adj[edge[1]].push_back(edge[0]);
+        for(auto& e : edges){
+            int u = e[0], v = e[1];
+            adj[u].push_back(v);
+            adj[v].push_back(u);
         }
-
-        // Bob's path tracking with efficient backtracking DFS
-        vector<int> bobp;
-        vector<int> visited(n, 0);
-        function<bool(int)> findBobPath = [&](int node) {
-            bobp.push_back(node);
-            if (node == bob) return true;  // Found Bob, stop recursion
-            visited[node] = 1;
-            for (int son : adj[node]) {
-                if (!visited[son] && findBobPath(son)) {
-                    return true;
-                }
+        
+        // Build parent and depth info from root 0.
+        vector<int> parent(n, -1), depth(n, 0);
+        function<void(int, int)> dfsBuild = [&](int node, int par) {
+            parent[node] = par;
+            for (int nxt : adj[node]) {
+                if(nxt == par) continue;
+                depth[nxt] = depth[node] + 1;
+                dfsBuild(nxt, node);
             }
-            bobp.pop_back(); // Backtrack if not on the path
-            return false;
         };
-
-        findBobPath(0);
-        reverse(bobp.begin(), bobp.end());
-        // Bob clears amounts on his path
-        vector<int> amount_clear_time(n, INT_MAX);
-        for (int i = 0; i < bobp.size(); i++) {
-            amount_clear_time[bobp[i]] = i;
+        dfsBuild(0, -1);
+        
+        // Compute the time Bob visits each node on his unique path from bob to root.
+        const int INF = 1e9;
+        vector<int> bobTime(n, INF);
+        int t = 0, cur = bob;
+        while(cur != -1) {
+            bobTime[cur] = t;
+            cur = parent[cur];
+            t++;
         }
-
-        int max_profit = INT_MIN;
-
-        // Alice's DFS (iterative)
-        stack<vector<int>> aq; // {current node, profit so far, time}
-        vector<int> visited_alice(n, 0);
-        aq.push({0, 0, 0});
-
-        while (!aq.empty()) {
-            vector<int> tp = aq.top();
-            aq.pop();
-            int cnode = tp[0], profit = tp[1], time = tp[2];
-            if (visited_alice[cnode]) continue;
-            visited_alice[cnode] = 1;
-            // Calculate profit at the current node
-            if (amount_clear_time[cnode] == time) {
-                profit += amount[cnode]>>1;
-            } else if (amount_clear_time[cnode] > time) {
-                profit += amount[cnode];
-            }
+        
+        int ans = -1e9;
+        // DFS for Alice from the root. At time t, if Alice is at node,
+        // her contribution is decided by comparing t with bobTime[node]:
+        // - If t < bobTime[node]: she gets full amount[node]
+        // - If t == bobTime[node]: she gets half of amount[node]
+        // - If t > bobTime[node]: Bob already opened the gate, so she gets 0.
+        function<void(int, int, int)> dfsAlice = [&](int node, int t, int income) {
+            int currIncome = income;
+            if(t < bobTime[node])
+                currIncome += amount[node];
+            else if(t == bobTime[node])
+                currIncome += amount[node] / 2;
+            // Otherwise, Bob reached earlier so no money is added.
+            
+            // Check if node is a leaf (except for the root which might be a singleton)
             bool isLeaf = true;
-            for (int son : adj[cnode]) {
-                if (!visited_alice[son]) {
-                    isLeaf = false;
-                    aq.push({son, profit, time + 1});
-                }
+            for (int nxt : adj[node]) {
+                if(nxt == parent[node]) continue;
+                isLeaf = false;
+                dfsAlice(nxt, t + 1, currIncome);
             }
-            if (isLeaf) {
-                max_profit = max(max_profit, profit);
-            }
-        }
-        return max_profit;
+            if(isLeaf)
+                ans = max(ans, currIncome);
+        };
+        
+        dfsAlice(0, 0, 0);
+        return ans;
     }
 };
