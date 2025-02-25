@@ -1,27 +1,35 @@
 class Solution {
 public:
     long long maxCoins(vector<int>& lane1, vector<int>& lane2) {
-        int n = lane1.size();
-        if (n == 1) return max(lane1[0], lane2[0]);
-
-        const long long NEG_INF = -1e18;
-        vector<vector<long long>> dp(n, vector<long long>(3, NEG_INF));
-
-        dp[0][0] = lane1[0];
-        dp[0][1] = lane2[0];
-
-        long long ans = max(dp[0][0], dp[0][1]);
-
-        for (int i = 1; i < n; i++) {
-            // Stay in lane 1 or restart fresh
-            dp[i][0] = max({(long long)lane1[i], dp[i-1][0] + lane1[i]});
-            // Stay in lane 2, switch from lane1, or restart fresh
-            dp[i][1] = max({(long long)lane2[i], dp[i-1][1] + lane2[i], dp[i-1][0] + lane2[i]});
-            // Switch from lane 2 back to lane 1 or stay in lane 1
-            dp[i][2] = max({dp[i-1][1] + lane1[i], dp[i-1][2] + lane1[i]});
-            ans = max({ans, dp[i][0], dp[i][1], dp[i][2]});
+        vector<vector<long long>> dp(2, vector<long long>(3, LONG_LONG_MIN));
+        const int n = lane1.size();
+        long long r = LONG_LONG_MIN;
+        for (int i = 0; i < n; ++i) {
+            vector<vector<long long>> temp(2, vector<long long>(3, LONG_LONG_MIN));
+            temp[0][0] = lane1[i];
+            temp[1][1] = lane2[i];
+            for (int j = 0; j < 2; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    if (dp[j][k] == LONG_LONG_MIN) continue;
+                    const int t = k + (j != 0);
+                    if (t < 3) {
+                        temp[0][t] = max(temp[0][t], dp[j][k] + lane1[i]);
+                    }
+                }
+            }
+            for (int j = 0; j < 2; ++j) {
+                for (int k = 0; k < 3; ++k) {
+                    if (dp[j][k] == LONG_LONG_MIN) continue;
+                    const int t = k + (j != 1);
+                    if (t < 3) {
+                        temp[1][t] = max(temp[1][t], dp[j][k] + lane2[i]);
+                    }
+                }
+            }
+            swap(dp, temp);
+            r = max(r, *max_element(dp[0].begin(), dp[0].end()));
+            r = max(r, *max_element(dp[1].begin(), dp[1].end()));
         }
-
-        return ans;
+        return r;
     }
 };
