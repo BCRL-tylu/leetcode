@@ -2,10 +2,9 @@ class Solution {
 public:
     long long largestEvenSum(vector<int>& nums, int k) {
     int n = nums.size();
-    if (k > n) return -1;
     
     // Sort nums in descending order.
-    sort(nums.begin(), nums.end(), greater<int>());
+    nth_element(begin(nums), begin(nums) + k, end(nums), greater<int>());
     
     // Select the first k numbers as the candidate subsequence.
     long long sumCandidate = 0;
