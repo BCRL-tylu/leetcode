@@ -1,35 +1,31 @@
 class Solution {
 public:
     long long maxCoins(vector<int>& lane1, vector<int>& lane2) {
-        vector<vector<long long>> dp(2, vector<long long>(3, LONG_LONG_MIN));
-        const int n = lane1.size();
-        long long r = LONG_LONG_MIN;
-        for (int i = 0; i < n; ++i) {
-            vector<vector<long long>> temp(2, vector<long long>(3, LONG_LONG_MIN));
-            temp[0][0] = lane1[i];
-            temp[1][1] = lane2[i];
-            for (int j = 0; j < 2; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    if (dp[j][k] == LONG_LONG_MIN) continue;
-                    const int t = k + (j != 0);
-                    if (t < 3) {
-                        temp[0][t] = max(temp[0][t], dp[j][k] + lane1[i]);
-                    }
-                }
-            }
-            for (int j = 0; j < 2; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    if (dp[j][k] == LONG_LONG_MIN) continue;
-                    const int t = k + (j != 1);
-                    if (t < 3) {
-                        temp[1][t] = max(temp[1][t], dp[j][k] + lane2[i]);
-                    }
-                }
-            }
-            swap(dp, temp);
-            r = max(r, *max_element(dp[0].begin(), dp[0].end()));
-            r = max(r, *max_element(dp[1].begin(), dp[1].end()));
+        int n = lane1.size();
+        // Use a very small number as -infinity.
+        const long long NEG_INF = -1e18;
+        
+        // dp0, dp1, dp2 represent our three states for each mile i.
+        vector<long long> dp0(n, NEG_INF), dp1(n, NEG_INF), dp2(n, NEG_INF);
+        
+        // Base case: at mile 0.
+        dp0[0] = lane1[0];     // Start on lane1 without any switch.
+        dp1[0] = lane2[0];     // Allowed: switch immediately upon entering.
+        // dp2[0] remains -infinity because two switches at mile 0 is impossible.
+        
+        long long ans = max(dp0[0], dp1[0]);
+        
+        for (int i = 1; i < n; i++) {
+            // Stay in lane 1
+            dp0[i] = max((long long)lane1[i], dp0[i-1] + lane1[i]);
+             // Switch from lane 1 to lane 2 or stay in lane 2
+            dp1[i] = max({ (long long)lane2[i], dp1[i-1] + lane2[i], dp0[i-1] + lane2[i] });
+            // Switch from lane 2 back to lane 1 or stay in lane 1
+            dp2[i] = max(dp2[i-1] + lane1[i], dp1[i-1] + lane1[i]);
+             // Update the max result at each step
+            ans = max({ ans, dp0[i], dp1[i], dp2[i] });
         }
-        return r;
+        
+        return ans;
     }
 };
