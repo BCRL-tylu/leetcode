@@ -2,9 +2,11 @@ class Solution {
 public:
     long long largestEvenSum(vector<int>& nums, int k) {
     int n = nums.size();
+
     
     // Sort nums in descending order.
-    nth_element(begin(nums), begin(nums) + k, end(nums), greater<int>());
+    // nth_element(begin(nums), begin(nums) + k, end(nums), greater<int>());
+    sort(nums.begin(), nums.end(), greater<int>());
     
     // Select the first k numbers as the candidate subsequence.
     long long sumCandidate = 0;
@@ -31,6 +33,7 @@ public:
     //   - The largest odd number (if any).
     int remainderEvenMax = -1, remainderOddMax = -1;
     for (int i = k; i < n; i++) {
+        if(remainderEvenMax!=-1&&remainderOddMax!=-1) break;
         if (nums[i] % 2 == 0) {
             remainderEvenMax = max(remainderEvenMax, nums[i]);
         } else {
