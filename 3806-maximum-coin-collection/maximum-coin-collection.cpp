@@ -2,7 +2,7 @@ class Solution {
 public:
     long long maxCoins(vector<int>& lane1, vector<int>& lane2) {
         int n = lane1.size();
-        const long long NEG_INF = -1e18;
+        const long long NEG_INF = -1e9-1;
         
         // dp0, dp1, dp2 represent our three states for each mile i.
         // dp0 -stay on line 1
