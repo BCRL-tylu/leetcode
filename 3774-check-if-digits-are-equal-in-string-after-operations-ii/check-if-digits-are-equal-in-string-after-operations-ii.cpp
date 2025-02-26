@@ -15,7 +15,7 @@ public:
     }
     
     // Precomputed small binomials mod 5 for n, k in {0,1,2,3,4}.
-    // Note: 4 choose 2 = 6, and 6 mod 5 = 1.
+    // Binom[n][k]
     int smallBinom[5][5] = {
         {1, 0, 0, 0, 0},
         {1, 1, 0, 0, 0},
