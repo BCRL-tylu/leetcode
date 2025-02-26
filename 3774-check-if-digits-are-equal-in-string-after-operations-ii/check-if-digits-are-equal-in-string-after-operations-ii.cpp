@@ -3,7 +3,7 @@ public:
     // Compute binom(n, k) mod 2.
     // A well known fact is that binom(n, k) is odd (≡ 1 mod 2)
     // if and only if for every bit position, the binary digit of k
-    // is ≤ that of n.
+    // is ≤ that of n. ie \U0001d45b=2^\U0001d458−1
     int binom_mod_2(int n, int k) {
         while(n || k) {
             if ((k & 1) > (n & 1))
@@ -30,8 +30,6 @@ public:
         while(n > 0 || k > 0) {
             int n_digit = n % 5;
             int k_digit = k % 5;
-            if(k_digit > n_digit)
-                return 0;
             res = (res * smallBinom[n_digit][k_digit]) % 5;
             n /= 5;
             k /= 5;
@@ -41,7 +39,7 @@ public:
     
     // Combine the mod 2 and mod 5 parts to get binom(n, k) mod 10.
     // If we have:
-    //     x ≡ mod2 (mod 2)  and  x ≡ mod5 (mod 5),
+    // x ≡ mod2 (mod 2)  and  x ≡ mod5 (mod 5),
     // then the two possibilities mod 10 are mod5 and mod5+5.
     int binom_mod_10(int n, int k) {
         int mod2 = binom_mod_2(n, k);  // Either 0 or 1.
@@ -52,13 +50,9 @@ public:
         else
             return mod5 + 5;
     }
-    
+
     bool hasSameDigits(string s) {
-        int L = s.size();
-        if (L < 2)
-            return false;  // Edge case.
-        int n = L - 2;  // The number of steps (the binomial row index).
-        
+        int n = s.size() - 2;
         int left = 0, right = 0;
         // For 0 <= i <= n, compute the weighted sums.
         for (int i = 0; i <= n; i++) {
