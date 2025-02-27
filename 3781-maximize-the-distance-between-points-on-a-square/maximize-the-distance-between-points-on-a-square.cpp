@@ -1,3 +1,12 @@
+#define NO_SAN __attribute__((no_sanitize("undefined", "address", "coverage", "thread")))
+#define INL __attribute__((always_inline))
+#define HOT __attribute__((hot))
+#define INL_ATTR noexcept INL /*NO_SAN*/ HOT
+#define OUTL_ATTR noexcept /*NO_SAN*/ HOT
+#define LAM_ATTR INL /*NO_SAN*/ HOT noexcept
+
+#pragma GCC diagnostic ignored "-Wshift-op-parentheses"
+#pragma GCC diagnostic ignored "-Wvla-cxx-extension"
 class Solution {
 public:
     int maxDistance(int side, vector<vector<int>>& points, int k) {
