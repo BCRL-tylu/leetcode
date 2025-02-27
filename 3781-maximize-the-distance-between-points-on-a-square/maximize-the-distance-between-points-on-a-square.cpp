@@ -37,10 +37,9 @@ public:
 private:
     // Returns true if it's possible to pick k points with all gaps >= d.
     bool canPlaceK(const vector<long long>& p, int k, long long d, long long L) {
-        int n = p.size();
-        if ((long long)k * d > L) return false; // quick check
+        int n = p.size();//number of points
         
-        // Build extended array: [p[0], p[1], ..., p[n-1], p[0]+L, p[1]+L, ..., p[n-1]+L]
+        // Build extended array: [p[0], p[1], ..., p[n-1], p[0]+L, p[1]+L, ..., p[n-1]+L] to simulate the cycle
         vector<long long> ext(2 * n);
         for (int i = 0; i < n; i++){
             ext[i] = p[i];
@@ -54,10 +53,9 @@ private:
             int pos = start;
             // Try to greedily pick the next k-1 points using binary search.
             for (int i = 1; i < k; i++){
-                long long target = last + d;
                 // We only search up to ext.begin() + start + n,
                 // which means we cover exactly one full circle.
-                auto it = std::lower_bound(ext.begin() + pos + 1, ext.begin() + start + n, target);
+                auto it = std::lower_bound(ext.begin() + start + 1, ext.begin() + start + n, last + d);
                 if (it == ext.begin() + start + n) {
                     // Cannot find a valid next point.
                     count = i;  
