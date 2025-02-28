@@ -23,7 +23,7 @@ public:
                 i++; j++;
             } 
             // Otherwise, move in the direction of the larger LCS.
-            else if (dp[i+1][j] >= dp[i][j+1]) {
+            else if (dp[i+1][j] >= dp[i][j+1]) { // LCS in str1 larger than str2
                 res.push_back(str1[i]);
                 i++;
             } else {
