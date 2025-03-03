@@ -33,6 +33,7 @@ public:
                     for (int op = 0; op <= k; op++) {
                         dp[i][j][op] = max(dp[i + 1][j][op], dp[i][j - 1][op]);
                     }
+
                     // Then try pairing s[i] and s[j].
                     int cost = transformCost(s[i], s[j]);
                     for (int op = 0; op <= k - cost; op++) {
