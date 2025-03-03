@@ -31,13 +31,12 @@ public:
             int cost = transformCost(s[i], s[j]);
             for (int op = 0; op <= k - cost; op++) {
                 // For the inner substring [i+1, j-1]:
-                int inner = (i+1 <= j-1) ? dp[i+1][j-1][op] : 0;
-                dp[i][j][op + cost] = max(dp[i][j][op + cost], inner + 2);
+                //int inner = (i+1 <= j-1) ? dp[i+1][j-1][op] : 0;
+                dp[i][j][op + cost] = max(dp[i][j][op + cost], dp[i+1][j-1][op] + 2);
             }
         }
     }
-    
-    // Answer: best value for the entire string over all allowed operations.
+
     int ans = 0;
     for (int op = 0; op <= k; op++) {
         ans = max(ans, dp[0][n-1][op]);
