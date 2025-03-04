@@ -2,10 +2,10 @@ using pgq = priority_queue<int, vector<int>, greater<int>>;
 struct Info { int cnt; pgq pq; };
 class Solution {
 public:
-    long long maxProfit(vector<int>& W, vector<vector<int>>& T) {
+    long long maxProfit(vector<int>& worker, vector<vector<int>>& tasks) {
         unordered_map<int, Info> mp;
-        mp.reserve(W.size());
-        for (int w : W) {
+        mp.reserve(worker.size());
+        for (int w : worker) {
             auto it = mp.find(w);
             if(it == mp.end())
                 mp.emplace(w, Info{1, pgq()});
@@ -13,8 +13,8 @@ public:
                 it->second.cnt++;
         }
         long long ans = 0;
-        int ma = 0;
-        for (auto &t : T) {
+        int ma = 0; // the additional worker's best profit
+        for (auto &t : tasks) {
             int s = t[0], p = t[1];
             auto it = mp.find(s);
             if(it == mp.end()){
