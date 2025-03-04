@@ -27,7 +27,7 @@ public:
                 ans += p;
             } else if(p > inf.pq.top()){
                 ma = max(ma, inf.pq.top());
-                ans += p - inf.pq.top();
+                ans += p - inf.pq.top(); // remove less profitable job and add the most profitable
                 inf.pq.pop();
                 inf.pq.push(p);
             } else {
