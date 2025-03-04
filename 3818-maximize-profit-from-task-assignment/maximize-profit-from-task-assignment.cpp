@@ -5,33 +5,38 @@ public:
     long long maxProfit(vector<int>& workers, vector<vector<int>>& tasks) {
         unordered_map<int, int> cw;
         unordered_map<int, pgq> ts;
+
         for (int k : workers) {
             cw[k]++;
         }
+
         long long ans = 0;
         int ma = 0;
-        for (int i = 0; i < (int)tasks.size(); i++) {
-            if (!cw.count(tasks[i][0])) {
-                ma = max(ma, tasks[i][1]);
+
+        for (const auto& task : tasks) {
+            int skill = task[0], profit = task[1];
+
+            auto it = cw.find(skill);
+            if (it == cw.end()) {
+                ma = max(ma, profit);
                 continue;
             }
-            if (ts[tasks[i][0]].size() < cw[tasks[i][0]]) {
-                ts[tasks[i][0]].push(tasks[i][1]);
-                ans += tasks[i][1];
+
+            auto& pq = ts[skill];  // Use a reference to avoid repeated lookups
+
+            if ((int)pq.size() < it->second) {
+                pq.push(profit);
+                ans += profit;
+            } else if (profit > pq.top()) {
+                ma = max(ma, pq.top());  // Update `ma` only when replacing an element
+                ans += profit - pq.top();
+                pq.pop();
+                pq.push(profit);
             } else {
-                int tor = ts[tasks[i][0]].top();
-                if (tasks[i][1] < tor) {
-                    ma = max(ma, tasks[i][1]);
-                    continue;
-                }else{
-                    ts[tasks[i][0]].pop();
-                    ts[tasks[i][0]].push(tasks[i][1]);
-                    ans += tasks[i][1];
-                    ans -= tor;
-                    ma = max(ma, tor);
-                }
+                ma = max(ma, profit);
             }
         }
-        return ans+ma;
+
+        return ans + ma;
     }
 };
