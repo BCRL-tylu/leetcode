@@ -1,53 +1,28 @@
-#include <vector>
-#include <unordered_map>
-#include <algorithm>
-using namespace std;
-
 class Solution {
 public:
-    long long maxProfit(vector<int>& workers, vector<vector<int>>& tasks) {
-        // Count workers by their skill.
-        unordered_map<int, int> workerCount;
-        for (int w : workers) {
-            workerCount[w]++;
-        }
-        
-        unordered_map<int, vector<int>> buckets;
-        for (const auto& task : tasks) {
-            int skill = task[0], profit = task[1];
-            buckets[skill].push_back(profit);
-        }
-        
-        long long totalProfit = 0;
-        int extraCandidate = 0; 
-        for (auto &entry : buckets) {
-            int skill = entry.first;
-            auto &profits = entry.second;
-            if (workerCount.find(skill) == workerCount.end()) {
-                int candidate = *max_element(profits.begin(), profits.end());
-                extraCandidate = max(extraCandidate, candidate);
-                continue;
-            }
-            
-            int available = workerCount[skill];
-            // If there are as many or fewer tasks than workers,
-            // assign all tasks and leave nothing unassigned in this bucket.
-            if ((int)profits.size() <= available) {
-                for (int p : profits)
-                    totalProfit += p;
-            } else {
-                nth_element(profits.begin(), profits.end() - available, profits.end());
-                long long sumAssigned = 0;
-                for (auto it = profits.end() - available; it != profits.end(); ++it) {
-                    sumAssigned += *it;
+    long long maxProfit(vector<int>& W, vector<vector<int>>& T) {
+        unordered_map<int,int> c;
+        for (int a : W) c[a]++;
+        unordered_map<int,vector<int>> b;
+        for (auto &t : T) b[t[0]].push_back(t[1]);
+        long long s = 0;
+        int x = 0;
+        for (auto &p : b) {
+            auto &v = p.second;
+            if (c.find(p.first) == c.end())
+                x = max(x, *max_element(v.begin(), v.end()));
+            else {
+                int av = c[p.first], n = v.size();
+                if (n <= av)
+                    s += accumulate(v.begin(), v.end(), 0LL);
+                else {
+                    nth_element(v.begin(), v.end() - av, v.end());
+                    s += accumulate(v.begin() + n - av, v.end(), 0LL);
+                    int m = *max_element(v.begin(), v.begin() + n - av);
+                    x = max(x, m);
                 }
-                totalProfit += sumAssigned;
-                int candidate = *max_element(profits.begin(), profits.end() - available);
-                extraCandidate = max(extraCandidate, candidate);
             }
         }
-        
-        totalProfit += extraCandidate;
-        return totalProfit;
+        return s + x;
     }
 };
