@@ -1,42 +1,53 @@
-using pgq = priority_queue<int, vector<int>, greater<int>>;
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
 
 class Solution {
 public:
     long long maxProfit(vector<int>& workers, vector<vector<int>>& tasks) {
-        unordered_map<int, int> cw;
-        unordered_map<int, pgq> ts;
-
-        for (int k : workers) {
-            cw[k]++;
+        // Count workers by their skill.
+        unordered_map<int, int> workerCount;
+        for (int w : workers) {
+            workerCount[w]++;
         }
-
-        long long ans = 0;
-        int ma = 0;
-
+        
+        unordered_map<int, vector<int>> buckets;
         for (const auto& task : tasks) {
             int skill = task[0], profit = task[1];
-
-            auto it = cw.find(skill);
-            if (it == cw.end()) {
-                ma = max(ma, profit);
+            buckets[skill].push_back(profit);
+        }
+        
+        long long totalProfit = 0;
+        int extraCandidate = 0; 
+        for (auto &entry : buckets) {
+            int skill = entry.first;
+            auto &profits = entry.second;
+            if (workerCount.find(skill) == workerCount.end()) {
+                int candidate = *max_element(profits.begin(), profits.end());
+                extraCandidate = max(extraCandidate, candidate);
                 continue;
             }
-
-            auto& pq = ts[skill];  // Use a reference to avoid repeated lookups
-
-            if ((int)pq.size() < it->second) {
-                pq.push(profit);
-                ans += profit;
-            } else if (profit > pq.top()) {
-                ma = max(ma, pq.top());  // Update `ma` only when replacing an element
-                ans += profit - pq.top();
-                pq.pop();
-                pq.push(profit);
+            
+            int available = workerCount[skill];
+            // If there are as many or fewer tasks than workers,
+            // assign all tasks and leave nothing unassigned in this bucket.
+            if ((int)profits.size() <= available) {
+                for (int p : profits)
+                    totalProfit += p;
             } else {
-                ma = max(ma, profit);
+                nth_element(profits.begin(), profits.end() - available, profits.end());
+                long long sumAssigned = 0;
+                for (auto it = profits.end() - available; it != profits.end(); ++it) {
+                    sumAssigned += *it;
+                }
+                totalProfit += sumAssigned;
+                int candidate = *max_element(profits.begin(), profits.end() - available);
+                extraCandidate = max(extraCandidate, candidate);
             }
         }
-
-        return ans + ma;
+        
+        totalProfit += extraCandidate;
+        return totalProfit;
     }
 };
