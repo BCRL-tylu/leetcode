@@ -1,25 +1,39 @@
-class Solution 
-{
-	public:
-    long long maxProfit(vector<int>& workers, vector<vector<int>>& tasks) 
-	{
-		long long result=0,maximum=0,m=workers.size(),n=tasks.size();
-		unordered_map<int,int> total;
-		sort(tasks.begin(),tasks.end(),[](vector<int>& a,vector<int>& b){
-			if(a[0]!=b[0]) return a[0]<b[0];
-			return a[1]>b[1];
-		});
-		for(int i=0;i<m;i++) total[workers[i]]++;
-		for(int i=0;i<n;i++)
-		{
-			if(total.count(tasks[i][0]))
-			{
-				result+=tasks[i][1];
-				total[tasks[i][0]]--;
-				if(total[tasks[i][0]]==0) total.erase(tasks[i][0]);
-			}
-			else maximum=max(maximum,1ll*tasks[i][1]);
-		}
-		return result+maximum;
+using pgq = priority_queue<int, vector<int>, greater<int>>;
+struct Info { int cnt; pgq pq; };
+class Solution {
+public:
+    long long maxProfit(vector<int>& W, vector<vector<int>>& T) {
+        unordered_map<int, Info> mp;
+        mp.reserve(W.size());
+        for (int w : W) {
+            auto it = mp.find(w);
+            if(it == mp.end())
+                mp.emplace(w, Info{1, pgq()});
+            else
+                it->second.cnt++;
+        }
+        long long ans = 0;
+        int ma = 0;
+        for (auto &t : T) {
+            int s = t[0], p = t[1];
+            auto it = mp.find(s);
+            if(it == mp.end()){
+                ma = max(ma, p);
+                continue;
+            }
+            auto &inf = it->second;
+            if((int)inf.pq.size() < inf.cnt) {
+                inf.pq.push(p);
+                ans += p;
+            } else if(p > inf.pq.top()){
+                ma = max(ma, inf.pq.top());
+                ans += p - inf.pq.top();
+                inf.pq.pop();
+                inf.pq.push(p);
+            } else {
+                ma = max(ma, p);
+            }
+        }
+        return ans + ma;
     }
 };
