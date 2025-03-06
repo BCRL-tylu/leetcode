@@ -1,90 +1,81 @@
+//time complexity: O(n^2)
+//space complexity: O(n^2)
+
+
+// for k = 323021009840101
+vector<long long> fact(101, LLONG_MAX);
+//left0=even, left1=odd
+vector<int> remain(2);
+
 class Solution {
-    using int128 = __int128;
-    
-    unordered_map<long long, int128> memo;
 
-    long long encode(int odd, int even, int req) {
-        return odd + even * 10LL + req * 100LL;
+    long long calcPerms(int odd, int even) {
+        long long fromOdd = fact[odd];
+        long long fromEven = fact[even];
+
+        long long total = LLONG_MAX;
+        // for k = 670623106831091
+        if (log10(fromOdd) + log10(fromEven) <= 18)
+            total = fromOdd * fromEven;
+
+        return total;
     }
 
-    int128 cap;
-    
-
-    int128 dp(int odd, int even, int req) {
-        if (odd == 0 && even == 0) return 1;
-        long long key = encode(odd, even, req);
-        if (memo.count(key)) return memo[key];
-        int128 ways = 0;
-        if (req == 2) {
-            if (odd > 0) {
-                int128 sub = dp(odd - 1, even, 0);
-                ways += odd * sub;
-                if (ways > cap) ways = cap;
-            }
-            if (even > 0) {
-                int128 sub = dp(odd, even - 1, 1);
-                ways += even * sub;
-                if (ways > cap) ways = cap;
-            }
-        } else if (req == 1) { // must pick an odd
-            if (odd > 0) {
-                int128 sub = dp(odd - 1, even, 0);
-                ways = odd * sub;
-                if (ways > cap) ways = cap;
-            }
-        } else { 
-            if (even > 0) {
-                int128 sub = dp(odd, even - 1, 1);
-                ways = even * sub;
-                if (ways > cap) ways = cap;
+    //placeOdd == -1, can place anything here, (haven't started)
+    // 0: even
+    // 1: odd
+//    void solve(vector<int> &ans, int n, long long k, int placeOdd, vector<vector<bool>> &chosen) {
+    void solve(vector<int> &ans, int n, long long k, int placeOdd, vector<bool> &chosen) {
+        if (remain[0] + remain[1] == 0)
+            return;
+        
+        long long next;
+        if (placeOdd == -1)
+            next = calcPerms(remain[1], remain[0] - 1);
+        else
+            next = calcPerms(remain[1] - placeOdd, remain[0] - !placeOdd);
+        
+        for (int i = 1; i <= n; i++) {
+            if (placeOdd == -1 || ((i&1) == placeOdd)) {
+//                if (!chosen[i&1][i]) {
+                if (!chosen[i]) {
+                    if (k > next)
+                        k -= next;
+                    else {
+                        remain[i&1]--;
+                        ans.push_back(i);
+//                        chosen[i&1][i] = true;
+                        chosen[i] = true;
+                        solve(ans, n, k, !(i&1), chosen);
+                        break;
+                    }
+                }
             }
         }
-        memo[key] = ways;
-        return ways;
     }
-    
+
 public:
-    vector<int> permute(int n, long long k) {
-        int oddCount = (n + 1) / 2;
-        int evenCount = n / 2;
-        cap = k + 1; // we cap all dp values at k+1
+    vector<int> permute(int n, long long k) {        
+        vector<int> ans;
+
+        //init fact
+        fact[0] = 1;
+        for (int i = 1; i <= 20; i++) fact[i] = i * fact[i-1];
         
-        int128 total = dp(oddCount, evenCount, 2);
-        if (k > (long long) total) return {};  // fewer than k valid permutations
-        
-        vector<int> result,avail(n);
-        iota(avail.begin(), avail.end(), 1);  // 1,2,3,4,....
-        int req = 2;  
-        while (!avail.empty()) {
-            bool chosen = false;
-            for (int i = 0; i < avail.size(); i++) {
-                int candidate = avail[i];
-                int candidateParity = candidate & 1; // odd if 1, even if 0
-                if (req != 2 && candidateParity != req) continue;
-                
-                int128 cnt = 0;
-                if (candidateParity == 1) { //odd
-                    cnt = dp(oddCount - 1, evenCount, 0);
-                } else {  
-                    cnt = dp(oddCount, evenCount - 1, 1);
-                }
-                if (cnt < k) {
-                    k -= (long long) cnt; 
-                } else {
-                    result.push_back(candidate);
-                    avail.erase(avail.begin() + i);
-                    if (candidateParity == 1)
-                        oddCount--;
-                    else
-                        evenCount--;
-                    req = (candidateParity == 1 ? 0 : 1);
-                    chosen = true;
-                    break;
-                }
-            }
-            if (!chosen)
-                break;  // logically should not happen if k is valid.
-        }
-        return result;
+        //left0=even, left1=odd
+        remain[0] = (n)/2;
+        remain[1] = (n+1)/2;
+
+        //all even/odd numbers
+        //vector<vector<bool>> chosen(2, vector(n+1, false));
+        vector<bool> chosen(n+1, false);
+
+        //odd = 1
+        //even = -1
+        int placeOdd = n % 2 ? 1 : -1;
+
+        solve(ans, n, k, placeOdd, chosen) ;
+
+        return ans;
     }
 };
