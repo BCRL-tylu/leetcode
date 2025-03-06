@@ -15,15 +15,16 @@ public:
         for (int j = 0; j <= n; j++) {
             dp[0][j] = 0;
         }
-
+        //Let dp[i][j] be the maximum sum with i subarrays for the first j elements
         for (int i = 1; i <= k; i++) {
             int u = i * m;
             local[i][u] = dp[i - 1][u - m] + (ps[u] - ps[u - m]);
             dp[i][u] = local[i][u]; // Update dp for the first valid index
             for (int j = u + 1; j <= n; j++) {
-                local[i][j] = max(local[i][j - 1] + nums[j - 1],
+                int jm = j-1;
+                local[i][j] = max(local[i][jm] + nums[jm],
                                   dp[i - 1][j - m] + (ps[j] - ps[j - m]));
-                dp[i][j] = max(dp[i][j - 1], local[i][j]);
+                dp[i][j] = max(dp[i][jm], local[i][j]);
             }
         }
 
