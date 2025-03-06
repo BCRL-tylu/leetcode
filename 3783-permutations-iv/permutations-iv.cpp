@@ -2,9 +2,7 @@
 //space complexity: O(n^2)
 
 
-// for k = 323021009840101
 vector<long long> fact(101, LLONG_MAX);
-//left0=even, left1=odd
 vector<int> remain(2);
 
 class Solution {
@@ -14,7 +12,6 @@ class Solution {
         long long fromEven = fact[even];
 
         long long total = LLONG_MAX;
-        // for k = 670623106831091
         if (log10(fromOdd) + log10(fromEven) <= 18)
             total = fromOdd * fromEven;
 
@@ -60,7 +57,7 @@ public:
 
         //init fact
         fact[0] = 1;
-        for (int i = 1; i <= 20; i++) fact[i] = i * fact[i-1];
+        for (int i = 1; i <= 18; i++) fact[i] = i * fact[i-1];
         
         //left0=even, left1=odd
         remain[0] = (n)/2;
