@@ -4,7 +4,7 @@ class Solution {
     unordered_map<long long, int128> memo;
 
     long long encode(int odd, int even, int req) {
-        return odd + even * 100LL + req * 10000LL;
+        return odd + even * 10LL + req * 100LL;
     }
 
     int128 cap;
@@ -49,12 +49,10 @@ public:
     vector<int> permute(int n, long long k) {
         int oddCount = (n + 1) / 2;
         int evenCount = n / 2;
-        memo.clear();
         cap = k + 1; // we cap all dp values at k+1
         
         int128 total = dp(oddCount, evenCount, 2);
-        if (k > (long long) total)
-            return {};  // fewer than k valid permutations
+        if (k > (long long) total) return {};  // fewer than k valid permutations
         
         vector<int> result;
         vector<int> avail(n);
