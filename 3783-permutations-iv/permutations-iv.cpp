@@ -47,7 +47,6 @@ class Solution {
     
 public:
     vector<int> permute(int n, long long k) {
-        if (k > std::tgamma(n + 1)) return {};
         int oddCount = (n + 1) / 2;
         int evenCount = n / 2;
         memo.clear();
@@ -72,10 +71,8 @@ public:
                 
                 int128 cnt = 0;
                 if (candidateParity == 1) { 
-                    // Candidate is odd; next state requires even.
                     cnt = dp(oddCount - 1, evenCount, 0);
                 } else {  
-                    // Candidate is even; next state requires odd.
                     cnt = dp(oddCount, evenCount - 1, 1);
                 }
                 if (cnt < k) {
