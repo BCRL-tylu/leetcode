@@ -11,11 +11,9 @@ class Solution {
     
 
     int128 dp(int odd, int even, int req) {
-        if (odd == 0 && even == 0)
-            return 1;
+        if (odd == 0 && even == 0) return 1;
         long long key = encode(odd, even, req);
-        if (memo.count(key))
-            return memo[key];
+        if (memo.count(key)) return memo[key];
         int128 ways = 0;
         if (req == 2) {
             if (odd > 0) {
@@ -54,21 +52,18 @@ public:
         int128 total = dp(oddCount, evenCount, 2);
         if (k > (long long) total) return {};  // fewer than k valid permutations
         
-        vector<int> result;
-        vector<int> avail(n);
-        iota(avail.begin(), avail.end(), 1);  
+        vector<int> result,avail(n);
+        iota(avail.begin(), avail.end(), 1);  // 1,2,3,4,....
         int req = 2;  
-        
         while (!avail.empty()) {
             bool chosen = false;
             for (int i = 0; i < avail.size(); i++) {
                 int candidate = avail[i];
                 int candidateParity = candidate & 1; // odd if 1, even if 0
-                if (req != 2 && candidateParity != req)
-                    continue;
+                if (req != 2 && candidateParity != req) continue;
                 
                 int128 cnt = 0;
-                if (candidateParity == 1) { 
+                if (candidateParity == 1) { //odd
                     cnt = dp(oddCount - 1, evenCount, 0);
                 } else {  
                     cnt = dp(oddCount, evenCount - 1, 1);
