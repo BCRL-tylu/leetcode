@@ -18,11 +18,18 @@ public:
 
         for (int i = 1; i <= k; i++) {
             int u = i * m;
-            local[i][u] = dp[i - 1][u - m] + (ps[u] - ps[u - m]);
-            dp[i][u] = local[i][u]; // Update dp for the first valid index
+            if (u > n) break;  // Prevent out-of-bounds access
+            
+            if (u - m >= 0) {   // Ensure valid index
+                local[i][u] = dp[i - 1][u - m] + (ps[u] - ps[u - m]);
+                dp[i][u] = local[i][u]; // Update dp for the first valid index
+            }
+
             for (int j = u + 1; j <= n; j++) {
-                local[i][j] = max(local[i][j - 1] + nums[j - 1],
-                                  dp[i - 1][j - m] + (ps[j] - ps[j - m]));
+                if (j - m >= 0) {  // Ensure valid index
+                    local[i][j] = max(local[i][j - 1] + nums[j - 1],
+                                      dp[i - 1][j - m] + (ps[j] - ps[j - m]));
+                }
                 dp[i][j] = max(dp[i][j - 1], local[i][j]);
             }
         }
