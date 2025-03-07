@@ -19,26 +19,29 @@ public:
             }
         }
 
-        // Step 2: Collect primes in the range [left, right]
-        vector<int> primes;
-        for (int i = max(2, left); i <= right; i++) {
-            if (isPrime[i]) primes.push_back(i);
-        }
-
-        // Step 3: Find the closest pair
-        if (primes.size() < 2) return {-1, -1};
-
-        vector<int> ans = {primes[0], primes[1]};
-        int minDiff = ans[1] - ans[0];
-
-        for (size_t i = 1; i < primes.size() - 1; i++) {
-            int diff = primes[i + 1] - primes[i];
-            if (diff < minDiff) {
-                minDiff = diff;
-                ans = {primes[i], primes[i + 1]};
+        vector<int> ans = {-1,-1};
+        int diff = 0, prev =0;
+        for(int i =left; i<=right;i++){
+            if(isPrime[i]){
+                if(ans[0] == -1){
+                    ans[0] = (int)i;
+                    continue;
+                }else if(ans[1] ==-1){
+                    ans[1] = (int)i;
+                    diff = ans[1]-ans[0];
+                    prev = ans[1];
+                    continue;
+                }else{
+                    if((int)i-prev<diff){
+                        diff = (int)i-prev;
+                        ans[0] = prev;
+                        ans[1] = (int)i;
+                    }
+                    prev = (int)i;
+                }
             }
-            if (minDiff == 2) break;  // Twin prime optimization
         }
+        if(ans[1] ==-1) return {-1,-1};
         return ans;
     }
 };
