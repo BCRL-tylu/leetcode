@@ -6,6 +6,8 @@ class Solution {
 public:
     vector<int> closestPrimes(int left, int right) {
         if (right < 2) return {-1, -1};
+        if (left <= 2 && right >= 3)
+            return { 2, 3 };
 
         // Step 1: Sieve of Eratosthenes to find primes up to 'right'
         vector<bool> isPrime(right + 1, true);
