@@ -4,11 +4,10 @@ public:
         int n = c.size(),l = 0,r=0,ans=0,tr;
 
         while(l<n){
-            tr = r+1;
-            while(tr-l<k && c[r%n]!=c[(tr)%n]){
+            while(r-l+1<k && c[r%n]!=c[(r+1)%n]){
                 tr = ++r+1;
             }
-            if(tr-l<k){
+            if(r-l+1<k){
                 r++;
                 l=r;
             }else{
