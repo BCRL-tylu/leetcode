@@ -9,7 +9,7 @@ public:
         }
         sort(n1.begin(), n1.end());
         
-        // Use a multiset to allow duplicate values.
+        // Use a set of long long to store the elements from nums2.
         multiset<long long> heap;
         long long k_largest = 0;
         
@@ -19,6 +19,7 @@ public:
                 int index = n1[i].second;
                 heap.insert(nums2[index]);
                 k_largest += nums2[index];
+                
                 // If the heap size exceeds k, remove the smallest element.
                 if (heap.size() > k) {
                     k_largest -= *heap.begin();
