@@ -1,70 +1,24 @@
+
+//greedy
 class Solution {
 public:
     int minZeroArray(vector<int>& nums, vector<vector<int>>& queries) {
-        int n = nums.size(), k = queries.size();
-        unordered_map<int, vector<int>> cache;
-        set<int> cachedIds;
-        cache[0] = vector<int>(n, 0);
-        cachedIds.insert(0);
-        
-        auto computeCum = [&](int mid) -> vector<int> {
-            // If we already computed the cumulative array for 'mid' queries, return it.
-            if (cache.count(mid))
-                return cache[mid];
-            
-            int baseIdx = 0;
-            auto it = cachedIds.upper_bound(mid);
-            if (it != cachedIds.begin()){
-                it--;
-                baseIdx = *it;
+        int n = nums.size(), sum = 0, k = 0;
+        vector<int> cnt(n + 1, 0);
+        for (int i = 0; i < n; i++) {
+            while (sum + cnt[i] < nums[i]) {
+                if (k == queries.size()) return -1;
+                int l = queries[k][0];
+                int r = queries[k][1];
+                int val = queries[k][2];
+                k++;
+                
+                if (r < i) continue;
+                cnt[max(l, i)] += val;
+                cnt[r + 1] -= val;
             }
-            
-            vector<int> cum = cache[baseIdx];
-            
-            vector<int> diff(n + 1, 0);
-            for (int i = baseIdx; i < mid; i++) {
-                int l = queries[i][0], r = queries[i][1], val = queries[i][2];
-                diff[l] += val;
-                // Since our diff array is of size n+1, we can update index r+1 directly.
-                if (r + 1 < (int)diff.size())
-                    diff[r + 1] -= val;
-            }
-            int add = 0;
-            for (int j = 0; j < n; j++){
-                add += diff[j];
-                cum[j] += add;
-            }
-            cache[mid] = cum;
-            cachedIds.insert(mid);
-            return cum;
-        };
-        
-        int low = 0, high = k + 1;
-        while (low < high) {
-            int mid = low + (high - low) / 2;
-            vector<int> cum = computeCum(mid);
-            bool valid = true;
-            for (int j = 0; j < n; j++){
-                if (cum[j] < nums[j]) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (valid) {
-                high = mid;
-            } else {
-                low = mid + 1;
-                auto it = cachedIds.lower_bound(low);
-                for (auto iter = cachedIds.begin(); iter != it; ) {
-                    if (*iter != 0) {  // Never remove candidate 0.
-                        cache.erase(*iter);
-                        iter = cachedIds.erase(iter);
-                    } else {
-                        ++iter;
-                    }
-                }
-            }
+            sum += cnt[i];
         }
-        return (low <= k ? low : -1);
+        return k;
     }
 };
