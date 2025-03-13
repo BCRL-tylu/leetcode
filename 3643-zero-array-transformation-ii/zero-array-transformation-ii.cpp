@@ -2,53 +2,49 @@ class Solution {
 public:
     int minZeroArray(vector<int>& nums, vector<vector<int>>& queries) {
         int n = nums.size(), k = queries.size();
-        // We'll cache computed cumulative arrays:
-        // cache[x] stores the cumulative array after applying the first x queries.
         unordered_map<int, vector<int>> cache;
+        set<int> cachedIds;
+        cache[0] = vector<int>(n, 0);
+        cachedIds.insert(0);
         
-        // Helper: compute cumulative array for candidate 'mid'
         auto computeCum = [&](int mid) -> vector<int> {
-            // If already computed, return it.
+            // If we already computed the cumulative array for 'mid' queries, return it.
             if (cache.count(mid))
                 return cache[mid];
             
-            // Try to find a cached candidate that is the largest candidate <= mid.
             int baseIdx = 0;
-            for (auto &entry : cache) {
-                if (entry.first <= mid && entry.first > baseIdx)
-                    baseIdx = entry.first;
+            auto it = cachedIds.upper_bound(mid);
+            if (it != cachedIds.begin()){
+                it--;
+                baseIdx = *it;
             }
             
-            // Start with the previously computed cumulative array if available,
-            // otherwise start with all zeros.
-            vector<int> cum = (baseIdx > 0 ? cache[baseIdx] : vector<int>(n, 0));
+            vector<int> cum = cache[baseIdx];
             
-            // Use a diff array to apply queries from baseIdx to mid - 1.
             vector<int> diff(n + 1, 0);
             for (int i = baseIdx; i < mid; i++) {
                 int l = queries[i][0], r = queries[i][1], val = queries[i][2];
                 diff[l] += val;
-                if (r + 1 < n)
+                // Since our diff array is of size n+1, we can update index r+1 directly.
+                if (r + 1 < (int)diff.size())
                     diff[r + 1] -= val;
             }
-            // Now update cum by adding the effect of diff.
             int add = 0;
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j < n; j++){
                 add += diff[j];
                 cum[j] += add;
             }
-            // Cache this result.
             cache[mid] = cum;
+            cachedIds.insert(mid);
             return cum;
         };
         
-        // Binary search for the minimum number of queries required.
         int low = 0, high = k + 1;
         while (low < high) {
             int mid = low + (high - low) / 2;
             vector<int> cum = computeCum(mid);
             bool valid = true;
-            for (int j = 0; j < n; j++) {
+            for (int j = 0; j < n; j++){
                 if (cum[j] < nums[j]) {
                     valid = false;
                     break;
@@ -58,13 +54,15 @@ public:
                 high = mid;
             } else {
                 low = mid + 1;
-                vector<int> keysToRemove;
-                for (auto &entry : cache) {
-                    if (entry.first < low)
-                        keysToRemove.push_back(entry.first);
+                auto it = cachedIds.lower_bound(low);
+                for (auto iter = cachedIds.begin(); iter != it; ) {
+                    if (*iter != 0) {  // Never remove candidate 0.
+                        cache.erase(*iter);
+                        iter = cachedIds.erase(iter);
+                    } else {
+                        ++iter;
+                    }
                 }
-                for (int key : keysToRemove)
-                    cache.erase(key);
             }
         }
         return (low <= k ? low : -1);
