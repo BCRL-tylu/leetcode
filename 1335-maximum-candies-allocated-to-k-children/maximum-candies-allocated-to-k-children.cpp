@@ -7,7 +7,6 @@ public:
             mid = (l + r) >> 1; 
             long long kids = 0; 
             for (int i = 0; i < n; i++) kids += c[i] / mid;
-            
             if (kids < k) { 
                 r = mid - 1;
             } else {
