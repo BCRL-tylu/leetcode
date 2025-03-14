@@ -1,7 +1,7 @@
 class Solution {
 public:
     int maximumCandies(vector<int>& c, long long k) {
-        int l = 1, r = *max_element(c.begin(), c.end()), n = c.size(), mid;
+        int l = 1, r = 1e7, n = c.size(), mid;
         
         while (l <= r) { 
             mid = (l + r) >> 1; 
