@@ -6,14 +6,14 @@ public:
 
         while (l < r) {
             int mid = (l + r) / 2;
-            int count = 0, prev_robbed = -2;
+            int count = k, prev_robbed = -2;
             bool  valid =false;
             for (int i = 0; i < nums.size(); i++) {
                 if (nums[i] <= mid && i > prev_robbed + 1) {
-                    count++;
+                    count--;
                     prev_robbed = i;
                 }
-                if(count >= k){
+                if(count ==0){
                     valid=true;
                     break;
                 }
