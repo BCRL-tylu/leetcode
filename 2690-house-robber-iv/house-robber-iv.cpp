@@ -9,11 +9,11 @@ public:
             int count = k, prev_robbed = -2;
             bool  valid =false;
             for (int i = 0; i < nums.size(); i++) {
-                if (nums[i] <= mid && i > prev_robbed + 1) {
+                if (nums[i] <= mid) {
                     count--;
-                    prev_robbed = i;
+                    i++;
                 }
-                if(count ==0){
+                if(count==0){
                     valid=true;
                     break;
                 }
