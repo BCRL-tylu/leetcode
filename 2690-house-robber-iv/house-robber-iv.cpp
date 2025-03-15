@@ -1,7 +1,7 @@
 class Solution {
 public:
     int minCapability(vector<int>& nums, int k) {
-        int l = *min_element(nums.begin(), nums.end());
+        int l = 0;
         int r = *max_element(nums.begin(), nums.end());
 
         while (l < r) {
