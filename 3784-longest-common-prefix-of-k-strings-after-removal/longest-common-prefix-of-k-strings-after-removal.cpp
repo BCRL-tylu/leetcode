@@ -1,72 +1,48 @@
+
 class Solution {
+    // compute the pairwise longest common prefix
+    int helper(string& a, string& b) {
+        int res = 0;
+        for(; res < a.length() && res < b.length() && a[res] == b[res]; res++) {}
+        return res;
+    }
+    // Sliding Window over Sorted Order to Find the Best k-Group
+    pair<vector<int>,int> helper(vector<string>& S, vector<int>& ord, int k) {
+        vector<int> best{0,0};
+        int bestIndex = -1;
+        for(int i = k - 1; i < S.size(); i++) {
+            int j = i - k + 1;
+            int ii = ord[i], jj = ord[j];
+
+            if(min(S[ii].length(), S[jj].length()) <= best[1]) continue;
+            int match = helper(S[ii], S[jj]), now = match;
+            if(match <= best[1]) continue;
+            if(match > best[0]) swap(match, best[0]);
+            if(match > best[1]) swap(match, best[1]);
+            if(best[0] == now) bestIndex = i;
+        }
+
+        return {best, bestIndex};
+    }
 public:
-    struct Node {
-        unordered_map<char, Node*> ch;
-        int cnt = 0, d = 0, dp = 0;
-    };
-    
-    struct Trie {
-        Node* r;
-        int k;
-        Trie(int kk): k(kk) { r = new Node(); r->d = 0; }
-        
-        void ins(const string &s) {
-            Node* cur = r;
-            cur->cnt++;
-            for (char c : s) {
-                if (!cur->ch.count(c)) {
-                    Node* nxt = new Node();
-                    nxt->d = cur->d + 1;
-                    cur->ch[c] = nxt;
-                }
-                cur = cur->ch[c];
-                cur->cnt++;
+    vector<int> longestCommonPrefix(vector<string>& words, int k) {
+        if(words.size() <= k) return vector<int>(words.size());
+        vector<int> ord(words.size());
+        for(int i = 0; i < words.size(); i++) ord[i] = i;
+        sort(begin(ord), end(ord), [&](int i, int j) {return words[i] < words[j];});
+        vector<int> rord(words.size());
+        for(int i = 0; i < words.size(); i++) rord[ord[i]] = i;
+        auto [best, bestIndex] = helper(words,ord,k);
+        vector<int> res;
+        for(int i = 0; auto& w : words) {
+            if(w.length() < best[0]) res.push_back(best[0]);
+            else if(best[0] == best[1]) res.push_back(best[0]);
+            else {
+                if(bestIndex - k + 1 <= rord[i] and rord[i] <= bestIndex) res.push_back(best[1]);
+                else res.push_back(best[0]);
             }
+            i++;
         }
-        
-        void dfs(Node* cur) {
-            cur->dp = (cur->cnt >= k ? cur->d : 0);
-            for (auto &p : cur->ch) {
-                dfs(p.second);
-                cur->dp = max(cur->dp, p.second->dp);
-            }
-        }
-        
-        void updPath(const vector<Node*>& path) {
-            for (int i = path.size() - 1; i >= 0; i--) {
-                int nd = (path[i]->cnt >= k ? path[i]->d : 0);
-                for (auto &p : path[i]->ch)
-                    nd = max(nd, p.second->dp);
-                path[i]->dp = nd;
-            }
-        }
-        
-        void updWord(const string &s, int delta) {
-            vector<Node*> path;
-            Node* cur = r;
-            path.push_back(cur);
-            for (char c : s) {
-                cur = cur->ch[c];
-                path.push_back(cur);
-            }
-            for (auto node : path)
-                node->cnt += delta;
-            updPath(path);
-        }
-    };
-    
-    vector<int> longestCommonPrefix(vector<string>& w, int k) {
-        vector<string> v = w;
-        Trie t(k);
-        for (auto &s : v)
-            t.ins(s);
-        t.dfs(t.r);
-        vector<int> ans;
-        for (auto &s : v) {
-            t.updWord(s, -1);
-            ans.push_back(t.r->cnt < k ? 0 : t.r->dp);
-            t.updWord(s, 1);
-        }
-        return ans;
+        return res;
     }
 };
