@@ -11,7 +11,7 @@ public:
             }
 
             else if (maxNum > nums[i]) {
-                if ((maxNum-nums[i])==1) {
+                if ((maxNum-nums[i])&1) {
                     minUnlocked += numLocksFromMax;
                     numLocksFromMax = 0;
                 } else {
