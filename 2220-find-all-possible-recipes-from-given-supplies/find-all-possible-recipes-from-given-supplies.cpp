@@ -5,20 +5,17 @@ class Solution {
     
 private:
     bool dfs(const string &ing) {
-
         if (state[ing] == 2) return sp[ing];
         if (state[ing] == 1) return false;
-        
         if (sp[ing]) {
             state[ing] = 2;
             return true;
         }
-        if (reping.find(ing) == reping.end()) {
+        if (!reping.count(ing)) {
             state[ing] = 2;
             return false;
         }
-        
-        // Mark this ingredient as currently being visited
+
         state[ing] = 1;
         bool canMake = true;
         for (const auto &subIng : reping[ing]) {
