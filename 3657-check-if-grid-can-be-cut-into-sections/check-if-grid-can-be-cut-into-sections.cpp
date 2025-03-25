@@ -34,8 +34,6 @@ public:
             // Check if we have at least 3 non-overlapping intervals
             return merged.size() >= 3;
         };
-
-        // Check for valid cuts in both dimensions (x: 0 and 2, y: 1 and 3)
         return canMakeCutsInDimension(0, 2) || canMakeCutsInDimension(1, 3);
     }
 };
