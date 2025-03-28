@@ -8,11 +8,11 @@ public:
         int m = grid.size(), n = grid[0].size();
         int k = queries.size();
         
-        vector<pair<int, int>> sortedQueries;
+        vector<pair<int, int>> sq;
         for (int i = 0; i < k; i++) {
-            sortedQueries.emplace_back(queries[i], i);
+            sq.emplace_back(queries[i], i);
         }
-        sort(sortedQueries.begin(), sortedQueries.end());
+        sort(sq.begin(), sq.end());
         
         vector<int> ans(k, 0);
         vector<vector<bool>> visited(m, vector<bool>(n, false));
@@ -25,7 +25,7 @@ public:
         vector<int> dr = {1, -1, 0, 0};
         vector<int> dc = {0, 0, 1, -1};
 
-        for (auto [query, qi] : sortedQueries) {  // Renamed q to query
+        for (auto [query, qi] : sq) {  // Renamed q to query
             while (!q.empty() && get<0>(q.top()) < query) {
                 auto [val, r, c] = q.top();
                 q.pop();
