@@ -5,10 +5,10 @@ public:
         for (auto i : nums) sum += i;
         if (sum & 1) return false;
         int target = sum>>1;
-        vector<int> f(20001,0);
+        vector<int> f(target+1,0);
         for (int i = 1; i < nums.size(); i++)
             for (int l = target; l >= nums[i]; l--)
-                f[l] = max(f[l], f[l - nums[i]] + nums[i]);
+                f[l] = max(f[l], f[l-nums[i]] + nums[i]);
         return f[target] == target;
     }
 };
