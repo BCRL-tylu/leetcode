@@ -6,29 +6,24 @@ using namespace std;
 class Solution {
 public:
     int minimumOperations(vector<int>& nums) {
-        int operations = 0;
-
-        auto hasDistinctElements = [](const vector<int>& arr) {
-            unordered_set<int> seen;
-            for (int num : arr) {
-                if (seen.find(num) != seen.end()) {
-                    return false; // Found a duplicate
+        unordered_map<int,int> freq,multi;
+        for(auto nu:nums) if(++freq[nu]>1) multi[nu] = freq[nu]-1;
+        int i =0,op=0;
+        while(i<nums.size()){
+            int temp = i;
+            if(multi.size()==0){
+                break;
+            }
+            while(i<temp+3 && i<nums.size()){
+                if(--freq[nums[i]]==1){
+                    multi.erase(nums[i]);
                 }
-                seen.insert(num);
+                i++;
             }
-            return true; // All elements are distinct
-        };
-
-        while (!hasDistinctElements(nums)) {
-            if (nums.size() >= 3) {
-                nums.erase(nums.begin(), nums.begin() + 3); 
-            } else {
-                nums.clear();
-            }
-            operations++;
+            op++;
         }
-
-        return operations;
+        return op;
     }
+
 };
 
