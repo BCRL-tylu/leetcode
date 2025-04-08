@@ -7,7 +7,7 @@ class Solution {
 public:
     int minimumOperations(vector<int>& nums) {
         unordered_map<int,int> freq;
-        int i =0,op=0,n=nums.size(),multi=0;
+        int i=0,op=0,n=nums.size(),multi=0;
         for(auto nu:nums) if(++freq[nu]>>1) multi++;
         while(i<n){
             int temp = i+3;
