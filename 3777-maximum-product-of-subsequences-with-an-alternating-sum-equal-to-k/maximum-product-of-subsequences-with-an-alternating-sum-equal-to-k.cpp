@@ -1,8 +1,6 @@
 class Solution {
 public:
     int maxProduct(vector<int>& nums, int k, int limit) {
-        // If k is outside the achievable alternating sum range (-900 to 900),
-        // then no subsequence is possible.
         if (abs(k) > 900) return -1;
         
         // dp[parity][product] is a vector of bitsets.
@@ -11,17 +9,20 @@ public:
         //   0: even length subsequence,
         //   1: odd length subsequence.
         // The second index is the current product of the subsequence.
+
         vector<vector<bitset<1801>>> dp(2, vector<bitset<1801>>(limit + 1));
         
         // The "any" DP tracks branches that are rescued (multiplication by 0) even if no valid product > 0 is achieved.
         // It has a second dimension of size 2:
         //   index 0: not rescued (normal branch),
         //   index 1: rescued branch (i.e. product is effectively 0).
+
         vector<vector<bitset<1801>>> any(2, vector<bitset<1801>>(2));
         
         // Initialization:
         // dp[0][1][900] is set to true: This represents the "empty" starting state (even parity, product = 1)
         // with an alternating sum of 0 (index 900 = 0+900). (Note: product 1 is like the identity for multiplication.)
+
         dp[0][1][900] = 1;
         
         // any[0][0][900] is set to true: Similar initialization for the "any" DP where we have not rescued yet.
@@ -35,6 +36,7 @@ public:
             // --- Update dp for normal multiplication ---
             // Loop over potential product values from current dp states, going in descending order.
             // We iterate over product values j so that when we do multiplication, we do not use updated values in the same iteration.
+            if(i!=0) int templimt = limit/i;
             for (int j = limit; j >= 0; j--) {
                 // If multiplying the current product j by the current number i exceeds the limit,
                 // then skip this product state; it cannot be extended.
