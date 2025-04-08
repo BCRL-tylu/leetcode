@@ -6,14 +6,14 @@ using namespace std;
 class Solution {
 public:
     int minimumOperations(vector<int>& nums) {
-        unordered_map<int,int> freq,multi;
-        for(auto nu:nums) if(++freq[nu]>1) multi[nu]=1;
-        int i =0,op=0,n=nums.size();
+        unordered_map<int,int> freq;
+        int i =0,op=0,n=nums.size(),multi=0;
+        for(auto nu:nums) if(++freq[nu]==2) multi++;
         while(i<n){
             int temp = i+3;
-            if(multi.size()==0) break;
+            if(multi==0) break;
             while(i<temp && i<n){
-                if(--freq[nums[i]]==1) multi.erase(nums[i]);
+                if(--freq[nums[i]]==1) multi--;
                 i++;
             }
             op++;
