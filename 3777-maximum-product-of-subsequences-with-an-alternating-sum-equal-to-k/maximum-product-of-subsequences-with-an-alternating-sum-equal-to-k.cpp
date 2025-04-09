@@ -2,6 +2,7 @@ class Solution {
 public:
     int maxProduct(vector<int>& nums, int k, int limit) {
         if (abs(k) > 900) return -1;
+        if(nums.size()==1 && nums[0] == 0) return 0;
         // we can have maximumum 900 and worst case -900 and 0, so total 1801 states
         //dp[1][j]: subsequences that currently have an odd length with product j
         //dp[0][j]: subsequences that currently have an even length with product j
@@ -35,11 +36,11 @@ public:
         for (int x = limit; x >= 1; x--) {
             //if such product value x exist for either odd or even subsequence with latenrating sum k
             if (dp[0][x][900 + k] || dp[1][x][900 + k]) {
-                //special judge if k ==0. and the the product equals 1
+                //special judge if k ==0. and the the product equals 1 (as for some edge cases, such as [0,5] we can simply have default value to be 1, so we need speical judge to tell whether there is a true subsequence with product 1 or it's just running out)
                 if (k==0 && x==1) {
                     int ones=0;
                     for (int i : nums) if (i == 1) ones++;
-                    // if at least 2 1s, we can constcuture 1 1 with alterating sum 0 and product 1, so we can return 1
+                    // if at least 2 1s, we can constcuture 1 1 with alterating sum 0 and product 1, so we can return
                     if (ones>=2) return 1;
                 } else {
                     return x;
