@@ -4,19 +4,19 @@ public:
     int n;
     
     BIT(int n): n(n) {
-        tree.resize(n + 1, 0);
+        tree.resize(n, 0);
     }
     void update(int idx, int val) {
-        while (idx <= n) {
+        while (idx < n) {
             tree[idx] += val;
-            idx += idx & -idx;
+            idx = idx | (idx + 1);
         }
     }
     int query(int idx) {
         int sum = 0;
-        while (idx > 0) {
+        while (idx >= 0) {
             sum += tree[idx];
-            idx -= idx & -idx;
+            idx = (idx & (idx + 1)) - 1;
         }
         return sum;
     }
@@ -40,17 +40,17 @@ public:
         vector<long long> leftCount(n, 0);
         BIT bitLeft(n); 
         for (int i = 0; i < n; i++) {
-            leftCount[i] = bitLeft.query(arr[i] + 1);  
-            bitLeft.update(arr[i] + 1, 1);
+            leftCount[i] = bitLeft.query(arr[i]);  
+            bitLeft.update(arr[i], 1);
         }
         
         vector<long long> rightCount(n, 0);
         BIT bitRight(n);
         for (int i = n - 1; i >= 0; i--) {
-            int total = bitRight.query(n);
-            int lessOrEqual = bitRight.query(arr[i] + 1);
+            int total = bitRight.query(n - 1);
+            int lessOrEqual = bitRight.query(arr[i]);
             rightCount[i] = total - lessOrEqual;
-            bitRight.update(arr[i] + 1, 1);
+            bitRight.update(arr[i], 1);
         }
         
         long long answer = 0;
