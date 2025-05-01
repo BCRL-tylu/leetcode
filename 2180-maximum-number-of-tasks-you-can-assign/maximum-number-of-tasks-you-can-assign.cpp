@@ -1,56 +1,44 @@
-#include <bits/stdc++.h>
-using namespace std;
-
 class Solution {
-    // Check if we can complete the k largest tasks using ≤ pills pills.
-    bool canDo(int k,
-               const vector<int>& t, 
-               multiset<int>& workers, 
-               int pills, 
-               int strength) 
-    {
-        auto it_t = t.begin() + k;
-        while (k--) {
-            int task = *--it_t;
-            
-            auto it_w = prev(workers.end());
-            if (*it_w >= task) {
-                workers.erase(it_w);
+private:
+bool solve(int mid, multiset<int> w, vector<int> t, int pills, int strength){
+    int i = 0, m = w.size(), n = t.size(), p = 0, j = t.size() - 1;
+        for (int j = mid-1; j>=0; j--) {
+            auto it = w.lower_bound(t[j]);
+            if (it != w.end()) {
+                int found = *it;
+                w.erase(it);
                 continue;
             }
-            
-            if (pills == 0) return false;
-            int need = task - strength;
-            it_w = workers.lower_bound(need);
-            if (it_w == workers.end())
-                return false;
-            
-            workers.erase(it_w);
-            --pills;
-        }
-        return true;
-    }
-    
-public:
-    int maxTaskAssign(vector<int>& tasks,
-                      vector<int>& workers,
-                      int pills,
-                      int strength) 
-    {
-        sort(tasks.begin(), tasks.end());
-        multiset<int> W(workers.begin(), workers.end());
-        
-        int lo = 0, hi = min((int)tasks.size(), (int)workers.size()), ans = 0;
-        while (lo <= hi) {
-            int mid = (lo + hi) / 2;
-            auto Wcopy = W; 
-            if (canDo(mid, tasks, Wcopy, pills, strength)) {
-                ans = mid; 
-                lo = mid + 1;
-            } else {
-                hi = mid - 1;
+            if (p < pills) {
+                it = w.lower_bound(t[j] - strength);
+                if (it != w.end()) {
+                    int found = *it;
+                    w.erase(it);
+                    p++;
+                    continue;
+                }
             }
         }
-        return ans;
+        return (m-w.size())==mid;
+}
+public:
+    int maxTaskAssign(vector<int>& tasks, vector<int>& workers, int pills,
+                      int strength) {
+        multiset<int> w;
+        for (int i = 0; i < workers.size(); i++) {
+            w.insert(workers[i]);
+        }
+        vector<int> t = tasks;
+        sort(t.begin(), t.end());
+        int l=0,r=min(w.size(),t.size());
+        while(l<r){
+            int mid = (l + r + 1) >> 1;
+            if(solve(mid,w,t,pills,strength)){
+                l=mid;
+            }else{
+                r=mid-1;
+            }
+        }
+        return l;
     }
 };
