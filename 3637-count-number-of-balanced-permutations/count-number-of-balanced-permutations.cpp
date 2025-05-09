@@ -53,13 +53,12 @@ public:
                 for (int sum = 0; sum <= target; sum++) {
                     if (!dp[used][sum]) continue;
                     long long cur = dp[used][sum];
-                    // try putting k copies of digit d in even positions
-                    for (int k = 0; k <= c; k++) {
-                        int nu = used + k;
-                        int ns = sum + k * d;
-                        if (nu > ne || ns > target) break;
+                    int k=0;
+                    while(k<=c && used+k<=ne && sum + k * d<=target){
                         long long ways = cur * invf[k] % MOD * invf[c - k] % MOD;
-                        next_dp[nu][ns] = (next_dp[nu][ns] + ways) % MOD;
+                        // used even+=k, current value+=k*d
+                        next_dp[used+k][sum + k * d] = (next_dp[used+k][sum + k* d] + ways) % MOD;
+                        k++;
                     }
                 }
             }
