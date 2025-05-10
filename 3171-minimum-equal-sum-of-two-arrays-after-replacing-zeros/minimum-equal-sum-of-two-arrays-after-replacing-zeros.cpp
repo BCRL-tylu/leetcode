@@ -3,12 +3,18 @@ public:
     long long minSum(vector<int>& nums1, vector<int>& nums2) {
         long long l1=0,l2=0,s1=0,s2=0;
         for(auto k:nums1) {
-            if(!k) l1++;
-            s1+=(long long)k;
+            if(!k){
+                l1++;
+                continue;
+            }
+            s1+=k;
         }
         for(auto k:nums2) {
-            if(!k) l2++;
-            s2+=(long long)k;
+            if(!k){
+                l2++;
+                continue;
+            }
+            s2+=k;
         }
         long long k1 =s1+l1,k2=s2+l2;
         if(k1==k2) return k1; 
