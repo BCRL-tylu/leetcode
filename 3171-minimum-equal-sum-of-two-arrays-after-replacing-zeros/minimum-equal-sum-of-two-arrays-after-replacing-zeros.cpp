@@ -10,13 +10,12 @@ public:
             if(!k) l2++;
             s2+=(long long)k;
         }
-        long long k1 = s1+l1, k2=s2+l2;
+        long long k1 =s1+l1,k2=s2+l2;
         if(k1==k2) return k1; 
         if(k1>k2){
             if(l2!=0) return k1;
             else return -1;
-        }
-        if(k1<k2){
+        }else{
             if(l1!=0) return k2;
             else return -1;
         }
