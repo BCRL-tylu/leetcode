@@ -42,15 +42,11 @@ public:
             int c = sz[id];
             vector<long long> S(c), P;
             for (int i = 0; i < c; i++) S[i] = cur - c + 1 + i;
-            if (cyc[id]) {
+        
                 for (int i = 1; i < c; i += 2) P.push_back(S[i]);
                 int st = ((c-1)%2==0 ? c-1 : c-2);
                 for (int i = st; i >= 0; i -= 2) P.push_back(S[i]);
-            } else {
-                for (int i = 0; i < c; i += 2) P.push_back(S[i]);
-                int st = ((c-1)%2==1 ? c-1 : c-2);
-                for (int i = st; i >= 1; i -= 2) P.push_back(S[i]);
-            }
+            
             vector<int> tour;
             if (cyc[id]) {
                 int s = q[0], u = s, p = -1;
