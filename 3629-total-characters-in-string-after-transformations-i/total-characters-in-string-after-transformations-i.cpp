@@ -7,11 +7,9 @@ public:
 
         while (t--) {
             int z = m[25];  
-            for (int i = 24; i >= 0; --i) {
-                m[i+1] = m[i];
-            }
+            for (int i = 24; i >= 0; --i)m[i+1] = m[i];
             m[0] = z%mod;
-            m[1] = (m[1]+z)%mod;
+            m[1] =(m[1]+z)%mod;
             ans =(ans+z)%mod;
         }
         return ans;
