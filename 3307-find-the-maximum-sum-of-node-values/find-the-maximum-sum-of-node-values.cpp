@@ -35,10 +35,17 @@ public:
                 dp[u][0] = val0;
                 dp[u][1] = val1;
             } else {
-                dp[u][0] = max((val1 + base - (parity == 1 ? 0LL : diffs)),
-                                (val0 + base - (parity == 0 ? 0LL : diffs)));
-                dp[u][1] = max((val0 + base - (parity == 1 ? 0LL : diffs)),
-                                (val1 + base - (parity == 0 ? 0LL : diffs)));
+                if(parity){
+                dp[u][0] = max((val1 + base ),
+                                (val0 + base - diffs));
+                dp[u][1] = max((val0 + base),
+                                (val1 + base - diffs));
+                }else{
+                dp[u][0] = max((val1 + base - diffs),
+                                (val0 + base ));
+                dp[u][1] = max((val0 + base- diffs),
+                                (val1 + base ));
+                }
             }
         };
 
