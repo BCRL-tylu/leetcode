@@ -43,7 +43,7 @@ public:
                 }else{
                 dp[u][0] = max((val1 + base - diffs),
                                 (val0 + base ));
-                dp[u][1] = max((val0 + base- diffs),
+                dp[u][1] = max((val0 + base-diffs),
                                 (val1 + base ));
                 }
             }
