@@ -16,7 +16,7 @@ public:
             long long val1 = nums[u] ^ (long long)k;
             long long base = 0;
             int parity = 0;
-            vector<long long> diffs;
+            long long diffs = 1e10;
 
             for (int v : adj[u]) if (v != p) {
                 self(self, v, u);
@@ -28,20 +28,17 @@ public:
                 } else {
                     base   += a0;
                 }
-                diffs.push_back(d);
+                diffs = min(abs(d),diffs);
             }
 
-            if (diffs.empty()) {
+            if (diffs==1e10) {
                 dp[u][0] = val0;
                 dp[u][1] = val1;
             } else {
-                long long bestFix = LLONG_MAX;
-                for (auto &d : diffs)
-                    bestFix = min(bestFix, llabs(d));
-                dp[u][0] = max((val1 + base - (parity == 1 ? 0LL : bestFix)),
-                                (val0 + base - (parity == 0 ? 0LL : bestFix)));
-                dp[u][1] = max((val0 + base - (parity == 1 ? 0LL : bestFix)),
-                                (val1 + base - (parity == 0 ? 0LL : bestFix)));
+                dp[u][0] = max((val1 + base - (parity == 1 ? 0LL : diffs)),
+                                (val0 + base - (parity == 0 ? 0LL : diffs)));
+                dp[u][1] = max((val0 + base - (parity == 1 ? 0LL : diffs)),
+                                (val1 + base - (parity == 0 ? 0LL : diffs)));
             }
         };
 
