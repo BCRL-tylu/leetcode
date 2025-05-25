@@ -5,7 +5,7 @@ public:
         int  n =words.size(),ans=0,maxmid=0;
         for(int i = 0;i<n;i++){
             int f = words[i][0]-'a',s=words[i][1]-'a';
-            if(mat[s][f]){
+            if(mat[s][f]>0){
                 ans+=4;
                 mat[s][f]--;
                 continue;
