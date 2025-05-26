@@ -14,29 +14,25 @@ public:
             freq[u][colors[u]-'a'] = 1;
         }
 
-        queue<int> q;
-        for (int u = 0; u < n; u++) {
-            if (indeg[u] == 0) q.push(u);
-        }
+        stack<int> q;
+        for (int u = 0; u < n; u++) if (indeg[u] == 0) q.push(u);
+        
 
         int seen = 0, ans = 0;
         while (!q.empty()) {
-            int u = q.front(); q.pop();
+            int u = q.top(); q.pop();
             seen++;
-            for (int c = 0; c < 26; c++) {
+            for (int c = 0; c < 26; c++) 
                 ans = max(ans, freq[u][c]);
-            }
+            
             for (int v : adj[u]) {
                 for (int c = 0; c < 26; c++) {
                     int add = (colors[v]-'a' == c);
                     freq[v][c] = max(freq[v][c], freq[u][c] + add);
                 }
-                if (--indeg[v] == 0) {
-                    q.push(v);
-                }
+                if (--indeg[v] == 0) q.push(v);
             }
         }
-
         return (seen < n ? -1 : ans);
     }
 };
