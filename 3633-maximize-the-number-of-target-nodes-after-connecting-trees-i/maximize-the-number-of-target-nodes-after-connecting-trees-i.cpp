@@ -134,7 +134,6 @@ private:
         }
     }
 
-    // public entry: returns cnt[u] = #nodes within dist ≤ R of u
     vector<int> withinDist(const VVI& adj, int RR) {
         padj    = &adj;
         N       = adj.size();
@@ -142,7 +141,6 @@ private:
         blocked.assign(N, false);
         subSize.assign(N, 0);
         answer .assign(N, 0);
-
         decompose(0);
         return answer;
     }
