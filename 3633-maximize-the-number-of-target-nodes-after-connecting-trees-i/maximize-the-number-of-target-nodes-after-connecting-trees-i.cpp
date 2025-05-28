@@ -1,152 +1,149 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+struct Edge { int u, v; };
+using VI  = vector<int>;
+using VVI = vector<VI>;
+
 class Solution {
 public:
-    vector<int> maxTargetNodes(vector<vector<int>>& edges1,
-                               vector<vector<int>>& edges2,
+    vector<int> maxTargetNodes(const VVI& edges1,
+                               const VVI& edges2,
                                int k) {
         int n = edges1.size() + 1;
         int m = edges2.size() + 1;
 
-        // build adjacency lists
-        vector<vector<int>> adj1(n), adj2(m);
+        // build adjacency
+        VVI adj1(n), adj2(m);
         for (auto &e : edges1) {
-            int u = e[0], v = e[1];
-            adj1[u].push_back(v);
-            adj1[v].push_back(u);
+            adj1[e[0]].push_back(e[1]);
+            adj1[e[1]].push_back(e[0]);
         }
         for (auto &e : edges2) {
-            int u = e[0], v = e[1];
-            adj2[u].push_back(v);
-            adj2[v].push_back(u);
+            adj2[e[0]].push_back(e[1]);
+            adj2[e[1]].push_back(e[0]);
         }
 
-        // g1[i] = # nodes in tree1 within distance ≤ k of i
-        // g2[j] = # nodes in tree2 within distance ≤ k−1 of j
-        auto g1 = computeWithinDist(n, adj1, k);
-        auto g2 = computeWithinDist(m, adj2, k-1);
+        // compute g1, g2 in O(n log n) and O(m log m)
+        auto g1 = withinDist(adj1, k);
+        auto g2 = withinDist(adj2, max(0, k-1));
 
-        // best you can do in tree2 by choosing the best attach-point
-        int M = 0;
-        if (k > 0) 
-            M = *max_element(g2.begin(), g2.end());
+        // best we can cover in tree2
+        int M = k>0 ? *max_element(g2.begin(), g2.end()) : 0;
 
-        // answer[i] = g1[i] + M
-        vector<int> answer(n);
-        for (int i = 0; i < n; i++) {
-            answer[i] = g1[i] + M;
-        }
-        return answer;
+        vector<int> ans(n);
+        for (int i = 0; i < n; ++i)
+            ans[i] = g1[i] + M;
+        return ans;
     }
 
 private:
-    struct Info { int c, dist, comp; };
+    int N, R;
+    const VVI *padj;
+    vector<bool>      blocked;
+    vector<int>       subSize, answer;
+    
+    // Decompose recursion
+    void decompose(int root) {
+        int sz = dfsSize(root, -1);
+        int c  = findCentroid(root, -1, sz);
+        blocked[c] = true;
 
-    // Returns for each u in [0..N-1], the count of nodes within distance ≤ R of u.
-    // Runs in O(N log²N) via centroid decomposition.
-    vector<int> computeWithinDist(int N,
-                                  const vector<vector<int>>& adj,
-                                  int R) {
-        vector<bool> blocked(N, false);
-        vector<int>  subSize(N, 0), centroidParent(N, -1);
-        vector<vector<Info>>                  layers(N);
-        vector<vector<int>>                   allDist(N);
-        vector<vector<vector<int>>>           childDist(N);
+        // gather (node, dist, compIdx)
+        vector<tuple<int,int,int>> rec;
+        rec.reserve(sz);
 
-        // 1) compute subtree sizes
-        auto dfsSize = [&](auto&& self, int u, int p) -> void {
-            subSize[u] = 1;
-            for (int v : adj[u]) if (!blocked[v] && v != p) {
-                self(self, v, u);
-                subSize[u] += subSize[v];
-            }
-        };
+        // centroid itself
+        rec.emplace_back(c, 0, -1);
 
-        // 2) find centroid of a component of size sz rooted at u
-        auto findCentroid = [&](auto&& self, int u, int p, int sz) -> int {
-            for (int v : adj[u]) if (!blocked[v] && v != p
-                                     && subSize[v] * 2 > sz)
-                return self(self, v, u, sz);
-            return u;
-        };
-
-        // 3) gather distances from centroid c into its component
-        auto dfsDist = [&](auto&& self,
-                           int u, int p, int d, int c, int comp) -> void {
-            layers[u].push_back({c, d, comp});
-            allDist[c].push_back(d);
-            if (comp >= 0)
-                childDist[c][comp].push_back(d);
-            for (int v : adj[u]) if (!blocked[v] && v != p) {
-                self(self, v, u, d + 1, c, comp);
-            }
-        };
-
-        // 4) build the centroid‐decomposition
-        auto decompose = [&](auto&& self, int entry, int p) -> void {
-            dfsSize(dfsSize, entry, -1);
-            int c = findCentroid(findCentroid, entry, -1, subSize[entry]);
-
-            blocked[c]         = true;
-            centroidParent[c]  = p;
-
-            // record centroid -> itself
-            layers[c].push_back({c, 0, -1});
-            allDist[c].push_back(0);
-
-            // count how many child‐subtrees remain
-            int comps = 0;
-            for (int v : adj[c]) if (!blocked[v]) comps++;
-            childDist[c].assign(comps, {});
-
-            // gather distances in each child‐subtree
-            int idx = 0;
-            for (int v : adj[c]) if (!blocked[v]) {
-                dfsDist(dfsDist, v, c, 1, c, idx);
-                idx++;
-            }
-
-            // sort for binary‐search
-            sort(allDist[c].begin(), allDist[c].end());
-            for (int i = 0; i < comps; i++)
-                sort(childDist[c][i].begin(), childDist[c][i].end());
-
-            // recurse on each subtree
-            for (int v : adj[c]) if (!blocked[v])
-                self(self, v, c);
-        };
-
-        // start decomposition from node 0
-        decompose(decompose, 0, -1);
-
-        // now answer the “ball of radius R” query for every u
-        vector<int> cnt(N, 0);
-        for (int u = 0; u < N; u++) {
-            long long reached = 0;
-            for (auto &info : layers[u]) {
-                int c    = info.c;
-                int du   = info.dist;
-                int comp = info.comp;
-                int rem  = R - du;
-                if (rem < 0) continue;
-
-                // total in centroid c’s component within rem
-                auto &A = allDist[c];
-                long long tot = upper_bound(A.begin(), A.end(), rem)
-                              - A.begin();
-
-                // subtract the child‐subtree that contains u
-                if (comp >= 0) {
-                    auto &B = childDist[c][comp];
-                    tot -= upper_bound(B.begin(), B.end(), rem)
-                         - B.begin();
-                }
-                reached += tot;
-            }
-            cnt[u] = (int)reached;
+        // for each child‐subtree assign compIdx and DFS
+        int compCnt = 0;
+        for (int v : (*padj)[c]) if (!blocked[v]) {
+            dfsGather(v, c, 1, compCnt, rec);
+            ++compCnt;
         }
 
-        return cnt;
+        // figure maxDepth
+        int maxD = 0;
+        for (auto &t : rec)
+            maxD = max(maxD, get<1>(t));
+
+        // build freq and prefix
+        vector<int> freq(maxD+1, 0);
+        for (auto &t : rec)
+            freq[get<1>(t)]++;
+        for (int i = 1; i <= maxD; ++i)
+            freq[i] += freq[i-1];
+
+        // build per‐comp freq & prefix
+        vector< vector<int> > compFreq(compCnt, vector<int>(maxD+1, 0));
+        for (auto &t : rec) {
+            int d = get<1>(t), ci = get<2>(t);
+            if (ci >= 0) compFreq[ci][d]++;
+        }
+        for (int i = 0; i < compCnt; ++i)
+            for (int d = 1; d <= maxD; ++d)
+                compFreq[i][d] += compFreq[i][d-1];
+
+        // now for each record add to answer[u]
+        for (auto &t : rec) {
+            int u = get<0>(t);
+            int d = get<1>(t);
+            int ci= get<2>(t);
+
+            int rem = R - d;
+            if (rem < 0) continue;
+            rem = min(rem, maxD);
+
+            int tot = freq[rem];
+            if (ci >= 0) tot -= compFreq[ci][rem];
+            answer[u] += tot;
+        }
+
+        // recurse on subtrees
+        for (int v : (*padj)[c]) 
+            if (!blocked[v]) 
+                decompose(v);
+    }
+
+    // compute subSize
+    int dfsSize(int u, int p) {
+        subSize[u] = 1;
+        for (int v : (*padj)[u]) 
+            if (v!=p && !blocked[v]) 
+                subSize[u] += dfsSize(v, u);
+        return subSize[u];
+    }
+
+    // find centroid
+    int findCentroid(int u, int p, int sz) {
+        for (int v : (*padj)[u]) {
+            if (v!=p && !blocked[v] && subSize[v]*2 > sz)
+                return findCentroid(v, u, sz);
+        }
+        return u;
+    }
+
+    // gather (node, dist from c, compIdx)
+    void dfsGather(int u, int p, int d, int comp, 
+                   vector<tuple<int,int,int>>& rec) {
+        rec.emplace_back(u, d, comp);
+        for (int v : (*padj)[u]) {
+            if (v!=p && !blocked[v])
+                dfsGather(v, u, d+1, comp, rec);
+        }
+    }
+
+    // public entry: returns cnt[u] = #nodes within dist ≤ R of u
+    vector<int> withinDist(const VVI& adj, int RR) {
+        padj    = &adj;
+        N       = adj.size();
+        R       = RR;
+        blocked.assign(N, false);
+        subSize.assign(N, 0);
+        answer .assign(N, 0);
+
+        decompose(0);
+        return answer;
     }
 };
