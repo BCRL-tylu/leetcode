@@ -1,75 +1,61 @@
 class Solution {
 private:
-    // ────────────────────────────────────────────────────────────────────────────
-    // Replace your old conv(...) with this “1D→2D” implementation.
-    //
-    // This version guarantees 0 <= row,col < n for every 1 <= u <= n*n.
-    //
     vector<int> conv(int u, int n) {
-        int u0 = u - 1;                   // make 0-based
-        int rowFromBottom = u0 / n;       // which “strip” from the bottom (0..n-1)
-        int offsetInThatRow = u0 % n;     // 0..n-1 within that strip
+        int u0 = u - 1;                   
+        int rowFromBottom = u0 / n;       
+        int offsetInThatRow = u0 % n;     
 
-        // The actual stored board[][] is “top‐down,” so:
         int row = (n - 1) - rowFromBottom;
-
-        // Even‐numbered strips (0,2,4,…) go left→right; odd strips go right→left
         int col;
         if (rowFromBottom % 2 == 0) {
-            col = offsetInThatRow; 
+            col = offsetInThatRow;
         } else {
             col = (n - 1) - offsetInThatRow;
         }
-
         return { row, col };
     }
-    // ────────────────────────────────────────────────────────────────────────────
 
 public:
     int snakesAndLadders(vector<vector<int>>& board) {
         int n = board.size();
-        int q = n * n;                   // total squares = 1..(n*n)
-        int m = q / 6 + 1;               // upper‐bound on moves
+        int q = n * n;                    // total squares = 1..n*n
 
-        // dp[x] = minimum # of dice rolls needed to “land on” square (x+1).
-        vector<int> dp(q, INT_MAX);
+        // dist[x] = the minimum # of dice rolls to reach square (x+1), or -1 if unvisited
+        vector<int> dist(q, -1);
 
-        // INITIALIZE: square 1 is reached with 0 moves.
-        dp[0] = 0;
+        // Start on square 1 ⇒ 0 rolls needed
+        dist[0] = 0;
+        queue<int> bfs;
+        bfs.push(1);  // we push the 1‐based square index
 
-        // We iterate “move count” i = 1..m.  On move i, only roll dice from squares j
-        // for which dp[j] < i (i.e. j was reached in fewer than i moves).
-        for (int i = 1; i <= m; i++) {
+        while (!bfs.empty()) {
+            int curSquare = bfs.front();
+            bfs.pop();
+
+            if (curSquare == q) {
+                // As soon as we pop n*n, dist[n*n - 1] is the answer
+                return dist[q - 1];
+            }
+
             for (int k = 1; k <= 6; k++) {
-                for (int j = 0; j < q - k; j++) {
-                    // ────────────────────────────────────────────────────────────────
-                    // Only roll from j if we have actually reached j in < i moves.
-                    if (dp[j] >= i) continue;
-                    // ────────────────────────────────────────────────────────────────
+                int nxt = curSquare + k;
+                if (nxt > q) break;
 
-                    int currSquare = j + 1;            // “j” is 0‐based, so square = j+1
-                    int nex = currSquare + k;          
+                // Replace structured binding with explicit indexing
+                vector<int> coord = conv(nxt, n);
+                int r = coord[0], c = coord[1];
 
-                    // If rolling sends us beyond the last square, skip it.
-                    if (nex > q) continue;
+                if (board[r][c] != -1) {
+                    nxt = board[r][c];
+                }
 
-                    // Find (row, col) for the “nex”th square:
-                    vector<int> coord_new = conv(nex, n);
-                    int r = coord_new[0], c = coord_new[1];
-
-                    // If there is a snake/ladder, follow it exactly once:
-                    int jump = board[r][c];
-                    if (jump != -1) {
-                        // “jump” is in [1..n*n], so subtract 1 for 0-based index:
-                        dp[jump - 1] = min(dp[jump - 1], i);
-                    } else {
-                        dp[nex - 1] = min(dp[nex - 1], i);
-                    }
+                if (dist[nxt - 1] == -1) {
+                    dist[nxt - 1] = dist[curSquare - 1] + 1;
+                    bfs.push(nxt);
                 }
             }
         }
 
-        // If we never reached square n*n, dp[n*n -1] is still INT_MAX:
-        return (dp[q - 1] == INT_MAX ? -1 : dp[q - 1]);
+        return -1;
     }
 };
