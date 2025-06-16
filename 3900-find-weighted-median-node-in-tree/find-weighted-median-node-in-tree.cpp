@@ -42,29 +42,15 @@ public:
 
     // Climb from x upwards until just before accumulating ≥ rem
     // Returns the node whose parent is the first node at or past rem.
-    int climbUntil(long long rem, int x) {
+    int climb(long long rem, int x,int q) {
         for (int k = LOG-1; k >= 0; k--) {
             int anc = parent[k][x];
-            if (anc != -1 && distUp[k][x] < rem) {
+            if (anc != -1 && distUp[k][x] < rem+q) {
                 rem -= distUp[k][x];
                 x = anc;
             }
         }
-        // one more step to cross the threshold
-        return parent[0][x];
-    }
-
-    // Climb from x upwards consuming up to rem total weight, 
-    // stopping at the deepest node whose distance->x ≤ rem
-    int climbAtMost(long long rem, int x) {
-        for (int k = LOG-1; k >= 0; k--) {
-            int anc = parent[k][x];
-            if (anc != -1 && distUp[k][x] <= rem) {
-                rem -= distUp[k][x];
-                x = anc;
-            }
-        }
-        return x;
+        return q?x:parent[0][x];
     }
 
     vector<int> findMedian(int n, vector<vector<int>>& edges, vector<vector<int>>& queries) {
@@ -117,13 +103,13 @@ public:
             long long du = distRoot[u] - distRoot[L];
             if (half <= du) {
                 // median lies on the u→L path
-                ans.push_back(climbUntil(half, u));
+                ans.push_back(climb(half, u,0));
             } else {
                 // median on the L→v path
                 long long rem2 = half - du;         // distance past L
                 long long dv = distRoot[v] - distRoot[L];
                 long long K  = dv - rem2;           // distance from v to median
-                ans.push_back(climbAtMost(K, v));
+                ans.push_back(climb(K, v,1));
             }
         }
 
