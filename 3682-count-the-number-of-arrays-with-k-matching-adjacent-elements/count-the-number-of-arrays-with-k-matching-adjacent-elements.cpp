@@ -1,43 +1,53 @@
-class Solution {
-    static constexpr long long MOD = 1'000'000'007LL;
+const int MOD = 1e9 + 7;
+const int MX  = 100000;              // make ≥ max n in the tests
 
-    /* fast a^e mod MOD */
-    static long long modPow(long long a, long long e) {
-        long long res = 1;
+long long fact[MX + 1];
+long long inv_fact[MX + 1];
+
+class Solution {
+    /* fast a^e (mod MOD) */
+    long long qpow(long long a, long long e) {
+        long long r = 1 % MOD;
         a %= MOD;
         while (e) {
-            if (e & 1) res = res * a % MOD;
+            if (e & 1) r = r * a % MOD;
             a = a * a % MOD;
             e >>= 1;
         }
-        return res;
+        return r;
+    }
+
+    /* nCk (mod MOD), assumes 0 ≤ k ≤ n ≤ MX */
+    long long comb(int n, int k) {
+        if (k < 0 || k > n) return 0;
+        return fact[n] * inv_fact[k] % MOD * inv_fact[n - k] % MOD;
+    }
+
+    /* one‑time factorial table */
+    void init() {
+        if (fact[0]) return;                 // already done
+        fact[0] = 1;
+        for (int i = 1; i <= MX; ++i) fact[i] = fact[i - 1] * i % MOD;
+
+        inv_fact[MX] = qpow(fact[MX], MOD - 2);      // Fermat inverse
+        for (int i = MX; i; --i) inv_fact[i - 1] = inv_fact[i] * i % MOD;
     }
 
 public:
     int countGoodArrays(int n, int m, int k) {
-        /* invalid parameter ranges */
+        init();
+
+        /* impossible cases */
         if (k < 0 || k > n - 1) return 0;
 
-        long long breaks = n - k - 1;          // b = n‑k‑1
-        if (breaks < 0) return 0;
+        /* special case m = 1 : only one possible array (all 1s) */
+        if (m == 1) return (k == n - 1 ? 1 : 0);
 
-        /* factorials up to n‑1 (fits easily in memory for usual constraints) */
-        std::vector<long long> fact(n), invFact(n);
-        fact[0] = 1;
-        for (int i = 1; i < n; ++i) fact[i] = fact[i - 1] * i % MOD;
-        invFact[n - 1] = modPow(fact[n - 1], MOD - 2);   // Fermat inverse
-        for (int i = n - 1; i > 0; --i)
-            invFact[i - 1] = invFact[i] * i % MOD;
+        int breaks = n - k - 1;                       // positions where value changes
+        long long choose = comb(n - 1, breaks);       // C(n‑1, n‑k‑1)
+        long long ways   = (long long)m % MOD *
+                           qpow(m - 1, breaks) % MOD; // m·(m‑1)^{breaks}
 
-        /* C(n‑1, breaks) */
-        long long choose =
-            fact[n - 1] * invFact[breaks] % MOD * invFact[n - 1 - breaks] % MOD;
-
-        /* m * (m‑1)^{breaks} */
-        long long ways =
-            (static_cast<long long>(m) % MOD) *
-            modPow((m - 1 + MOD) % MOD, breaks) % MOD;
-
-        return static_cast<int>(choose * ways % MOD);
+        return (int)(choose * ways % MOD);
     }
 };
