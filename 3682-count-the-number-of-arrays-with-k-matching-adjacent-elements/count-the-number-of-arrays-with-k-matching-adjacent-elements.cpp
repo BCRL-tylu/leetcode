@@ -1,66 +1,81 @@
-#include <vector>
-
+#include <iostream>
+#include <array>
 using namespace std;
 
-class Combination {
+class Solution {
 private:
-    vector<long long> fac, inv;
-    long long MOD;
+    array<long long, 100001> factorial;
+    array<long long, 100001> inverseFactorial;
 
-    long long modpow(long long n, long long x, long long MOD) {
-        if (x < 0) {
-            return modpow(modpow(n, -x, MOD), MOD - 2, MOD);
+    // Precompute factorials and inverse factorials
+    void precomputeFactorials(int maxN, int mod) {
+        factorial[0] = 1;
+        for (int i = 1; i <= maxN; i++) {
+            factorial[i] = factorial[i - 1] * i % mod;
         }
-        n %= MOD;
-        long long res = 1;
-        while (x) {
-            if (x & 1) {
-                res = res * n % MOD;
-            }
-            n = n * n % MOD;
-            x >>= 1;
+
+        inverseFactorial[maxN] = modInverse(factorial[maxN], mod);
+        for (int i = maxN - 1; i >= 0; i--) {
+            inverseFactorial[i] = inverseFactorial[i + 1] * (i + 1) % mod;
+        }
+    }
+
+    // Function to calculate nCr % mod
+    long long nCr(int n, int r, int mod) {
+        return (r > n || n < 0 || r < 0) ? 0 : (factorial[n] * inverseFactorial[r] % mod * inverseFactorial[n - r] % mod);
+    }
+
+    // Function to calculate modular inverse using Fermat's Little Theorem
+    long long modInverse(long long a, int mod) {
+        long long res = 1, x = a;
+        long long m = mod - 2; // mod is prime
+        while (m > 0) {
+            if (m % 2 == 1) res = res * x % mod;
+            x = x * x % mod;
+            m /= 2;
         }
         return res;
     }
 
-public:
-    Combination(long long maxN, long long mod) : MOD(mod) {
-        fac.resize(maxN + 1);
-        inv.resize(maxN + 1);
-        fac[0] = 1;
+    // Function to calculate total conformations
+    long long totalConformations(int k, int m, int l, int mod) {
+        if (k < 2 * m) return 0; // Not enough length for valid segments
+        long long splittingWays = nCr(k - m - 1, m - 1, mod); // Ways to split
+        long long arrangementWays = nCr(m + l, l, mod);       // Ways to insert identical segments
 
-        for (long long i = 1; i <= maxN; ++i) {
-            fac[i] = fac[i - 1] * i % MOD;
+        return (splittingWays * arrangementWays % mod + (splittingWays == 0 && k == 0 ? arrangementWays : 0)) % mod;
+    }
+
+    // Modular exponentiation
+    long long modPow(int base, int exponent, int mod) {
+        long long result = 1, b = base;  // Use long long to avoid overflow
+        while (exponent > 0) {
+            if (exponent % 2 == 1) result = result * b % mod;
+            b = b * b % mod;
+            exponent /= 2;
         }
-
-        inv[maxN] = modpow(fac[maxN], MOD - 2, MOD);
-        for (long long i = maxN - 1; i >= 0; --i) {
-            inv[i] = inv[i + 1] * (i + 1) % MOD;
-        }
+        return result;
     }
-
-    long long nCr(long long n, long long r) {
-        if (n < r || n < 0 || r < 0) return 0;
-        return fac[n] * inv[r] % MOD * inv[n - r] % MOD;
-    }
-
-    long long power(long long base, long long exp) {
-        return modpow(base, exp, MOD); // Public method for modular exponentiation
-    }
-};
-
-constexpr long long MOD = 1e9 + 7;
-
-class Solution {
-private:
-    Combination comb;
 
 public:
-    Solution() : comb(1e5, MOD) {} // Initialize combination for up to 100000
     int countGoodArrays(int n, int m, int k) {
-        long long arrangementWays = m * comb.power(m - 1, n - 1 - k) % MOD; // Use public method
-        long long combinationWays = comb.nCr(n - 1, n - 1 - k);
-        return (arrangementWays * combinationWays) % MOD; // Final result
+        const int mod = 1e9 + 7;
+        const int iter = n - k;
+        long long ans = 0;
+
+        // Precompute factorials up to n
+        precomputeFactorials(n, mod);
+
+        // Use modular exponentiation
+        long long combination = m * modPow(m - 1, iter - 1, mod) % mod;
+
+        for (int i = 0; i <= iter; i++) {
+            int nc = iter - i;
+            if (nc > (n - i) / 2) {
+                continue; // Skip if condition is not met
+            }
+            ans = (ans + totalConformations(n - i, nc, i, mod) * combination % mod) % mod;
+        }
+        return ans;
     }
 };
-
