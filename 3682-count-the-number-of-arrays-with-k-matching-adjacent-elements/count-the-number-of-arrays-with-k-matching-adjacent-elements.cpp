@@ -1,43 +1,43 @@
-const int MOD = 1e9 + 7;
-const int MX = 1e5;
-
-long long fact[MX];
-long long inv_fact[MX];
-
 class Solution {
-    long long qpow(long long x, int n) {
+    static constexpr long long MOD = 1'000'000'007LL;
+
+    /* fast a^e mod MOD */
+    static long long modPow(long long a, long long e) {
         long long res = 1;
-        while (n) {
-            if (n & 1) {
-                res = res * x % MOD;
-            }
-            x = x * x % MOD;
-            n >>= 1;
+        a %= MOD;
+        while (e) {
+            if (e & 1) res = res * a % MOD;
+            a = a * a % MOD;
+            e >>= 1;
         }
         return res;
     }
 
-    long long comb(int n, int m) {
-        return fact[n] * inv_fact[m] % MOD * inv_fact[n - m] % MOD;
-    }
-    void init() {
-        if (fact[0]) {
-            return;
-        }
-        fact[0] = 1;
-        for (int i = 1; i < MX; i++) {
-            fact[i] = fact[i - 1] * i % MOD;
-        }
-
-        inv_fact[MX - 1] = qpow(fact[MX - 1], MOD - 2);
-        for (int i = MX - 1; i; i--) {
-            inv_fact[i - 1] = inv_fact[i] * i % MOD;
-        }
-    }
-
 public:
     int countGoodArrays(int n, int m, int k) {
-        init();
-        return comb(n - 1, k) * m % MOD * qpow(m - 1, n - k - 1) % MOD;
+        /* invalid parameter ranges */
+        if (k < 0 || k > n - 1) return 0;
+
+        long long breaks = n - k - 1;          // b = n‑k‑1
+        if (breaks < 0) return 0;
+
+        /* factorials up to n‑1 (fits easily in memory for usual constraints) */
+        std::vector<long long> fact(n), invFact(n);
+        fact[0] = 1;
+        for (int i = 1; i < n; ++i) fact[i] = fact[i - 1] * i % MOD;
+        invFact[n - 1] = modPow(fact[n - 1], MOD - 2);   // Fermat inverse
+        for (int i = n - 1; i > 0; --i)
+            invFact[i - 1] = invFact[i] * i % MOD;
+
+        /* C(n‑1, breaks) */
+        long long choose =
+            fact[n - 1] * invFact[breaks] % MOD * invFact[n - 1 - breaks] % MOD;
+
+        /* m * (m‑1)^{breaks} */
+        long long ways =
+            (static_cast<long long>(m) % MOD) *
+            modPow((m - 1 + MOD) % MOD, breaks) % MOD;
+
+        return static_cast<int>(choose * ways % MOD);
     }
 };
