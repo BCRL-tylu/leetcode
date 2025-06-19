@@ -3,7 +3,7 @@ public:
     struct State {
         int x, y;
         int e;
-        int mask;
+        int mask; //Bit i in mask is 1 if (and only if) you’ve already picked up litter 
         int steps;
     };
     
@@ -26,7 +26,6 @@ public:
                 }
             }
         }
-        
         int L = lits.size();
         int allMask = (1<<L) - 1;
         
@@ -61,24 +60,16 @@ public:
             for(auto &d: dirs){
                 int nx = cur.x + d[0];
                 int ny = cur.y + d[1];
-                if(nx < 0 || nx >= n || ny < 0 || ny >= m) 
+                if(nx < 0 || nx >= n || ny < 0 || ny >= m||room[nx][ny] == 'X'||e == 0) 
                     continue;
-                if(room[nx][ny] == 'X') 
-                    continue;
-                if(e == 0) 
-                    continue;  // no energy to move
-                
+
                 int ne = e - 1;
                 int nmask = cur.mask;
                 if(room[nx][ny] == 'L'){
                     int id = litIdx[nx][ny];
                     nmask |= (1<<id);
                 }
-                
-                // have we ever arrived here with ≥ this energy & same mask?
-                if(bestEnergy[nx][ny][nmask] >= ne) 
-                    continue;
-                
+                if(bestEnergy[nx][ny][nmask] >= ne) continue;
                 bestEnergy[nx][ny][nmask] = ne;
                 q.push_back({nx, ny, ne, nmask, cur.steps + 1});
             }
