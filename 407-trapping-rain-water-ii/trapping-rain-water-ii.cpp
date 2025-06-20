@@ -24,7 +24,7 @@ public:
             visited[i][0] = true;
             visited[i][n - 1] = true;
         }
-        for (int j = 0; j < n; ++j) {
+        for (int j = 1; j < n-1; ++j) {
             pq.emplace(heightMap[0][j], 0, j);
             pq.emplace(heightMap[m - 1][j], m - 1, j);
             visited[0][j] = true;
