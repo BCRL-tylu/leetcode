@@ -1,7 +1,7 @@
 class Solution {
 private:
     bool kpal(long long k, long long a){
-        vector<long long> u(100);
+        static long long u[100];
         long long pos =-1;
         while(a){
             pos++;
@@ -15,8 +15,6 @@ private:
     }
 public:
     long long kMirror(int k, int n) {
-        k = (long long)k;
-        n = (long long)n;
         long long count=0;
         long long left =1;
         long long ans=0;
