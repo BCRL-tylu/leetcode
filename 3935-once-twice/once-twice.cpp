@@ -23,11 +23,13 @@ public:
             if(cnta[i]%3) vala|=1u<<i;
             if(cntb[i]%3) valb|=1u<<i;
         }
-        int counta=0,countb=0;
-        for(int v:nums){
-            if(v==vala) counta++;
-            else if(v==valb) countb++;
+        for(int i=0;i<32;i++){
+            if(cnta[i]%3==1){
+                return vector<int>{vala,valb};
+            }else if(cnta[i]%3==2){
+                return vector<int>{valb,vala};
+            }
         }
-        return counta==1?vector<int>{vala,valb}:vector<int>{valb,vala};
+        return {-1};
     }
 };
