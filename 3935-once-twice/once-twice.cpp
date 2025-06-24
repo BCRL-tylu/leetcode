@@ -1,27 +1,27 @@
 class Solution {
 public:
     vector<int> onceTwice(vector<int>& nums) {
-        long long cnt[32]={};
+        int cnt[32]={};
         for(int v:nums){
-            unsigned u=v;
-            for(int i=0;i<32;i++) cnt[i]+=(u>>i)&1u;
+            int u=v;
+            for(int i=0;i<32;i++) cnt[i]+=(u>>i)&1;
         }
-        unsigned diff=0;
-        for(int i=0;i<32;i++) if(cnt[i]%3) diff|=1u<<i;
-        unsigned key=diff&-diff;
+        int diff=0;
+        for(int i=0;i<32;i++) if(cnt[i]%3) diff|=1<<i;
+        int pivot=diff&-diff;
         int cnta[32]={},cntb[32]={};
         for(int v:nums){
-            unsigned u=v;
-            if(u&key){
-                for(int i=0;i<32;i++) cnta[i]+=(u>>i)&1u;
+            int u=v;
+            if(u&pivot){
+                for(int i=0;i<32;i++) cnta[i]+=(u>>i)&1;
             } else {
-                for(int i=0;i<32;i++) cntb[i]+=(u>>i)&1u;
+                for(int i=0;i<32;i++) cntb[i]+=(u>>i)&1;
             }
         }
         int vala=0,valb=0;
         for(int i=0;i<32;i++){
-            if(cnta[i]%3) vala|=1u<<i;
-            if(cntb[i]%3) valb|=1u<<i;
+            if(cnta[i]%3) vala|=1<<i;
+            if(cntb[i]%3) valb|=1<<i;
         }
         for(int i=0;i<32;i++){
             if(cnta[i]%3==1){
