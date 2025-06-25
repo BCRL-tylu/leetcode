@@ -1,40 +1,62 @@
 class Solution {
 public:
-    int f(vector<int>& nums2, long long x1, long long v) {
-        int n2 = nums2.size();
-        int left = 0, right = n2 - 1;
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            if (x1 >= 0 && nums2[mid] * x1 <= v ||
-                x1 < 0 && nums2[mid] * x1 > v) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
+    long long kthSmallestProduct(vector<int>& nums1, vector<int>& nums2, long long k) {
+        int i1 = 0, i2 = 0;
+        long long m = 10000000005LL;
+        long long l, r, mid;
+        while(i1 < nums1.size() && nums1[i1] < 0) ++i1;
+        while(i2 < nums2.size() && nums2[i2] < 0) ++i2;
+        vector<int> p1(nums1.begin()+i1, nums1.end()),
+                    n1(nums1.begin(), nums1.begin()+i1),
+                    p2(nums2.begin()+i2, nums2.end()),
+                    n2(nums2.begin(), nums2.begin()+i2);
+        // for(int a: p1) cout<<a<<' '; cout<<endl;
+        // for(int a: n1) cout<<a<<' '; cout<<endl;
+        // for(int a: p2) cout<<a<<' '; cout<<endl;
+        // for(int a: n2) cout<<a<<' '; cout<<endl;
+        if(k <= (long long)p1.size()*n2.size()+(long long)p2.size()*n1.size()){
+            l = -m;
+            r = 1;
+            while(l < r){
+                mid = (l+r)>>1;
+                // cout<<format("l:{}, r:{}, mid:{}\n", l, r, mid);
+                long long s = 0;
+                for(int i = 0, j = 0; i < p1.size(); ++i){
+                    while(j < n2.size() && (long long)p1[i] * n2[j] < mid) ++j;
+                    s += j;
+                    // cout<<format("s:{}, i:{}, j:{}\n", s, i, j);
+                }
+                for(int i = 0, j = 0; i < p2.size(); ++i){
+                    while(j < n1.size() && (long long)p2[i] * n1[j] < mid) ++j;
+                    s += j;
+                    // cout<<format("s:{}, i:{}, j:{}\n", s, i, j);
+                }
+                if(s >= k) r = mid;
+                else l = mid+1;
+            }
+        } else{
+            k -= (long long)p1.size()*n2.size()+(long long)p2.size()*n1.size();
+            // cout<<format("k:{}\n", k);
+            l = 0;
+            r = m;
+            while(l < r){
+                mid = (l+r)>>1;
+                // cout<<format("l:{}, r:{}, mid:{}\n", l, r, mid);
+                long long s = 0;
+                for(int i = 0, j = (int)p2.size()-1; i < p1.size(); ++i){
+                    while(j >= 0 && (long long)p1[i] * p2[j] >= mid) --j;
+                    s += j+1;
+                    // cout<<format("s:{}, i:{}, j:{}\n", s, i, j);
+                }
+                for(int i = 0, j = (int)n2.size()-1; i < n1.size(); ++i){
+                    while(j >= 0 && (long long)n1[i] * n2[j] < mid) --j;
+                    s += n2.size()-j-1;
+                    // cout<<format("s:{}, i:{}, j:{}\n", s, i, j);
+                }
+                if(s >= k) r = mid;
+                else l = mid+1;
             }
         }
-        if (x1 >= 0) {
-            return left;
-        } else {
-            return n2 - left;
-        }
-    }
-
-    long long kthSmallestProduct(vector<int>& nums1, vector<int>& nums2,
-                                 long long k) {
-        int n1 = nums1.size();
-        long long left = -1e10, right = 1e10;
-        while (left <= right) {
-            long long mid = (left + right) / 2;
-            long long count = 0;
-            for (int i = 0; i < n1; i++) {
-                count += f(nums2, nums1[i], mid);
-            }
-            if (count < k) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
-        }
-        return left;
+        return l-1;
     }
 };
