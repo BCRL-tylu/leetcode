@@ -35,11 +35,9 @@ public:
         }
 
         priority_queue<pair<int,int>> pq;
-        for (int i = 0; i < (int)edges.size(); i++) {
-            if (edges[i][3] == 0) {
-                pq.push({edges[i][2], i});
-            }
-        }
+        for (int i = 0; i < (int)edges.size(); i++) 
+            if (edges[i][3] == 0) pq.push({edges[i][2], i});
+        
 
         vector<int> chosen;
         while (used < n - 1 && !pq.empty()) {
@@ -49,7 +47,7 @@ public:
                 used++;
             }
         }
-        if (used < n - 1) return -1;  // can't connect
+        if (used < n - 1) return -1;
 
         sort(chosen.begin(), chosen.end(),
              [&](int a, int b){
@@ -61,13 +59,11 @@ public:
         }
 
         int stability = INT_MAX;
-        for (auto &e : edges) {
-            if (e[3] == 1)
-                stability = min(stability, e[2]);
-        }
-        for (int i : chosen) {
-            stability = min(stability, edges[i][2]);
-        }
+        for (auto &e : edges) 
+            if (e[3] == 1)stability = min(stability, e[2]);
+        
+        for (int i : chosen) stability = min(stability, edges[i][2]);
+        
         return stability;
     }
 };
